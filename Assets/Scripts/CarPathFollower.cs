@@ -55,25 +55,33 @@ public class CarPathFollower : MonoBehaviour
             transform.rotation = Quaternion.identity;
             rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
+            rb.bodyType = RigidbodyType2D.Kinematic;
             return; // Skip the rest of the update logic on reset
         }
 
-        collisionCooldown = Mathf.Max(collisionCooldown - Time.deltaTime, 0f);
+        collisionCooldown = Mathf.Max(collisionCooldown - Time.deltaTime, 0f);   
+
+    }
+
+    void FixedUpdate()
+    {
+        // Apply physics-based movement if needed (currently not used since we're directly setting position in Update)
+        
         if (hasCollided) return; // Stop moving if we've collided with another car
 
         if (currentPosOnSpline > 1f) currentPosOnSpline -= 1f; // Loop back to start of spline
-        Vector3 position = splineController.splineContainer.EvaluatePosition(currentPosOnSpline);
-        position.z = 0f; // Keep the car on the 2D plane
+        Vector3 targetPosition = splineController.splineContainer.EvaluatePosition(currentPosOnSpline);
+        targetPosition.z = 0f; // Keep the car on the 2D plane
         Vector3 tangent = splineController.splineContainer.EvaluateTangent(currentPosOnSpline);
-        Debug.DrawRay(position, tangent, Color.green);
+        Debug.DrawRay(transform.position, tangent, Color.green);
         // Look at tangent direction
         if (tangent != Vector3.zero)
         {
             float angle = Mathf.Atan2(tangent.y, tangent.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(0, 0, angle - 90); // Subtract 90 degrees to align the car sprite correctly
+            rb.MoveRotation(Quaternion.Euler(0, 0, angle - 90)); // Subtract 90 degrees to align the car sprite correctly
         }
         
-        transform.position = position;
+        rb.MovePosition(targetPosition); // Move the car to the target position on the spline
 
         // Raycast out to detect if there is a car in front of this one, and if so, slow down
         Vector3 rayDirection = transform.up;
@@ -88,14 +96,14 @@ public class CarPathFollower : MonoBehaviour
         if (hits.Length > 1)
         {            
             float currentDecelerationRate = decelerationRate * (1/(hits[1].distance/raycastDistance)); // Decelerate more if the car in front is closer
-            speed = Mathf.Max(speed - currentDecelerationRate * Time.deltaTime, 0.0f); // Slow down if there's a car in front, but don't stop completely
+            speed = Mathf.Max(speed - currentDecelerationRate * Time.fixedDeltaTime, 0.0f); // Slow down if there's a car in front, but don't stop completely
         }
         else
         {
-            speed = Mathf.Min(speed + accelerationRate * Time.deltaTime, maxSpeed); // Normal speed
+            speed = Mathf.Min(speed + accelerationRate * Time.fixedDeltaTime, maxSpeed); // Normal speed
         }
 
-        currentPosOnSpline += speed * Time.deltaTime;
+        currentPosOnSpline += speed * Time.fixedDeltaTime;
 
         if (currentPosOnSpline >= 1f)
         {
@@ -111,12 +119,12 @@ public class CarPathFollower : MonoBehaviour
                 }
             }
         }
-
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
         Debug.Log("Collided with: " + collision.collider.name);
+        rb.bodyType = RigidbodyType2D.Dynamic; // Make the car affected by physics after collision
 
         if (collisionCooldown == 0) {
             collisionCooldown = 1f; // Set cooldown to 1 second
