@@ -4,120 +4,286 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Splines;
 
+#nullable enable
+
 public class CarPathFollower : MonoBehaviour
 {
 
-    float currentPosOnSpline = 0f;
-    [SerializeField] public SplineController splineController;
-    [SerializeField] SplineController startingSplineController;
-    [SerializeField] float raycastDistance = 3f;
-    [SerializeField] float maxSpeed = 0.1f;
-    [SerializeField] float decelerationRate = 0.1f;
-    [SerializeField] float accelerationRate = 0.05f;
+    float currentSplineTValue = 0f;
+    public IntersectionNode intersectionNode;
 
-    [SerializeField] float speed = 0.1f;
+    [SerializeField] float raycastDistance;
+    [SerializeField] float maxSpeed;
+    float minSpeed = 0.03f; // Minimum speed to stop the very gradual creeping when trying to stop for a target.
+    [SerializeField] float decelerationRate;
+    [SerializeField] float accelerationRate;
+
+    [SerializeField] float speed;
+
+    public bool canProceedAtStopSign = false; // Whether this car is currently allowed to proceed through a stop sign. This is set by the IntersectionController when it's this car's turn to go.
 
     [SerializeField] Rigidbody2D rb;
 
     [SerializeField] GameObject explosionEffectPrefab;
-    [SerializeField] PlayerInput playerInput;
+    [SerializeField] GameObject exhaustEffectPrefab;
+
 
     bool hasCollided = false;
+    GameObject? exhaustEffectInstance;
     float collisionCooldown = 0f; // Time in seconds to ignore collisions after a collision has occurred
 
+    // Braking tracking: remember the first detection distance for the current target so we can
+    // compute a smooth, linear target-speed curve from detection to stop point.
+    GameObject? trackedTarget = null;
+    float initialDetectionDistance = 0f;
+    const float kMinDetectionSpan = 0.001f;
 
-    InputAction resetAction;
 
-    private void Awake()
-    {
-        resetAction = playerInput.actions["Reset"];
-    }
-    
+    // used to determine whether the tracked target has moved independently
+    Vector3 trackedTargetLastPosition;
+
+    IntersectionController intersectionController = IntersectionController.Instance;
+
+
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        splineController = startingSplineController;
+   
     }
 
     // Update is called once per frame
     void Update()
     {
+        // if (nodesToWaitToDequeue == 0) {
+        //     intersectionController.DequeueStopSign(this);
+        //     nodesToWaitToDequeue = -1;
+        // }
 
-        bool reset = resetAction.ReadValue<float>() > 0;
-        if (reset)
+        if (!hasCollided && exhaustEffectPrefab != null)
         {
-            // Reset the car to the starting position and spline
-            splineController = startingSplineController;
-            currentPosOnSpline = 0f;
-            hasCollided = false;
-            collisionCooldown = 0f;
-            transform.position = splineController.splineContainer.EvaluatePosition(0f);
-            transform.rotation = Quaternion.identity;
-            rb.linearVelocity = Vector2.zero;
-            rb.angularVelocity = 0f;
-            rb.bodyType = RigidbodyType2D.Kinematic;
-            return; // Skip the rest of the update logic on reset
+            if (exhaustEffectInstance == null)
+            {
+                exhaustEffectInstance = Instantiate(exhaustEffectPrefab, transform);
+            }
+        }
+        else
+        {
+            if (exhaustEffectInstance != null)
+            {
+                Destroy(exhaustEffectInstance);
+                exhaustEffectInstance = null;
+            }
+
         }
 
-        collisionCooldown = Mathf.Max(collisionCooldown - Time.deltaTime, 0f);   
+        collisionCooldown = Mathf.Max(collisionCooldown - Time.deltaTime, 0f);
 
     }
 
     void FixedUpdate()
     {
         // Apply physics-based movement if needed (currently not used since we're directly setting position in Update)
-        
+
         if (hasCollided) return; // Stop moving if we've collided with another car
 
-        if (currentPosOnSpline > 1f) currentPosOnSpline -= 1f; // Loop back to start of spline
-        Vector3 targetPosition = splineController.splineContainer.EvaluatePosition(currentPosOnSpline);
+        // T value updates        
+        if (currentSplineTValue > 1f)
+        {
+            // Try to transfer to next spline
+            // TODO create system to specify car intentions at intersections (left turn, right turn, straight) and use that to determine which spline to transfer to
+            // For now, just continue until there is no "continueNode", at which point we will try to transfer to a random outgoing spline from the intersection node
+                        
+            if (intersectionNode.continueNode != null)
+            {
+                intersectionNode = intersectionNode.continueNode;
+            }
+            else
+            {
+                // Pick a random number 0-2, 0 = left turn, 1 = straight, 2 = right turn. If the corresponding node is null, try another one until we find a valid one or exhaust all options.
+                int turnChoice = UnityEngine.Random.Range(0, 3);
+                IntersectionNode? nextNode = null;
+                for (int i = 0; i < 3; i++)
+                {
+                    int choice = (turnChoice + i) % 3;
+                    if (choice == 0 && intersectionNode.leftTurnNode != null)
+                    {
+                        nextNode = intersectionNode.leftTurnNode;
+                        break;
+                    }
+                    else if (choice == 1 && intersectionNode.noTurnNode != null)
+                    {
+                        nextNode = intersectionNode.noTurnNode;
+                        break;
+                    }
+                    else if (choice == 2 && intersectionNode.rightTurnNode != null)
+                    {
+                        nextNode = intersectionNode.rightTurnNode;
+                        break;
+                    }
+                }
+                if (nextNode != null)
+                {
+                    intersectionNode = nextNode;
+                }
+                else
+                {
+
+                    Destroy(gameObject); // No more splines to transfer to, destroy the car
+                    intersectionController.DequeueStopSign(this); // If we're waiting at a stop sign, make sure to dequeue from the stop sign queue when we leave, even if it's because we're destroyed.
+                    return;
+
+                }
+            }
+
+            currentSplineTValue = 0f;
+        }
+
+        // Raycast out to detect if there is a car in front of this one, and if so, slow down for next update.
+        // TODO - Change this to use a target point to stop at, rather than just based on distance.
+        // This will allow for more precise stopping at stop signs and better speed matching between cars.
+        Vector3 rayDirection = transform.up;
+
+        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, rayDirection, raycastDistance);
+        Debug.DrawRay(transform.position, rayDirection * raycastDistance, Color.red);
+
+        RaycastHit2D? closestTargetHit = null;
+        float closestTargetDistance = Mathf.Infinity;
+        for (int i = 0; i < hits.Length; i++)
+        {
+            // Ignore hits that are this car's own collider
+            if (hits[i].collider.gameObject == gameObject) continue;
+            
+            // Ignore stop lines if we're allowed to go
+            if (canProceedAtStopSign && hits[i].collider.gameObject.layer == LayerMask.NameToLayer("Stop Lines")) continue;
+
+            // Ignore interssection leave triggers so we don't get confused when leaving an intersection
+            if (hits[i].collider.gameObject.layer == LayerMask.NameToLayer("Intersection Leave")) continue;
+
+            if (hits[i].distance < closestTargetDistance)
+            {
+                closestTargetDistance = hits[i].distance;
+                closestTargetHit = hits[i];
+            }
+
+
+            // Debug.Log("Hit: " + hits[i].collider.name + " at distance: " + hits[i].distance);
+        }
+
+        if (closestTargetHit.HasValue)
+        {
+
+            bool isCar = closestTargetHit.Value.collider.gameObject.layer == LayerMask.NameToLayer("Cars");
+            bool isStopSign = closestTargetHit.Value.collider.gameObject.layer == LayerMask.NameToLayer("Stop Lines");
+
+            // Stop closer to stop lines -- Ignore far away lines
+            bool didHitStopSign = false;
+            if (isStopSign)
+            {
+                didHitStopSign = true;
+            }
+
+            // always plan to stop half a unit ahead, ignoring stop sign branching
+            float desiredStopDistance = didHitStopSign ? 0.3f : 1.5f;
+            float distanceToTarget = closestTargetHit.Value.distance;
+            float distanceToStop = distanceToTarget - desiredStopDistance;
+            // Track the target we detected so the curve is anchored to the original detection point.
+            GameObject hitObj = closestTargetHit.Value.collider.gameObject;
+            if (trackedTarget == null || trackedTarget != hitObj)
+            {
+                trackedTarget = hitObj;
+                initialDetectionDistance = distanceToTarget;
+                trackedTargetLastPosition = hitObj.transform.position;
+            }
+            else
+            {
+                // compute how much the target moved since last frame
+                Vector3 newPos = hitObj.transform.position;
+                Vector3 moveDelta = newPos - trackedTargetLastPosition;
+                trackedTargetLastPosition = newPos;
+
+                // project movement onto our ray direction to see if the target has
+                // moved closer or farther independently of us.
+                float forwardMovement = Vector3.Dot(moveDelta, transform.up);
+                if (forwardMovement > 0.0001f)
+                {
+                    // target moved away
+                    initialDetectionDistance = distanceToTarget;
+                }
+                else if (forwardMovement < -0.0001f)
+                {
+                    // target moved closer
+                    initialDetectionDistance = distanceToTarget;
+                }
+            }
+
+            // If we're already at or past the desired stop point, brake to zero using the max deceleration.
+            if (distanceToStop <= 0f)
+            {
+                speed = Mathf.Max(speed - decelerationRate * Time.fixedDeltaTime, 0f);
+            }
+            else
+            {
+                // Compute a linear target speed between detection and stop point.
+                float detectionSpan = Mathf.Max(initialDetectionDistance - desiredStopDistance, kMinDetectionSpan);
+                float t = Mathf.Clamp01(distanceToStop / detectionSpan); // 1 at detection, 0 at stop point
+                float targetSpeed = Mathf.Min(maxSpeed * t, maxSpeed);
+
+                // Smoothly move current speed toward targetSpeed using acceleration/deceleration caps.
+                float delta = (speed > targetSpeed) ? decelerationRate * Time.fixedDeltaTime : accelerationRate * Time.fixedDeltaTime;
+                speed = Mathf.MoveTowards(speed, targetSpeed, delta);
+                if (speed < minSpeed && targetSpeed > 0f) // If we're trying to move but are below the minimum speed, snap up to the minimum speed to prevent creeping.
+                {
+                    speed = minSpeed;
+                    if (didHitStopSign && !isCar)  // isCar is check for the closest hit. We aren't first in line if the closest hit is a car.
+                    {
+                        intersectionController.EnqueueStopSign(this);
+                    }
+                }
+
+            }
+        }
+        else
+        {
+            // No target in sight: clear tracking and accelerate to cruise speed.
+            trackedTarget = null;
+            initialDetectionDistance = 0f;
+            speed = Mathf.Min(speed + accelerationRate * Time.fixedDeltaTime, maxSpeed); // Normal speed
+        }
+
+        // Also get spline length for consistent speed across different splines (since the T value is normalized, we need to account for spline length to maintain consistent speed)
+        float splineLength = intersectionNode.splineContainer.CalculateLength();
+
+        currentSplineTValue += speed * Time.fixedDeltaTime / splineLength * 10f;  // 10 is a rough estimate of the avg spline length.
+        // TODO remove the 10x speed multiplier
+
+
+
+        // Move along the current spline
+        SplineContainer splineContainer = intersectionNode.splineContainer;
+        Vector3 targetPosition = splineContainer.EvaluatePosition(currentSplineTValue);
         targetPosition.z = 0f; // Keep the car on the 2D plane
-        Vector3 tangent = splineController.splineContainer.EvaluateTangent(currentPosOnSpline);
-        Debug.DrawRay(transform.position, tangent, Color.green);
+        rb.MovePosition(targetPosition); // Move the car to the target position on the spline
+
+        // Point along the current spline
+        Vector3 tangent = splineContainer.EvaluateTangent(currentSplineTValue);
         // Look at tangent direction
         if (tangent != Vector3.zero)
         {
             float angle = Mathf.Atan2(tangent.y, tangent.x) * Mathf.Rad2Deg;
             rb.MoveRotation(Quaternion.Euler(0, 0, angle - 90)); // Subtract 90 degrees to align the car sprite correctly
         }
-        
-        rb.MovePosition(targetPosition); // Move the car to the target position on the spline
 
-        // Raycast out to detect if there is a car in front of this one, and if so, slow down
-        Vector3 rayDirection = transform.up;
 
-        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, rayDirection, raycastDistance);
-        Debug.DrawRay(transform.position, rayDirection * raycastDistance, Color.red);
-        if (hits.Length > 0)
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        // If we hit a stop sign trigger, set canProceedAtStopSign to true so we can ignore the stop sign raycast in Update and proceed through the intersection.
+        if (other.gameObject.layer == LayerMask.NameToLayer("Intersection Leave"))
         {
-            Debug.Log("Raycast count: " + hits.Length);
-            Debug.Log("Raycast hit: " + hits[0].collider.name);
-        }
-        if (hits.Length > 1)
-        {            
-            float currentDecelerationRate = decelerationRate * (1/(hits[1].distance/raycastDistance)); // Decelerate more if the car in front is closer
-            speed = Mathf.Max(speed - currentDecelerationRate * Time.fixedDeltaTime, 0.0f); // Slow down if there's a car in front, but don't stop completely
-        }
-        else
-        {
-            speed = Mathf.Min(speed + accelerationRate * Time.fixedDeltaTime, maxSpeed); // Normal speed
-        }
-
-        currentPosOnSpline += speed * Time.fixedDeltaTime;
-
-        if (currentPosOnSpline >= 1f)
-        {
-            // Reached end of spline, transfer to next spline
-            if (splineController != null)
-            {
-                currentPosOnSpline = 0f;
-                SplineController.NodeTransferType transferType = splineController.TransferToNextSpline(this);
-                if (transferType == SplineController.NodeTransferType.End)
-                {
-                    // No more splines to transfer to, reset. Placeholder behavior.
-                    splineController = startingSplineController;
-                }
-            }
+            intersectionController.DequeueStopSign(this);
         }
     }
 
@@ -126,11 +292,12 @@ public class CarPathFollower : MonoBehaviour
         Debug.Log("Collided with: " + collision.collider.name);
         rb.bodyType = RigidbodyType2D.Dynamic; // Make the car affected by physics after collision
 
-        if (collisionCooldown == 0) {
+        if (collisionCooldown == 0)
+        {
             collisionCooldown = 1f; // Set cooldown to 1 second
             Instantiate(explosionEffectPrefab, transform.position, Quaternion.identity); // Spawn explosion effect
-        } 
-        
+        }
+
         hasCollided = true; // Stop moving if we've collided with another car
     }
 }
