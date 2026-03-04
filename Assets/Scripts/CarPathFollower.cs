@@ -1,22 +1,26 @@
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Splines;
 
 #nullable enable
 
-public class CarPathFollower : MonoBehaviour
+public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 {
 
     float currentSplineTValue = 0f;
     public IntersectionNode intersectionNode;
 
-    [SerializeField] float raycastDistance;
-    [SerializeField] float maxSpeed;
+    public bool isDeviant = false; // Whether this car is a "deviant" that doesn't follow traffic rules.
+    // TODO Have the car control the behavior, rather than having the intersection controller manually modify the attributes.
+
+    public float raycastDistance;
+    public float maxSpeed;
     float minSpeed = 0.03f; // Minimum speed to stop the very gradual creeping when trying to stop for a target.
-    [SerializeField] float decelerationRate;
-    [SerializeField] float accelerationRate;
+    public float decelerationRate;
+    public float accelerationRate;
 
     [SerializeField] float speed;
 
@@ -56,10 +60,6 @@ public class CarPathFollower : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // if (nodesToWaitToDequeue == 0) {
-        //     intersectionController.DequeueStopSign(this);
-        //     nodesToWaitToDequeue = -1;
-        // }
 
         if (!hasCollided && exhaustEffectPrefab != null)
         {
@@ -72,8 +72,7 @@ public class CarPathFollower : MonoBehaviour
         {
             if (exhaustEffectInstance != null)
             {
-                Destroy(exhaustEffectInstance);
-                exhaustEffectInstance = null;
+                StopExhaust();
             }
 
         }
@@ -130,7 +129,7 @@ public class CarPathFollower : MonoBehaviour
                 else
                 {
 
-                    Destroy(gameObject); // No more splines to transfer to, destroy the car
+                    DestroyAndDropParticles(); // No more splines to transfer to, destroy the car
                     intersectionController.DequeueStopSign(this); // If we're waiting at a stop sign, make sure to dequeue from the stop sign queue when we leave, even if it's because we're destroyed.
                     return;
 
@@ -299,5 +298,49 @@ public class CarPathFollower : MonoBehaviour
         }
 
         hasCollided = true; // Stop moving if we've collided with another car
+    }
+
+    public void OnPointerClick(PointerEventData e)
+    {
+        IntersectionController.Instance.DequeueStopSign(this);
+        if (isDeviant)
+        {
+            // If this car is a deviant, clicking it will "report" it and destroy it, giving the player points.
+            IntersectionController.Instance.AddScore(1); // TODO add a score system and update the score when a deviant car is reported
+            Instantiate(explosionEffectPrefab, transform.position, Quaternion.identity); // Spawn explosion effect
+            DestroyAndDropParticles();
+        } else
+        {
+            // If this car is not a deviant, clicking it will penalize the player by reducing their score and destroying the car.
+            IntersectionController.Instance.AddScore(-1); // TODO add a score system and update the score when a non-deviant car is mistakenly reported
+            DestroyAndDropParticles();
+        }
+    }
+
+    // Called just before OnDestroy()
+    void OnDisable()
+    {
+
+        StopExhaust();
+        // Notify the intersection controller that this car was removed so it can update active counts
+        if (IntersectionController.Instance != null)
+        {
+            IntersectionController.Instance.NotifyCarDestroyed();
+        }
+    }
+
+    void StopExhaust() {
+        if (exhaustEffectInstance) {
+            exhaustEffectInstance.transform.parent = null;  // Detach from parent 
+            ParticleSystem particles = exhaustEffectInstance.GetComponent<ParticleSystem>();
+            particles.Stop();
+            exhaustEffectInstance = null;
+        }
+    }
+
+    public void DestroyAndDropParticles()
+    {
+        StopExhaust();
+        Destroy(gameObject);
     }
 }
