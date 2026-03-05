@@ -1,9 +1,6 @@
-using System;
-using Unity.VisualScripting;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
-using UnityEngine.Splines;
 
 #nullable enable
 
@@ -21,6 +18,8 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     float minSpeed = 0.03f; // Minimum speed to stop the very gradual creeping when trying to stop for a target.
     public float decelerationRate;
     public float accelerationRate;
+    public TurnChoice? turnIntention; // The car will take the first available turn that matches this intention when it reaches an intersection.
+                                     // If the there is no "continue" option, and the intended turn is not available, the car will take any available turn.
 
     [SerializeField] float speed;
 
@@ -49,96 +48,36 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     IntersectionController intersectionController = IntersectionController.Instance;
 
 
-
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void UpdatePositionAlongSpline()
     {
-   
+        // Get spline length for consistent speed across different splines (since the T value is normalized, we need to account for spline length to maintain consistent speed)
+        float splineLength = intersectionNode.splineContainer.CalculateLength();
+
+        currentSplineTValue += speed * Time.fixedDeltaTime / splineLength * 10f;  // 10 is a rough estimate of the avg spline length.
+        // TODO remove the 10x speed multiplier
+
+
+
+        // Move along the current spline
+        Vector3 targetPosition = intersectionNode.splineContainer.EvaluatePosition(currentSplineTValue);
+        targetPosition.z = 0f; // Keep the car on the 2D plane
+        rb.MovePosition(targetPosition); // Move the car to the target position on the spline
     }
 
-    // Update is called once per frame
-    void Update()
+    void UpdateRotationAlongSpline()
     {
-
-        if (!hasCollided && exhaustEffectPrefab != null)
+        // Point along the current spline
+        Vector3 tangent = intersectionNode.splineContainer.EvaluateTangent(currentSplineTValue);
+        // Look at tangent direction
+        if (tangent != Vector3.zero)
         {
-            if (exhaustEffectInstance == null)
-            {
-                exhaustEffectInstance = Instantiate(exhaustEffectPrefab, transform);
-            }
+            float angle = Mathf.Atan2(tangent.y, tangent.x) * Mathf.Rad2Deg;
+            rb.MoveRotation(Quaternion.Euler(0, 0, angle - 90)); // Subtract 90 degrees to align the car sprite correctly
         }
-        else
-        {
-            if (exhaustEffectInstance != null)
-            {
-                StopExhaust();
-            }
-
-        }
-
-        collisionCooldown = Mathf.Max(collisionCooldown - Time.deltaTime, 0f);
-
     }
 
-    void FixedUpdate()
+    void DoRaycastDetection()
     {
-        // Apply physics-based movement if needed (currently not used since we're directly setting position in Update)
-
-        if (hasCollided) return; // Stop moving if we've collided with another car
-
-        // T value updates        
-        if (currentSplineTValue > 1f)
-        {
-            // Try to transfer to next spline
-            // TODO create system to specify car intentions at intersections (left turn, right turn, straight) and use that to determine which spline to transfer to
-            // For now, just continue until there is no "continueNode", at which point we will try to transfer to a random outgoing spline from the intersection node
-                        
-            if (intersectionNode.continueNode != null)
-            {
-                intersectionNode = intersectionNode.continueNode;
-            }
-            else
-            {
-                // Pick a random number 0-2, 0 = left turn, 1 = straight, 2 = right turn. If the corresponding node is null, try another one until we find a valid one or exhaust all options.
-                int turnChoice = UnityEngine.Random.Range(0, 3);
-                IntersectionNode? nextNode = null;
-                for (int i = 0; i < 3; i++)
-                {
-                    int choice = (turnChoice + i) % 3;
-                    if (choice == 0 && intersectionNode.leftTurnNode != null)
-                    {
-                        nextNode = intersectionNode.leftTurnNode;
-                        break;
-                    }
-                    else if (choice == 1 && intersectionNode.noTurnNode != null)
-                    {
-                        nextNode = intersectionNode.noTurnNode;
-                        break;
-                    }
-                    else if (choice == 2 && intersectionNode.rightTurnNode != null)
-                    {
-                        nextNode = intersectionNode.rightTurnNode;
-                        break;
-                    }
-                }
-                if (nextNode != null)
-                {
-                    intersectionNode = nextNode;
-                }
-                else
-                {
-
-                    DestroyAndDropParticles(); // No more splines to transfer to, destroy the car
-                    intersectionController.DequeueStopSign(this); // If we're waiting at a stop sign, make sure to dequeue from the stop sign queue when we leave, even if it's because we're destroyed.
-                    return;
-
-                }
-            }
-
-            currentSplineTValue = 0f;
-        }
-
         // Raycast out to detect if there is a car in front of this one, and if so, slow down for next update.
         // TODO - Change this to use a target point to stop at, rather than just based on distance.
         // This will allow for more precise stopping at stop signs and better speed matching between cars.
@@ -153,7 +92,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         {
             // Ignore hits that are this car's own collider
             if (hits[i].collider.gameObject == gameObject) continue;
-            
+
             // Ignore stop lines if we're allowed to go
             if (canProceedAtStopSign && hits[i].collider.gameObject.layer == LayerMask.NameToLayer("Stop Lines")) continue;
 
@@ -250,30 +189,101 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
             initialDetectionDistance = 0f;
             speed = Mathf.Min(speed + accelerationRate * Time.fixedDeltaTime, maxSpeed); // Normal speed
         }
+    }
 
-        // Also get spline length for consistent speed across different splines (since the T value is normalized, we need to account for spline length to maintain consistent speed)
-        float splineLength = intersectionNode.splineContainer.CalculateLength();
+    void HandleEndOfSpline()
+    {
+        // Try to transfer to next spline
 
-        currentSplineTValue += speed * Time.fixedDeltaTime / splineLength * 10f;  // 10 is a rough estimate of the avg spline length.
-        // TODO remove the 10x speed multiplier
+        // The idea is that if there is a "continue" node, we take that one. 
+        // Otherwise, we look at our turn intention and try to take the corresponding turn if it's available, and if not, we take any available turn. 
+        // If there are no available turns, the car is destroyed.
 
+        // TODO create system to specify car intentions at intersections (left turn, right turn, straight) and use that to determine which spline to transfer to
+        // For now, just continue until there is no "continueNode", at which point we will try to transfer to a random outgoing spline from the intersection node
 
+        List<TurnChoice> availableTurns = intersectionNode.GetAvailableTurnChoices();
+        TurnChoice? chosenTurn = null;
 
-        // Move along the current spline
-        SplineContainer splineContainer = intersectionNode.splineContainer;
-        Vector3 targetPosition = splineContainer.EvaluatePosition(currentSplineTValue);
-        targetPosition.z = 0f; // Keep the car on the 2D plane
-        rb.MovePosition(targetPosition); // Move the car to the target position on the spline
-
-        // Point along the current spline
-        Vector3 tangent = splineContainer.EvaluateTangent(currentSplineTValue);
-        // Look at tangent direction
-        if (tangent != Vector3.zero)
+        // First, try to continue
+        if (availableTurns.Contains(TurnChoice.Continue))
         {
-            float angle = Mathf.Atan2(tangent.y, tangent.x) * Mathf.Rad2Deg;
-            rb.MoveRotation(Quaternion.Euler(0, 0, angle - 90)); // Subtract 90 degrees to align the car sprite correctly
+            chosenTurn = TurnChoice.Continue;
+        }
+        // Then, try to match the turn intention if there is one
+        else if (turnIntention.HasValue && availableTurns.Contains(turnIntention.Value))
+        {
+            chosenTurn = turnIntention.Value;
+        }
+        // Finally, if the intended turn isn't available, just pick a random available turn
+        else if (availableTurns.Count > 0)
+        {
+            // Pick a random available turn
+            int index = Random.Range(0, availableTurns.Count);
+            chosenTurn = availableTurns[index];
+        }
+        // Note: If there are no available turns, chosenTurn will remain null, and the car will be destroyed below when we fail to transfer to a new node.
+
+        IntersectionNode? nextNode = intersectionNode.TransferCarToNextNode(this, chosenTurn);
+        if (nextNode != null) {
+            intersectionNode = nextNode;
+            currentSplineTValue = 0f;
+        }
+        else
+        {
+            DestroyAndDropParticles(); // No more splines to transfer to, destroy the car
+            intersectionController.DequeueStopSign(this); // If we're waiting at a stop sign, make sure to dequeue from the stop sign queue when we leave, even if it's because we're destroyed.
+            return;
+        }
+    }
+
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+        if (!hasCollided && exhaustEffectPrefab != null)
+        {
+            if (exhaustEffectInstance == null)
+            {
+                exhaustEffectInstance = Instantiate(exhaustEffectPrefab, transform);
+            }
+        }
+        else
+        {
+            if (exhaustEffectInstance != null)
+            {
+                StopExhaust();
+            }
+
         }
 
+        collisionCooldown = Mathf.Max(collisionCooldown - Time.deltaTime, 0f);
+
+    }
+
+    void FixedUpdate()
+    {
+        // Apply physics-based movement if needed (currently not used since we're directly setting position in Update)
+
+        if (hasCollided) return; // Stop moving if we've collided with another car
+
+        // T value updates        
+        if (currentSplineTValue > 1f)
+        {
+            HandleEndOfSpline();
+        }
+
+        
+        DoRaycastDetection();
+        UpdatePositionAlongSpline();
+        UpdateRotationAlongSpline();
 
     }
 
@@ -309,7 +319,8 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
             IntersectionController.Instance.AddScore(1); // TODO add a score system and update the score when a deviant car is reported
             Instantiate(explosionEffectPrefab, transform.position, Quaternion.identity); // Spawn explosion effect
             DestroyAndDropParticles();
-        } else
+        }
+        else
         {
             // If this car is not a deviant, clicking it will penalize the player by reducing their score and destroying the car.
             IntersectionController.Instance.AddScore(-1); // TODO add a score system and update the score when a non-deviant car is mistakenly reported
@@ -329,8 +340,10 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    void StopExhaust() {
-        if (exhaustEffectInstance) {
+    void StopExhaust()
+    {
+        if (exhaustEffectInstance)
+        {
             exhaustEffectInstance.transform.parent = null;  // Detach from parent 
             ParticleSystem particles = exhaustEffectInstance.GetComponent<ParticleSystem>();
             particles.Stop();
@@ -343,4 +356,12 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         StopExhaust();
         Destroy(gameObject);
     }
+}
+
+public enum TurnChoice
+{
+    Continue,
+    Left,
+    NoTurn,
+    Right
 }
