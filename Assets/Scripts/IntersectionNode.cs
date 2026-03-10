@@ -16,7 +16,7 @@ public class IntersectionNode : MonoBehaviour
     [SerializeField] IntersectionNode? rightTurnNode;
     [SerializeField] IntersectionNode? noTurnNode;
 
-    public IntersectionNode? TransferCarToNextNode(CarPathFollower car, TurnChoice? turnChoice)
+    public IntersectionNode? TransferCarToNextNode(CarPathFollower car, TurnChoice turnChoice)
     {
         IntersectionNode? nextNode = null;
         switch (turnChoice)
@@ -40,7 +40,7 @@ public class IntersectionNode : MonoBehaviour
         {
             nextNode.OnCarEnter(car);
         }
-        else if (turnChoice != null) // Don't warn if there was no attempt to continue at all.
+        else if (turnChoice != TurnChoice.Unspecified) // Don't warn if there was no attempt to continue at all.
         {
             Debug.LogWarning($"Car attempted to transfer to a node that doesn't exist for turn choice {turnChoice}");
         }
@@ -116,22 +116,24 @@ public class IntersectionNode : MonoBehaviour
         carPathFollower.intersectionNode = this;
 
         OnCarEnter(carPathFollower);
+        IntersectionController.Instance.activeCars.Add(carPathFollower);
+
+        carPathFollower.maxSpeed += GameManager.Instance.roundNumber * 0.05f; // Increase base speed based on round number to make the game more challenging as it goes on
+        carPathFollower.raycastDistance += GameManager.Instance.roundNumber * 0.2f;
 
         if (deviant)  // TODO make this better
         {
             carPathFollower.isDeviant = true;
             // Choose a random behavior to modify
-            int behaviorToModify = UnityEngine.Random.Range(0, 3);
+            int behaviorToModify = Random.Range(0, 3);
             switch (behaviorToModify)
             {
                 case 0:
-                    carPathFollower.maxSpeed *= 2f; // Double speed for speeding behavior
+                    carPathFollower.maxSpeed *= 3f; // Higher speed for speeding behavior
                     break;
                 case 1:
-                    carPathFollower.canProceedAtStopSign = true; // Allow proceeding at stop signs for running stop signs behavior
-                    break;
                 case 2:
-                    carPathFollower.raycastDistance = 1f; // Set raycast distance to 1 for stopping too late behavior
+                    carPathFollower.canProceedAtStopSign = true; // Allow proceeding at stop signs for running stop signs behavior
                     break;
             }
         }

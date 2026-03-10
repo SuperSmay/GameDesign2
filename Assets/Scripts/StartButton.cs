@@ -1,0 +1,22 @@
+using UnityEngine;
+
+public class StartButton : MonoBehaviour
+{
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    public void OnClick()
+    {
+        // Start the game switching scene
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainScene");
+    }
+}

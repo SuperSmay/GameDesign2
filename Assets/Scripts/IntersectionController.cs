@@ -14,6 +14,8 @@ public class IntersectionController : MonoBehaviour
 
     public static IntersectionController Instance { get; private set; }
 
+    public List<CarPathFollower> activeCars = new List<CarPathFollower>();
+
     List<CarPathFollower> stopSignQueue = new List<CarPathFollower>();
     [SerializeField] float stopSignWaitTime; // Time to wait at a stop sign before allowing the next car to go
     float stopSignTimer = 0f;
@@ -25,7 +27,6 @@ public class IntersectionController : MonoBehaviour
 
     [SerializeField] float gameDuration = 60f; // Duration of the game in seconds
     float gameTimer = 0f;
-    int score = 0;
     
     [Header("Spawning")]
     [SerializeField] float spawnInterval; // seconds between spawn attempts
@@ -56,21 +57,41 @@ public class IntersectionController : MonoBehaviour
     {
         Instance = this;
         resetAction = playerInput.actions["Reset"];
+
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        // This is for debugging
+        // If there isn't a GameManager in the scene, create one and initialize it with default values
+        if (GameManager.Instance == null)
+        {
+            GameObject gameManagerObj = new GameObject("GameManager");
+            gameManagerObj.AddComponent<GameManager>();
+        }
+
         scoreTextComponent.text = "Score: 0";
         timerTextComponent.text = "Time: " + gameDuration.ToString("F1");
+
+        stopSignWaitTime -= 0.1f * GameManager.Instance.roundNumber; // Decrease stop sign wait time each round to increase difficulty
+        stopSignWaitTime = Mathf.Max(0f, stopSignWaitTime); // Set a minimum stop sign wait time to prevent it from becoming negative
     }
 
     // Update is called once per frame
     void Update()
     {
         gameTimer += Time.deltaTime;
-        timerTextComponent.text = "Time: " + (gameDuration - gameTimer).ToString("F1");
+        timerTextComponent.text = "Time: " + Mathf.Max(0, gameDuration - gameTimer).ToString("F1");
 
+        scoreTextComponent.text = "Score: " + GameManager.Instance.Score;
+
+        if (gameTimer >= gameDuration && activeCars.Count == 0)
+        {   
+            // Game over, show round end scene
+            UnityEngine.SceneManagement.SceneManager.LoadScene("RoundEndScene");
+            return;
+        }
         // Spawn cars periodically while the game timer is running
         if (gameTimer < gameDuration && startNodes != null && startNodes.Length > 0)
         {
@@ -124,12 +145,5 @@ public class IntersectionController : MonoBehaviour
         activeCarCount = Mathf.Max(0, activeCarCount - 1);
     }
 
-    
-
-    public void AddScore(int points)
-    {
-        score += points;
-        scoreTextComponent.text = "Score: " + score;
-    }
 
 }

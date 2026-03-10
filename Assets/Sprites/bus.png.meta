@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: da161a25f921e4237b36d13026e806c4
+guid: 96399cab9b41843ad889b749dba66ec5
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1161196385231537633
-    second: car 1_0
+      213: 1223958431475000254
+    second: bus_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -113,23 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: car 1_0
+      name: bus_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 10
-        height: 20
-      alignment: 9
-      pivot: {x: 0.5, y: 0.15}
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1e58138c5f56d1010800000000000000
-      internalID: 1161196385231537633
+      spriteID: eb369e765bf5cf010800000000000000
+      internalID: 1223958431475000254
       vertices: []
       indices: 
       edges: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: e6fe72f3094804e16b5c0edfefdb7a47
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      car 1_0: 1161196385231537633
+      bus_0: 1223958431475000254
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
