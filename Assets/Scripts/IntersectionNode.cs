@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -126,7 +127,22 @@ public class IntersectionNode : MonoBehaviour
         }
         Quaternion rotation = Quaternion.Euler(0, 0, angle - 90);
 
-        GameObject car = Instantiate(IntersectionController.Instance.carPrefab, transform.position, rotation);
+        // Sometimes spawn a bus
+        float spawnSeed = Random.Range(0f, 1f);
+
+        GameObject? prefabToSpawn;
+
+        switch (spawnSeed)
+        {
+            case < 0.2f:
+                prefabToSpawn = IntersectionController.Instance.busPrefab;
+                break;
+            default:
+                prefabToSpawn = IntersectionController.Instance.carPrefab;
+                break;
+        }
+
+        GameObject car = Instantiate(prefabToSpawn, transform.position, rotation);
         CarPathFollower carPathFollower = car.GetComponent<CarPathFollower>();
         carPathFollower.intersectionNode = this;
 
@@ -134,13 +150,12 @@ public class IntersectionNode : MonoBehaviour
         IntersectionController.Instance.activeCars.Add(carPathFollower);
 
         carPathFollower.maxSpeed += GameManager.Instance.roundNumber * 0.05f; // Increase base speed based on round number to make the game more challenging as it goes on
-        carPathFollower.raycastDistance += GameManager.Instance.roundNumber * 0.2f;
 
         if (deviant)  // TODO make this better
         {
             carPathFollower.isDeviant = true;
             // Choose a random behavior to modify
-            int behaviorToModify = Random.Range(0, 3);
+            int behaviorToModify = Random.Range(0, 4);
             switch (behaviorToModify)
             {
                 case 0:
@@ -149,6 +164,25 @@ public class IntersectionNode : MonoBehaviour
                 case 1:
                 case 2:
                     carPathFollower.canProceedAtStopSign = true; // Allow proceeding at stop signs for running stop signs behavior
+                    break;
+                case 3:
+                    List<ColliderStopDistanceInfo> newStopDistances = new List<ColliderStopDistanceInfo>();
+                    foreach (ColliderStopDistanceInfo info in carPathFollower.stopDistancesList)
+                    {
+                        if (info.colliderType == ColliderType.StopLine)
+                        {
+                            newStopDistances.Add(new ColliderStopDistanceInfo(info.colliderType, -1f)); // Stop after the line!
+                        }
+                        else if (info.colliderType == ColliderType.Car)
+                        {
+                            newStopDistances.Add(new ColliderStopDistanceInfo(info.colliderType, 0.5f)); // Stop very close to other cars
+                        }
+                        else
+                        {
+                            newStopDistances.Add(info);
+                        }
+                    }
+                    carPathFollower.stopDistancesList = newStopDistances;
                     break;
             }
         }

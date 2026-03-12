@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
 
     public int Score = 0;
     public int roundNumber = 1;
+    public bool roundSuccessful = false;
 
     private void Awake()
     {

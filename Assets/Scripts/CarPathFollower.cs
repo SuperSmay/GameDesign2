@@ -15,7 +15,6 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     public bool isDeviant; // Whether this car is a "deviant" that doesn't follow traffic rules.
     // TODO Have the car control the behavior, rather than having the intersection controller manually modify the attributes.
 
-    public float raycastDistance;
     public float stopSignMinimumQueueDistance; // How far ahead the car can queue for a stop sign. 
     public float maxDistanceToMoveAfterStopping;  // If the car is stopped for a target but that target moves away (e.g. a car in front turns or accelerates), this is the maximum distance the car will stay stopped within. This prevents cars from getting stuck trying to stop for a target that has moved away.
     public float maxSpeed;
@@ -24,8 +23,19 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     public float absoluteMaxEmergencyDeceleration; // An absolute max limit to how hard the car will brake when trying to avoid a collision
     public float accelerationRate;
     public float targetStopTime;  // Safe time headway in seconds (tune this for following distance)
-    public List<ColliderStopDistanceInfo> stopDistancesList; // List of stop distances for different collider types, used to populate the stopDistances dictionary in Awake()
-    Dictionary<ColliderType, float> stopDistances; // How far away the car should try to stop from different types of targets (other cars, stop signs, etc)
+    public List<ColliderStopDistanceInfo> stopDistancesList;
+   
+        
+     // List of stop distances for different collider types, used to populate the stopDistances dictionary in Awake()
+    Dictionary<ColliderType, float> stopDistances { get
+        {
+            Dictionary<ColliderType, float> dict = new Dictionary<ColliderType, float>();
+            foreach (ColliderStopDistanceInfo info in stopDistancesList)
+            {
+                dict[info.colliderType] = info.distance;
+            }
+            return dict;
+        } } // How far away the car should try to stop from different types of targets (other cars, stop signs, etc)
     public TurnChoice turnIntention; // The car will take the first available turn that matches this intention when it reaches an intersection.
                                      // If the there is no "continue" option, and the intended turn is not available, the car will take any available turn.
 
@@ -71,7 +81,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         // Get spline length for consistent speed across different splines (since the T value is normalized, we need to account for spline length to maintain consistent speed)
         float splineLength = intersectionNode.splineContainer.CalculateLength();
 
-        currentSplineTValue += speed * Time.fixedDeltaTime / splineLength * 10f;  // 10 is a rough estimate of the avg spline length.
+        currentSplineTValue += speed * intersectionController.fixedDeltaTimeSpeedMult / splineLength * 10f;  // 10 is a rough estimate of the avg spline length.
         // TODO remove the 10x speed multiplier
 
 
@@ -123,7 +133,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
                 // Project movement onto our up axis (assuming 2D top-down) and convert to speed per second
                 float forwardMovement = Vector3.Dot(moveDelta, transform.up);
-                targetSpeed = forwardMovement / Time.fixedDeltaTime;
+                targetSpeed = forwardMovement / intersectionController.fixedDeltaTimeSpeedMult;
             }
 
             // 3. Intelligent Driver Model (IDM) Variables
@@ -157,7 +167,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
             calculatedAcceleration = Mathf.Max(calculatedAcceleration, -absoluteMaxEmergencyDeceleration);
 
             // 6. Apply acceleration to speed
-            speed += calculatedAcceleration * Time.fixedDeltaTime;
+            speed += calculatedAcceleration * intersectionController.fixedDeltaTimeSpeedMult;
 
             // Prevent reversing and cap at true max speed
             speed = Mathf.Clamp(speed, 0f, maxSpeed);
@@ -181,7 +191,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
             // Free road behavior: accelerate to max speed
             trackedTarget = null;
             StopTireScreechEffect();
-            speed = Mathf.MoveTowards(speed, maxSpeed, accelerationRate * Time.fixedDeltaTime);
+            speed = Mathf.MoveTowards(speed, maxSpeed, accelerationRate * intersectionController.fixedDeltaTimeSpeedMult);
         }
     }
 
@@ -301,7 +311,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
                 tireScreechEffectInstances = new List<GameObject>();
                 foreach (GameObject spawnPoint in tireScreechEffectSpawnPoints)
                 {
-                    GameObject effectInstance = Instantiate(tireScreechEffectPrefab, spawnPoint.transform);
+                    GameObject effectInstance = InstantiateParticleEffects(tireScreechEffectPrefab, spawnPoint.transform);
                     tireScreechEffectInstances.Add(effectInstance);
                 }
             }
@@ -374,23 +384,19 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        // Convert the stopDistancesList to a dictionary for easier access during raycast detection
-        stopDistances = new Dictionary<ColliderType, float>();
-        foreach (ColliderStopDistanceInfo info in stopDistancesList)
-        {
-            stopDistances[info.colliderType] = info.distance;
-        }
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
         // Randomly assign a sprite from the list for visual variety
         if (sprites != null && sprites.Count > 0)
         {
             int index = Random.Range(0, sprites.Count);
             spriteRenderer.sprite = sprites[index];
         }
+
+    }
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+
     }
 
     // Update is called once per frame
@@ -399,7 +405,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
         if (hasCollided)
         {
-            despawnTimer -= Time.deltaTime;
+            despawnTimer -= intersectionController.deltaTimeSpeedMult;
             if (despawnTimer <= 0f)
             {
                 DestroyAndDropParticles();
@@ -410,7 +416,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         {
             if (exhaustEffectInstance == null)
             {
-                exhaustEffectInstance = Instantiate(exhaustEffectPrefab, transform);
+                exhaustEffectInstance = InstantiateParticleEffects(exhaustEffectPrefab, transform);
             }
         }
         else
@@ -422,8 +428,22 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
         }
 
-        collisionCooldown = Mathf.Max(collisionCooldown - Time.deltaTime, 0f);
+        collisionCooldown = Mathf.Max(collisionCooldown - intersectionController.deltaTimeSpeedMult, 0f);
 
+    }
+
+    GameObject InstantiateParticleEffects(GameObject effectPrefab, Transform parent)
+    {
+        GameObject effectInstance = Instantiate(effectPrefab, parent);
+        intersectionController.activeEffects.Add(effectInstance);
+        return effectInstance;
+    }
+
+    GameObject InstantiateParticleEffects(GameObject effectPrefab, Vector3 position, Quaternion rotation)
+    {
+        GameObject effectInstance = Instantiate(effectPrefab, position, rotation);
+        intersectionController.activeEffects.Add(effectInstance);
+        return effectInstance;
     }
 
     void FixedUpdate()
@@ -463,10 +483,12 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         if (collisionCooldown == 0)
         {
             collisionCooldown = 1f; // Set cooldown to 1 second
-            Instantiate(explosionEffectPrefab, transform.position, Quaternion.identity); // Spawn explosion effect
+            InstantiateParticleEffects(explosionEffectPrefab, transform.position, Quaternion.identity); // Spawn explosion effect
         }
 
         hasCollided = true; // Stop moving if we've collided with another car
+        intersectionController.gameOver = true; // Trigger game over in the intersection controller
+        intersectionController.gameOverPosition = transform.position; // Set the game over position to the location of the collision for camera focus
     }
 
     public void OnPointerClick(PointerEventData e)
@@ -476,7 +498,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         {
             // If this car is a deviant, clicking it will "report" it and destroy it, giving the player points.
             GameManager.Instance.Score += 1;
-            Instantiate(explosionEffectPrefab, transform.position, Quaternion.identity); // Spawn explosion effect
+            InstantiateParticleEffects(explosionEffectPrefab, transform.position, Quaternion.identity); // Spawn explosion effect
             DestroyAndDropParticles();
         }
 

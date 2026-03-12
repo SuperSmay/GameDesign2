@@ -45,6 +45,18 @@ PrefabInstance:
       value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 6775790952202966939, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: maxSpeed
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6775790952202966939, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: accelerationRate
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6775790952202966939, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: decelerationRate
+      value: 0.0005
+      objectReference: {fileID: 0}
+    - target: {fileID: 6775790952202966939, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
       propertyPath: sprites.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -52,6 +64,10 @@ PrefabInstance:
       propertyPath: 'sprites.Array.data[0]'
       value: 
       objectReference: {fileID: 1223958431475000254, guid: 96399cab9b41843ad889b749dba66ec5, type: 3}
+    - target: {fileID: 6775790952202966939, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: absoluteMaxEmergencyDeceleration
+      value: 0.3
+      objectReference: {fileID: 0}
     - target: {fileID: 7459471659854134903, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
       propertyPath: m_Size.y
       value: 0.3
