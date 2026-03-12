@@ -82,6 +82,11 @@ MonoBehaviour:
   - {fileID: 120349635869896627, guid: 16d0c75cf1cf24814a50d5e938d2f0c3, type: 3}
   - {fileID: -543848504685340680, guid: 5ee0c89aebe5c4a98a55856eeb52ad30, type: 3}
   - {fileID: 1617365613214483723, guid: 99cf0632601e848aca5cf43e75f8f970, type: 3}
+  lookAheadDistance: 25
+  carWidth: 0.5
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!212 &7459471659854134903
 SpriteRenderer:
   serializedVersion: 2

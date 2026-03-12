@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Splines;
 
 #nullable enable
 
@@ -42,6 +43,11 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     [SerializeField] List<GameObject> tireScreechEffectSpawnPoints; // List of points (e.g. empty child game objects) where we can spawn tire screech effects when the car brakes hard.
     List<GameObject>? tireScreechEffectInstances;
     [SerializeField] List<Sprite> sprites; // List of possible sprites to randomly assign to this car for visual variety.
+
+    [Header("Path Scanning")]
+    public float lookAheadDistance = 25f; // Max distance to scan
+    public float carWidth = 0.5f;           // Used for the SphereCast radius
+    public LayerMask obstacleLayer;       // Only hit other cars/stop lines
 
 
     bool hasCollided = false;
@@ -91,44 +97,12 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     void DoRaycastDetection()
     {
 
-        // TODO Make sure cars that are waiting at the stop sign that the raycast sweeps across are ignored here - We won't be hitting them
-        // TODO Alt title: Only check for targets within the current path
-
-        Vector3 rayDirection = transform.up;
-
-        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, rayDirection, raycastDistance);
-        Debug.DrawRay(transform.position, rayDirection * raycastDistance, Color.red);
-
-        RaycastHit2D? closestTargetHit = null;
-        float closestTargetDistance = Mathf.Infinity;
-        for (int i = 0; i < hits.Length; i++)
-        {
-            // Ignore hits that are this car's own collider
-            if (hits[i].collider.gameObject == gameObject) continue;
-
-            // Ignore hits on the clickbox colliders
-            if (hits[i].collider.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.ClickBox]) continue;
-
-            // Ignore stop lines if we're allowed to go
-            if (canProceedAtStopSign && hits[i].collider.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.StopLine]) continue;
-
-            // Ignore interssection leave triggers so we don't get confused when leaving an intersection
-            if (hits[i].collider.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.IntersectionLeave]) continue;
-
-            if (hits[i].distance < closestTargetDistance)
-            {
-                closestTargetDistance = hits[i].distance;
-                closestTargetHit = hits[i];
-            }
-
-
-            // Debug.Log("Hit: " + hits[i].collider.name + " at distance: " + hits[i].distance);
-        }
+        RaycastHit2D? closestTargetHit = ScanPathAhead();
 
         if (closestTargetHit.HasValue)
         {
             GameObject hitObj = closestTargetHit.Value.collider.gameObject;
-            float distanceToTarget = closestTargetHit.Value.distance;
+            float distanceToTarget = Vector3.Distance(transform.position, closestTargetHit.Value.point);
 
             // 1. Determine base minimum stopping distance
             float desiredStopDistance = stopDistances[LayerMasksToColliderType.Map[hitObj.layer]] + 0.7f;
@@ -211,6 +185,112 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         }
     }
 
+    RaycastHit2D? ScanPathAhead(float maxAngleToScan = 45f)
+    {
+        float distanceScanned = 0f;
+        IntersectionNode? scanNode = intersectionNode;
+        float t = currentSplineTValue;
+
+        Vector3 stepStartPos = transform.position;
+        float sphereRadius = carWidth / 2f;
+
+        while (distanceScanned < lookAheadDistance && scanNode != null)
+        {
+            Spline currentSpline = scanNode.splineContainer.Spline;
+            float splineLength = currentSpline.GetLength();
+
+            // Step forward by 2 meters at a time (tune this for performance vs curve precision)
+            float stepDistance = Mathf.Min(2f, lookAheadDistance - distanceScanned);
+
+            // Convert step distance to T (normalized 0 to 1). 
+            // Note: For extreme precision on wildly distorted splines, use SplineUtility, 
+            // but simple linear ratio is highly performant and usually perfect for roads.
+            float tStep = stepDistance / splineLength;
+            float nextT = t + tStep;
+
+            Vector3 stepEndPos;
+            bool crossingToNextNode = false;
+
+            Vector3 localEndPos;
+            if (nextT > 1f)
+            {
+                // We reached the end of this spline piece
+                localEndPos = currentSpline.EvaluatePosition(1f);
+                crossingToNextNode = true;
+            }
+            else
+            {
+                localEndPos = currentSpline.EvaluatePosition(nextT);
+            }
+
+            // Transform the local spline point into world space coordinates!
+            stepEndPos = scanNode.splineContainer.transform.TransformPoint(localEndPos);
+
+            // Do the SphereCast for this specific chunk of the curve
+            Vector3 direction = stepEndPos - stepStartPos;
+            float segmentLength = direction.magnitude;
+
+            // If the direction is more than maxAngleToScan, we stop here because drivers irl are sometimes bad at looking around corners.
+            if (Vector3.Angle(direction, transform.up) > maxAngleToScan)
+            {
+                break;
+            }
+
+            if (segmentLength > 0.001f) // Prevent zero-length cast errors
+            {
+                // We cast from stepStartPos to stepEndPos
+                DebugDrawing.DrawDebugCapsule(stepStartPos, stepEndPos, sphereRadius, Color.red, 0.1f);
+                RaycastHit2D[] hits = Physics2D.CircleCastAll(stepStartPos, sphereRadius, direction.normalized, segmentLength);
+
+                RaycastHit2D? closestTargetHit = null;
+                float closestTargetDistance = Mathf.Infinity;
+
+                foreach (RaycastHit2D hit in hits)
+                {
+                    // Ignore hits that are this car's own collider
+                    if (hit.collider.gameObject == gameObject) continue;
+                    // Ignore hits on the clickbox colliders
+                    if (hit.collider.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.ClickBox]) continue;
+                    // Ignore stop lines if we're allowed to go
+                    if (canProceedAtStopSign && hit.collider.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.StopLine]) continue;
+                    // Ignore interssection leave triggers so we don't get confused when leaving an intersection
+                    if (hit.collider.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.IntersectionLeave]) continue;
+
+
+                    float distanceToHit = Vector3.Distance(transform.position, hit.point);
+                    // We found our closest target!
+                    if (distanceToHit < closestTargetDistance)
+                    {
+                        closestTargetDistance = distanceToHit;
+                        closestTargetHit = hit;
+                    }
+                }
+
+                if (closestTargetHit.HasValue)
+                {
+                    // We found a target in this segment, return it
+                    return closestTargetHit;
+                }
+            }
+
+            // Move our start position forward for the next loop iteration
+            distanceScanned += segmentLength;
+            stepStartPos = stepEndPos;
+
+            if (crossingToNextNode)
+            {
+                // ⚠️ IMPORTANT: You must use a "Peek" method here, not one that alters the car's state.
+                scanNode = scanNode.PeekNextNode(turnIntention);
+                t = 0f; // Reset T to the start of the new spline
+            }
+            else
+            {
+                t = nextT;
+            }
+        }
+
+        return null; // Nothing found in our path
+    }
     void SpawnTireScreechEffect()
     {
         Debug.Log("Spawning tire screech effect");

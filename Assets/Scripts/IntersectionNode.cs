@@ -51,6 +51,21 @@ public class IntersectionNode : MonoBehaviour
 
     }
 
+    public IntersectionNode? PeekNextNode(TurnChoice turnChoice)
+    {
+        switch (turnChoice)
+        {
+            case TurnChoice.Left:
+                return leftTurnNode;
+            case TurnChoice.Right:
+                return rightTurnNode;
+            case TurnChoice.NoTurn:
+                return noTurnNode;
+            default:
+                return continueNode;
+        }
+    }
+
     public void OnCarEnter(CarPathFollower car)
     {
         if (!carPathFollowers.Contains(car))

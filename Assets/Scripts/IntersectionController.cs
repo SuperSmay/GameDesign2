@@ -27,7 +27,7 @@ public class IntersectionController : MonoBehaviour
 
     [SerializeField] float gameDuration = 60f; // Duration of the game in seconds
     float gameTimer = 0f;
-    
+
     [Header("Spawning")]
     [SerializeField] float spawnInterval; // seconds between spawn attempts
     float spawnTimer = 0f;
@@ -87,7 +87,7 @@ public class IntersectionController : MonoBehaviour
         scoreTextComponent.text = "Score: " + GameManager.Instance.Score;
 
         if (gameTimer >= gameDuration && activeCars.Count == 0)
-        {   
+        {
             // Game over, show round end scene
             UnityEngine.SceneManagement.SceneManager.LoadScene("RoundEndScene");
             return;
@@ -95,7 +95,7 @@ public class IntersectionController : MonoBehaviour
         // Spawn cars periodically while the game timer is running
         if (gameTimer < gameDuration && startNodes != null && startNodes.Length > 0)
         {
-            spawnTimer += Time.deltaTime;
+            // spawnTimer += Time.deltaTime;
             if (spawnTimer >= spawnInterval)
             {
                 spawnTimer = 0f;
@@ -131,11 +131,12 @@ public class IntersectionController : MonoBehaviour
         // Spawn cars at the start nodes when the reset button is pressed
         if (reset)
         {
-            foreach (IntersectionNode startNode in startNodes)
-            {
-                startNode.SpawnCar(true);
-                activeCarCount++;
-            }
+            // pick a random start node and spawn a car
+            int idx = UnityEngine.Random.Range(0, startNodes.Length);
+            bool deviant = UnityEngine.Random.value < deviantProbability;
+            startNodes[idx].SpawnCarIfNodeEmpty(deviant);
+            activeCarCount++;
+
         }
     }
 
