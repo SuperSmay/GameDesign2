@@ -5,17 +5,23 @@ using System;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
+#nullable enable
+
 public class IntersectionController : MonoBehaviour
 {
 
     public GameObject carPrefab;
     public GameObject busPrefab;
-    [SerializeField] PixelPerfectCamera pixelCamera;
+    // [SerializeField] PixelPerfectCamera pixelCamera;
     Vector2 cameraOriginalResolution;
-     Vector2 cameraOriginalPosition;
+    Vector2 cameraOriginalPosition;
     int cameraOriginalPPU;
 
-    [SerializeField] IntersectionNode[] startNodes;
+
+    [SerializeField] IntersectionNode northSpawnNode;
+    [SerializeField] IntersectionNode eastSpawnNode;
+    [SerializeField] IntersectionNode southSpawnNode;
+    [SerializeField] IntersectionNode westSpawnNode;
 
     [SerializeField] PlayerInput playerInput;
 
@@ -29,19 +35,22 @@ public class IntersectionController : MonoBehaviour
 
     InputAction resetAction;
 
-    [SerializeField] TMPro.TextMeshProUGUI scoreTextComponent;
-    [SerializeField] TMPro.TextMeshProUGUI timerTextComponent;
-    [SerializeField] Button nextTextButton;
-    [SerializeField] TMPro.TextMeshProUGUI rulesText;
-    [SerializeField] Image textBackground;
+    // [SerializeField] TMPro.TextMeshProUGUI scoreTextComponent;
+    // [SerializeField] TMPro.TextMeshProUGUI timerTextComponent;
+    // [SerializeField] Button nextTextButton;
+    // [SerializeField] TMPro.TextMeshProUGUI rulesText;
+    // [SerializeField] Image textBackground;
 
     int textPage = 0;
-    string[] rulesPages = new string[]
+    string[] preamble = new string[]
     {
         "Welcome, fellow road watcher!\nYour job:\n\tWatch the intersection from above\n\tLook for unsafe driving behaviors\n\tClick on the cars that are driving recklessly to stop them",
         "Not every driver is dangerous, so choose carefully! Dangerous drivers may…\n\tDrive too fast\n\tDrive through the stop sign without stopping\n\tStop too close to other vehicles\n\nStop these cars, and help us keep our roads safe!"
 
     };
+
+    public CarSpawn[]? carSpawns;
+    int carSpawnIndex = 0;
 
     [SerializeField] float gameDuration = 60f; // Duration of the game in seconds
     float gameOverDelay = 3f; // Time to wait after the game is over before showing the round end screen
@@ -85,9 +94,9 @@ public class IntersectionController : MonoBehaviour
         Instance = this;
         resetAction = playerInput.actions["Reset"];
         gameOverTimer = gameOverDelay; // Initialize game over timer
-        cameraOriginalResolution = new Vector2(pixelCamera.refResolutionX, pixelCamera.refResolutionY);
-        cameraOriginalPPU = pixelCamera.assetsPPU;
-        cameraOriginalPosition = pixelCamera.transform.position;
+        // cameraOriginalResolution = new Vector2(pixelCamera.refResolutionX, pixelCamera.refResolutionY);
+        // cameraOriginalPPU = pixelCamera.assetsPPU;
+        // cameraOriginalPosition = pixelCamera.transform.position;
 
     }
 
@@ -96,51 +105,52 @@ public class IntersectionController : MonoBehaviour
     {
         // This is for debugging
         // If there isn't a GameManager in the scene, create one and initialize it with default values
-        if (GameManager.Instance == null)
-        {
-            GameObject gameManagerObj = new GameObject("GameManager");
-            gameManagerObj.AddComponent<GameManager>();
-        }
+        // if (GameManager.Instance == null)
+        // {
+        //     GameObject gameManagerObj = new GameObject("GameManager");
+        //     gameManagerObj.AddComponent<GameManager>();
+        // }
 
-        scoreTextComponent.text = "Score: 0";
-        timerTextComponent.text = "Time: " + gameDuration.ToString("F1");
+        // scoreTextComponent.text = "Score: 0";
+        // timerTextComponent.text = "Time: " + gameDuration.ToString("F1");
 
         stopSignWaitTime -= 0.1f * GameManager.Instance.roundNumber; // Decrease stop sign wait time each round to increase difficulty
         stopSignWaitTime = Mathf.Max(0f, stopSignWaitTime); // Set a minimum stop sign wait time to prevent it from becoming negative
 
-        if (GameManager.Instance.roundNumber == 1)
-        {
-            textPage = 0; // Reset the text page
-            rulesText.text = rulesPages[textPage];
-            gameSpeedMultiplier = 0f; // Pause the game at the start to show the rules
-            // Show rules text and hide it when the player clicks the next button
-            rulesText.gameObject.SetActive(true);
-            textBackground.gameObject.SetActive(true);
-            nextTextButton.gameObject.SetActive(true);
-            nextTextButton.onClick.AddListener(() =>
-            {
-                if (textPage < rulesPages.Length - 1)
-                {
-                    textPage++;
-                    rulesText.text = rulesPages[textPage];
-                }
-                else
-                {
-                    // If we've reached the end of the rules pages, hide the text and button
-                    rulesText.gameObject.SetActive(false);
-                    textBackground.gameObject.SetActive(false);
-                    nextTextButton.gameObject.SetActive(false);
-                    gameSpeedMultiplier = 1f; // Start the game
-                }
-            });
-        } else
-        {
-            // If it's not the first round, skip the rules and start the game immediately
-            rulesText.gameObject.SetActive(false);
-            textBackground.gameObject.SetActive(false);
-            nextTextButton.gameObject.SetActive(false);
-            gameSpeedMultiplier = 1f; // Start the game
-        }
+        // if (GameManager.Instance.roundNumber == 1)
+        // {
+        //     textPage = 0; // Reset the text page
+        //     rulesText.text = preamble[textPage];
+        //     gameSpeedMultiplier = 0f; // Pause the game at the start to show the rules
+        //     // Show rules text and hide it when the player clicks the next button
+        //     rulesText.gameObject.SetActive(true);
+        //     textBackground.gameObject.SetActive(true);
+        //     nextTextButton.gameObject.SetActive(true);
+        //     nextTextButton.onClick.AddListener(() =>
+        //     {
+        //         if (textPage < preamble.Length - 1)
+        //         {
+        //             textPage++;
+        //             rulesText.text = preamble[textPage];
+        //         }
+        //         else
+        //         {
+        //             // If we've reached the end of the rules pages, hide the text and button
+        //             rulesText.gameObject.SetActive(false);
+        //             textBackground.gameObject.SetActive(false);
+        //             nextTextButton.gameObject.SetActive(false);
+        //             gameSpeedMultiplier = 1f; // Start the game
+        //         }
+        //     });
+        // }
+        // else
+        // {
+        //     // If it's not the first round, skip the rules and start the game immediately
+        //     rulesText.gameObject.SetActive(false);
+        //     textBackground.gameObject.SetActive(false);
+        //     nextTextButton.gameObject.SetActive(false);
+        //     gameSpeedMultiplier = 1f; // Start the game
+        // }
     }
 
     // Update is called once per frame
@@ -179,9 +189,9 @@ public class IntersectionController : MonoBehaviour
         UpdateParticleSpeeds();
 
         gameTimer += deltaTimeSpeedMult;
-        timerTextComponent.text = "Time: " + Mathf.Max(0, gameDuration - gameTimer).ToString("F1");
+        // timerTextComponent.text = "Time: " + Mathf.Max(0, gameDuration - gameTimer).ToString("F1");
 
-        scoreTextComponent.text = "Score: " + GameManager.Instance.Score;
+        // scoreTextComponent.text = "Score: " + GameManager.Instance.Score;
 
         if (gameTimer >= gameDuration && activeCars.Count == 0)
         {
@@ -191,20 +201,16 @@ public class IntersectionController : MonoBehaviour
             return;
         }
         // Spawn cars periodically while the game timer is running
-        if (gameTimer < gameDuration && startNodes != null && startNodes.Length > 0)
+        if (gameTimer < gameDuration)
         {
             spawnTimer += deltaTimeSpeedMult;
             if (spawnTimer >= spawnInterval)
             {
                 spawnTimer = 0f;
-                if (activeCarCount < maxActiveCars)
-                {
-                    // pick a random start node and spawn a car
-                    int idx = UnityEngine.Random.Range(0, startNodes.Length);
-                    bool deviant = UnityEngine.Random.value < deviantProbability;
-                    startNodes[idx].SpawnCarIfNodeEmpty(deviant);
-                    activeCarCount++;
-                }
+
+
+                DoNextCarSpawn();
+
             }
         }
 
@@ -229,11 +235,7 @@ public class IntersectionController : MonoBehaviour
         // Spawn cars at the start nodes when the reset button is pressed
         if (reset)
         {
-            // pick a random start node and spawn a car
-            int idx = UnityEngine.Random.Range(0, startNodes.Length);
-            bool deviant = UnityEngine.Random.value < deviantProbability;
-            startNodes[idx].SpawnCarIfNodeEmpty(deviant);
-            activeCarCount++;
+            DoNextCarSpawn();
 
         }
     }
@@ -258,10 +260,100 @@ public class IntersectionController : MonoBehaviour
         activeCarCount = Mathf.Max(0, activeCarCount - 1);
     }
 
-    void PlayRoundEndAnimation()
+    SpawnResult SpawnCar(CarSpawn spawn)
     {
+        IntersectionNode? spawnNode = GetSpawnNode(spawn.spawnLocation);
+        if (spawnNode == null) return SpawnResult.invalid; // If there isn't a valid spawn node for the specified location, return invalid to indicate the spawn failed
+        DeviantType deviantValue = DeviantType.none;
+        // If the type is unspecified, use the probability to determine if the car should be deviant and assign it the random deviant behavior if so
+        if (spawn.deviantBehavior == DeviantType.unspecified)
+        {
+            if (UnityEngine.Random.Range(0f, 1f) < deviantProbability)
+            {
+                deviantValue = DeviantType.random; // This will be resolved to a specific deviant behavior in the SpawnCar function of the IntersectionNode
+            } else
+            {
+                deviantValue = DeviantType.none;
+            }
+        }
 
+        spawn.deviantBehavior = deviantValue; // Set the deviant behavior on the spawn so it can be passed to the IntersectionNode and then the CarPathFollower to determine the car's behavior
+
+
+        return spawnNode.SpawnCarIfNodeEmpty(spawn) ? SpawnResult.success : SpawnResult.blocked; // If the spawn node is occupied, return blocked to indicate the spawn failed. Otherwise, spawn the car and return success
     }
 
+    void DoNextCarSpawn()
+    {
+        if (carSpawns == null)
+        {
+            SpawnCar(CarSpawn.Blank); // If no spawn order is defined, just spawn a car at a random start node
+            return;
+        }
 
+        // If a spawn order is defined, spawn cars according to the order
+        if (carSpawnIndex < carSpawns.Length)
+        {
+            CarSpawn spawn = carSpawns[carSpawnIndex];
+            SpawnResult result = SpawnCar(spawn);
+            if (result == SpawnResult.success)
+            {
+                activeCarCount++;
+                carSpawnIndex++;
+            }
+            else if (result == SpawnResult.invalid)
+            {
+                Debug.LogWarning("Invalid spawn location specified for car spawn at index " + carSpawnIndex);
+                carSpawnIndex++; // Skip this spawn and move on to the next one
+                DoNextCarSpawn(); // Attempt to spawn the next car immediately since this one was invalid
+            }
+        }
+    }
+
+    IntersectionNode? GetSpawnNode(SpawnLocation location)
+    {
+        // Note: even though the spawn nodes aren't marked nullable,
+        // they might not be assigned. This means that the current intersection setup doesn't have that spawn location,
+        // so we return null. We can still return the same node though, because it will just be null in that case and the spawn function will handle it appropriately.
+        switch (location)
+        {
+            case SpawnLocation.north:
+                return northSpawnNode;
+            case SpawnLocation.east:
+                return eastSpawnNode;
+            case SpawnLocation.south:
+                return southSpawnNode;
+            case SpawnLocation.west:
+                return westSpawnNode;
+            // If no spawn location is specified, pick a random one
+            case SpawnLocation.random:
+                IntersectionNode[] startNodes = GetAllSpawnNodes();
+                int idx = UnityEngine.Random.Range(0, startNodes.Length);
+                return startNodes[idx];
+            default:
+                throw new ArgumentException("Invalid spawn location: " + location);
+        }
+    }
+
+    IntersectionNode[] GetAllSpawnNodes()
+    {
+        List<IntersectionNode> returnList = new List<IntersectionNode> { northSpawnNode, eastSpawnNode, southSpawnNode, westSpawnNode };
+        returnList.RemoveAll(node => node == null);
+        return returnList.ToArray(); // Remove any null nodes from the list
+    }
+    public void Initialize(RoundConfig roundConfig)
+    {
+        this.carSpawns = roundConfig.spawnOrder;
+        this.gameDuration = roundConfig.timer;
+        this.deviantProbability = roundConfig.deviantSpawnChance;
+        this.spawnInterval = roundConfig.spawnDelay;
+    }
+
+}
+
+public enum SpawnResult
+{
+    success,
+    blocked,
+    invalid
 }

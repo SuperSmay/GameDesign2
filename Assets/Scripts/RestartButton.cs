@@ -21,5 +21,6 @@ public class RestartButton : MonoBehaviour
         GameManager.Instance.roundNumber += GameManager.Instance.roundSuccessful ? 1 : 0; // Increment round number
         GameManager.Instance.roundSuccessful = false; // Reset round success for the next round
         UnityEngine.SceneManagement.SceneManager.LoadScene("MainScene");
+        GameManager.Instance.StartRound(); // Start the next round
     }
 }

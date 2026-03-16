@@ -116,7 +116,7 @@ public class IntersectionNode : MonoBehaviour
         return carPathFollowers.Count > 0;
     }
 
-    public void SpawnCar(bool deviant)
+    public void SpawnCar(CarSpawn carSpawn)
     {
        Vector3 tangent = splineContainer.EvaluateTangent(0f);
        float angle = 0f;
@@ -151,22 +151,20 @@ public class IntersectionNode : MonoBehaviour
 
         carPathFollower.maxSpeed += GameManager.Instance.roundNumber * 0.05f; // Increase base speed based on round number to make the game more challenging as it goes on
 
-        if (deviant)  // TODO make this better
+
+        // TODO move this all into the carPathFollower class and just set the deviant type on the carPathFollower instead of having the IntersectionNode apply the behavior directly
+
+        if (carSpawn.deviantBehavior == DeviantType.random)
         {
-            carPathFollower.isDeviant = true;
-            // Choose a random behavior to modify
-            int behaviorToModify = Random.Range(0, 4);
-            switch (behaviorToModify)
-            {
-                case 0:
-                    carPathFollower.maxSpeed *= 3f; // Higher speed for speeding behavior
-                    break;
-                case 1:
-                case 2:
-                    carPathFollower.canProceedAtStopSign = true; // Allow proceeding at stop signs for running stop signs behavior
-                    break;
-                case 3:
-                    List<ColliderStopDistanceInfo> newStopDistances = new List<ColliderStopDistanceInfo>();
+            // If the deviant type is random, pick a random deviant behavior
+            DeviantType[] deviantTypes = new DeviantType[] { DeviantType.tailgating, DeviantType.speeding, DeviantType.swerving, DeviantType.runsStop };
+            carSpawn.deviantBehavior = deviantTypes[Random.Range(0, deviantTypes.Length)];
+        }
+
+        switch (carSpawn.deviantBehavior)
+        {
+            case DeviantType.tailgating:
+                List<ColliderStopDistanceInfo> newStopDistances = new List<ColliderStopDistanceInfo>();
                     foreach (ColliderStopDistanceInfo info in carPathFollower.stopDistancesList)
                     {
                         if (info.colliderType == ColliderType.StopLine)
@@ -175,7 +173,7 @@ public class IntersectionNode : MonoBehaviour
                         }
                         else if (info.colliderType == ColliderType.Car)
                         {
-                            newStopDistances.Add(new ColliderStopDistanceInfo(info.colliderType, 0.5f)); // Stop very close to other cars
+                            newStopDistances.Add(new ColliderStopDistanceInfo(info.colliderType, 0.3f)); // Stop very close to other cars
                         }
                         else
                         {
@@ -184,16 +182,35 @@ public class IntersectionNode : MonoBehaviour
                     }
                     carPathFollower.stopDistancesList = newStopDistances;
                     break;
-            }
+            case DeviantType.speeding:
+                carPathFollower.maxSpeed *= 2f; // Higher max speed for speeding behavior
+                break;
+            case DeviantType.swerving:
+                // TODO
+                break;
+            case DeviantType.runsStop:
+                carPathFollower.canProceedAtStopSign = true; // Allow proceeding at stop signs for running stop signs behavior
+                break;
         }
+
+        if (carSpawn.deviantBehavior != DeviantType.none)
+        {
+            carPathFollower.isDeviant = true;
+        }
+
+        carPathFollower.turnIntention = carSpawn.turnChoice;
     }
 
-    public void SpawnCarIfNodeEmpty(bool deviant)
+    public bool SpawnCarIfNodeEmpty(CarSpawn carSpawn)
     {
         if (!HasCars())
         {
-            SpawnCar(deviant);
+            SpawnCar(carSpawn);
+            return true;
         }
+        return false;
     }
+
+    
 
 }
