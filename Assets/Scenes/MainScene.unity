@@ -730,7 +730,24 @@ MonoBehaviour:
   roundSuccessful: 0
   rounds:
   - timer: 10
-    spawnDelay: 1.58
+    spawnDelay: 2
+    intersectionLayout: 0
+    spawnOrder:
+    - spawnLocation: 3
+      turnChoice: 2
+      deviantBehavior:
+        deviantType: 6
+        isSpecified: 1
+      vehicleType: 0
+    deviantSpawnChance: 0
+    isTutorial: 1
+    pedestriansEnabled: 0
+    preambles:
+    - 
+    failureMessages: []
+    allowedMistakes: 0
+  - timer: 10
+    spawnDelay: 1.65
     intersectionLayout: 0
     spawnOrder:
     - spawnLocation: 0
@@ -746,11 +763,12 @@ MonoBehaviour:
         isSpecified: 1
       vehicleType: 0
     deviantSpawnChance: 0
-    deviantBehaviors: 0
     isTutorial: 1
     pedestriansEnabled: 0
     preambles:
     - 
+    failureMessages: []
+    allowedMistakes: 0
   - timer: 10
     spawnDelay: 2
     intersectionLayout: 0
@@ -768,11 +786,12 @@ MonoBehaviour:
         isSpecified: 0
       vehicleType: 0
     deviantSpawnChance: 0
-    deviantBehaviors: 0
     isTutorial: 1
     pedestriansEnabled: 0
     preambles:
     - 
+    failureMessages: []
+    allowedMistakes: 0
   test:
     spawnLocation: 0
     turnChoice: 0

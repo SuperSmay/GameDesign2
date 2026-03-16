@@ -83,10 +83,11 @@ public struct RoundConfig
     public IntersectionLayout intersectionLayout;
     public CarSpawn[] spawnOrder;
     public float deviantSpawnChance;
-    public float deviantBehaviors;
     public bool isTutorial;
     public bool pedestriansEnabled;
     public string[] preambles;
+    public string[] failureMessages;
+    public int allowedMistakes;
     
 }
 
@@ -103,7 +104,7 @@ public struct CarSpawn
         this.spawnLocation = spawnLocation;
         this.turnChoice = turnChoice;
         this.deviantBehavior = deviantBehavior;
-        this.vehicleType = vehicleType;
+        this.vehicleType = vehicleType;  // TODO make this do something
     }
 
     static public CarSpawn Blank
