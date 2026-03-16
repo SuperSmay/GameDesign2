@@ -1,6 +1,7 @@
 using System;
 
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,9 +13,6 @@ public class GameManager : MonoBehaviour
     public bool roundSuccessful = false;
 
     public RoundConfig[] rounds;
-
-    // TEST
-    public CarSpawn test;
 
     [SerializeField] GameObject intersectionControllerFourWayStopPrefab;
     [SerializeField] GameObject intersectionControllerFourWayStoplightPrefab;
@@ -38,16 +36,40 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject); // Persist across scene loads
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void OnEnable()
     {
-        StartRound();
+        // Subscribe to the sceneLoaded event with your custom callback method
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    // Update is called once per frame
-    void Update()
+    // This method is called when the behaviour is disabled or inactive
+    void OnDisable()
     {
-        
+        // Unsubscribe from the event to prevent memory leaks
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    // Custom callback method
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log("Scene " + scene.name + " loaded with mode: " + mode);
+
+        // You can add specific logic here, for example, checking the scene name
+        if (scene.name == "MainScene")
+        {
+            // Perform actions specific to "MainScene"
+            Debug.Log("Main scene loaded.");
+            StartRound(); // Start the round when the main scene is loaded
+        }
+    }
+
+    public void RoundEndConfirmClicked()
+    {
+        // Start the game switching scene
+        Score = 0; // Reset score
+        roundNumber += roundSuccessful ? 1 : 0; // Increment round number
+        roundSuccessful = false; // Reset round success for the next round
+        SceneManager.LoadScene("MainScene");
     }
 
     public void StartRound()

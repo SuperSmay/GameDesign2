@@ -305,7 +305,6 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     }
     void SpawnTireScreechEffect()
     {
-        Debug.Log("Spawning tire screech effect");
         if (tireScreechEffectPrefab != null && tireScreechEffectSpawnPoints != null)
         {
             if (tireScreechEffectInstances == null)
@@ -322,7 +321,6 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
     void StopTireScreechEffect()
     {
-        Debug.Log("Stopping tire screech effect");
         if (tireScreechEffectInstances != null)
         {
             foreach (GameObject effectInstance in tireScreechEffectInstances)
