@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Unity.Collections;
+using UnityEditor.Toolbars;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Splines;
@@ -12,7 +13,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     float currentSplineTValue = 0f;
     [System.NonSerialized] public IntersectionNode intersectionNode;
 
-    public bool isDeviant; // Whether this car is a "deviant" that doesn't follow traffic rules.
+    public DeviantType deviantType; // Whether this car is a "deviant" that doesn't follow traffic rules.
     // TODO Have the car control the behavior, rather than having the intersection controller manually modify the attributes.
 
     public float stopSignMinimumQueueDistance; // How far ahead the car can queue for a stop sign. 
@@ -197,6 +198,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
     RaycastHit2D? ScanPathAhead(float maxAngleToScan = 45f)
     {
+        // TODO put the spawn point in front of the car not at the origin of the car
         float distanceScanned = 0f;
         IntersectionNode? scanNode = intersectionNode;
         float t = currentSplineTValue;
@@ -341,11 +343,8 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         // Otherwise, we look at our turn intention and try to take the corresponding turn if it's available, and if not, we take any available turn. 
         // If there are no available turns, the car is destroyed.
 
-        // TODO create system to specify car intentions at intersections (left turn, right turn, straight) and use that to determine which spline to transfer to
-        // For now, just continue until there is no "continueNode", at which point we will try to transfer to a random outgoing spline from the intersection node
-
         List<TurnChoice> availableTurns = intersectionNode.GetAvailableTurnChoices();
-        TurnChoice chosenTurn = TurnChoice.Unspecified;
+        TurnChoice? chosenTurn = null;
 
         // First, try to continue
         if (availableTurns.Contains(TurnChoice.Continue))
@@ -353,7 +352,9 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
             chosenTurn = TurnChoice.Continue;
         }
         // Then, try to match the turn intention if there is one
-        else if (turnIntention != TurnChoice.Unspecified && availableTurns.Contains(turnIntention))
+        // Note: The turn intention will be Continue if the car doesn't have a specific intention
+        // We check for that above, so this check will fail in that case and a random turn will be chosen below
+        else if (availableTurns.Contains(turnIntention))
         {
             chosenTurn = turnIntention;
         }
@@ -364,8 +365,8 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
             int index = Random.Range(0, availableTurns.Count);
             chosenTurn = availableTurns[index];
         }
-        // Note: If there are no available turns, chosenTurn will remain TurnChoice.Unspecified, and the car will be destroyed below when we fail to transfer to a new node.
-
+        // Note: If there are no available turns, chosenTurn will remain null, 
+        // and the car will be destroyed below when we fail to transfer to a new node.
         IntersectionNode? nextNode = intersectionNode.TransferCarToNextNode(this, chosenTurn);
         if (nextNode != null)
         {
@@ -494,7 +495,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     public void OnPointerClick(PointerEventData e)
     {
 
-        if (isDeviant && !hasBeenClicked && !hasCollided)
+        if ((deviantType != DeviantType.none) && !hasBeenClicked && !hasCollided)
         {
             // If this car is a deviant, clicking it will "report" it and destroy it, giving the player points.
             GameManager.Instance.Score += 1;
@@ -548,6 +549,58 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         IntersectionController.Instance.activeCars.Remove(this);
         Destroy(gameObject);
     }
+
+    public void Initialize(CarSpawn carSpawn, IntersectionNode node)
+    {
+
+        this.intersectionNode = node;
+        SetupDeviantBehavior(carSpawn.deviantBehavior.deviantType);
+        turnIntention = carSpawn.turnChoice;
+    }
+
+    public void SetupDeviantBehavior(DeviantType deviantSpawnType)
+    {
+        if (deviantSpawnType == DeviantType.random)
+        {
+            // If the deviant type is random, pick a random deviant behavior
+            DeviantType[] deviantTypes = new DeviantType[] { DeviantType.tailgating, DeviantType.speeding, DeviantType.swerving, DeviantType.runsStop };
+            deviantSpawnType = deviantTypes[Random.Range(0, deviantTypes.Length)];
+        }
+
+        switch (deviantSpawnType)
+        {
+            case DeviantType.tailgating:
+                List<ColliderStopDistanceInfo> newStopDistances = new List<ColliderStopDistanceInfo>();
+                    foreach (ColliderStopDistanceInfo info in stopDistancesList)
+                    {
+                        if (info.colliderType == ColliderType.StopLine)
+                        {
+                            newStopDistances.Add(new ColliderStopDistanceInfo(info.colliderType, -1f)); // Stop after the line!
+                        }
+                        else if (info.colliderType == ColliderType.Car)
+                        {
+                            newStopDistances.Add(new ColliderStopDistanceInfo(info.colliderType, 0.3f)); // Stop very close to other cars
+                        }
+                        else
+                        {
+                            newStopDistances.Add(info);
+                        }
+                    }
+                    stopDistancesList = newStopDistances;
+                    break;
+            case DeviantType.speeding:
+                maxSpeed *= 3f; // Higher max speed for speeding behavior
+                break;
+            case DeviantType.swerving:
+                // TODO
+                break;
+            case DeviantType.runsStop:
+                canProceedAtStopSign = true; // Allow proceeding at stop signs for running stop signs behavior
+                break;
+        }
+
+        deviantType = deviantSpawnType;
+    }
 }
 
 public enum ColliderType
@@ -597,9 +650,8 @@ public struct ColliderStopDistanceInfo
 
 public enum TurnChoice
 {
-    Continue,
+    Continue,  // Also used for cars that don't have a specific turn intention and will just take any available turn
     Left,
     NoTurn,
-    Right,
-    Unspecified // Used for cars that don't have a specific turn intention and will just take any available turn
+    Right
 }

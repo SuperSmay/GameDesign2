@@ -95,22 +95,31 @@ public struct CarSpawn
 {
     public SpawnLocation spawnLocation;
     public TurnChoice turnChoice;
-    public DeviantType deviantBehavior;
+    public DeviantBehaviorInfo deviantBehavior;
+    public VehicleType vehicleType;
 
-    public CarSpawn(SpawnLocation spawnLocation, TurnChoice turnChoice, DeviantType deviantBehavior)
+    public CarSpawn(SpawnLocation spawnLocation, TurnChoice turnChoice, DeviantBehaviorInfo deviantBehavior, VehicleType vehicleType)
     {
         this.spawnLocation = spawnLocation;
         this.turnChoice = turnChoice;
         this.deviantBehavior = deviantBehavior;
+        this.vehicleType = vehicleType;
     }
 
     static public CarSpawn Blank
     {
         get
         {
-            return new CarSpawn(SpawnLocation.random, TurnChoice.Unspecified, DeviantType.random);
+            return new CarSpawn(SpawnLocation.random, TurnChoice.Continue, new DeviantBehaviorInfo { deviantType = DeviantType.random, isSpecified = false }, VehicleType.random);
         }
     }
+}
+
+public enum VehicleType
+{
+    car,
+    bus,
+    random
 }
 
 public enum SpawnLocation
@@ -130,6 +139,13 @@ public enum IntersectionLayout
     highway
 }
 
+[Serializable]
+public struct DeviantBehaviorInfo
+{
+    public DeviantType deviantType;
+    public bool isSpecified; // Whether the deviant type was explicitly specified or if it should be randomly determined based on deviantSpawnChance
+}
+
 public enum DeviantType
 {
     runsStop,
@@ -138,6 +154,5 @@ public enum DeviantType
     speeding,
     swerving,
     random,
-    none,
-    unspecified
+    none
 }

@@ -264,21 +264,16 @@ public class IntersectionController : MonoBehaviour
     {
         IntersectionNode? spawnNode = GetSpawnNode(spawn.spawnLocation);
         if (spawnNode == null) return SpawnResult.invalid; // If there isn't a valid spawn node for the specified location, return invalid to indicate the spawn failed
-        DeviantType deviantValue = DeviantType.none;
-        // If the type is unspecified, use the probability to determine if the car should be deviant and assign it the random deviant behavior if so
-        if (spawn.deviantBehavior == DeviantType.unspecified)
+
+        // If the type is unspecified, use the probability to determine if the car should be deviant.
+        // If it should be, then pass through the set behavior. If not, set the behavior to none.
+        if (!spawn.deviantBehavior.isSpecified)
         {
-            if (UnityEngine.Random.Range(0f, 1f) < deviantProbability)
+            if (UnityEngine.Random.Range(0f, 1f) > deviantProbability)
             {
-                deviantValue = DeviantType.random; // This will be resolved to a specific deviant behavior in the SpawnCar function of the IntersectionNode
-            } else
-            {
-                deviantValue = DeviantType.none;
+                spawn.deviantBehavior.deviantType = DeviantType.none;
             }
         }
-
-        spawn.deviantBehavior = deviantValue; // Set the deviant behavior on the spawn so it can be passed to the IntersectionNode and then the CarPathFollower to determine the car's behavior
-
 
         return spawnNode.SpawnCarIfNodeEmpty(spawn) ? SpawnResult.success : SpawnResult.blocked; // If the spawn node is occupied, return blocked to indicate the spawn failed. Otherwise, spawn the car and return success
     }

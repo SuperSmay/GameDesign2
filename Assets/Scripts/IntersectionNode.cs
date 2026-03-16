@@ -17,14 +17,13 @@ public class IntersectionNode : MonoBehaviour
     [SerializeField] IntersectionNode? rightTurnNode;
     [SerializeField] IntersectionNode? noTurnNode;
 
-    public IntersectionNode? TransferCarToNextNode(CarPathFollower car, TurnChoice turnChoice)
+    public IntersectionNode? TransferCarToNextNode(CarPathFollower car, TurnChoice? turnChoice)
     {
         IntersectionNode? nextNode = null;
         switch (turnChoice)
         {
             case TurnChoice.Continue:
-                if (continueNode != null)
-                    nextNode = continueNode;
+                nextNode = continueNode;
                 break;
             case TurnChoice.Left:
                 nextNode = leftTurnNode;
@@ -41,7 +40,7 @@ public class IntersectionNode : MonoBehaviour
         {
             nextNode.OnCarEnter(car);
         }
-        else if (turnChoice != TurnChoice.Unspecified) // Don't warn if there was no attempt to continue at all.
+        else if (!turnChoice.HasValue) // Don't warn if there was no attempt to continue at all.
         {
             Debug.LogWarning($"Car attempted to transfer to a node that doesn't exist for turn choice {turnChoice}");
         }
@@ -144,61 +143,13 @@ public class IntersectionNode : MonoBehaviour
 
         GameObject car = Instantiate(prefabToSpawn, transform.position, rotation);
         CarPathFollower carPathFollower = car.GetComponent<CarPathFollower>();
-        carPathFollower.intersectionNode = this;
+        carPathFollower.Initialize(carSpawn, this);
 
         OnCarEnter(carPathFollower);
         IntersectionController.Instance.activeCars.Add(carPathFollower);
 
         carPathFollower.maxSpeed += GameManager.Instance.roundNumber * 0.05f; // Increase base speed based on round number to make the game more challenging as it goes on
 
-
-        // TODO move this all into the carPathFollower class and just set the deviant type on the carPathFollower instead of having the IntersectionNode apply the behavior directly
-
-        if (carSpawn.deviantBehavior == DeviantType.random)
-        {
-            // If the deviant type is random, pick a random deviant behavior
-            DeviantType[] deviantTypes = new DeviantType[] { DeviantType.tailgating, DeviantType.speeding, DeviantType.swerving, DeviantType.runsStop };
-            carSpawn.deviantBehavior = deviantTypes[Random.Range(0, deviantTypes.Length)];
-        }
-
-        switch (carSpawn.deviantBehavior)
-        {
-            case DeviantType.tailgating:
-                List<ColliderStopDistanceInfo> newStopDistances = new List<ColliderStopDistanceInfo>();
-                    foreach (ColliderStopDistanceInfo info in carPathFollower.stopDistancesList)
-                    {
-                        if (info.colliderType == ColliderType.StopLine)
-                        {
-                            newStopDistances.Add(new ColliderStopDistanceInfo(info.colliderType, -1f)); // Stop after the line!
-                        }
-                        else if (info.colliderType == ColliderType.Car)
-                        {
-                            newStopDistances.Add(new ColliderStopDistanceInfo(info.colliderType, 0.3f)); // Stop very close to other cars
-                        }
-                        else
-                        {
-                            newStopDistances.Add(info);
-                        }
-                    }
-                    carPathFollower.stopDistancesList = newStopDistances;
-                    break;
-            case DeviantType.speeding:
-                carPathFollower.maxSpeed *= 2f; // Higher max speed for speeding behavior
-                break;
-            case DeviantType.swerving:
-                // TODO
-                break;
-            case DeviantType.runsStop:
-                carPathFollower.canProceedAtStopSign = true; // Allow proceeding at stop signs for running stop signs behavior
-                break;
-        }
-
-        if (carSpawn.deviantBehavior != DeviantType.none)
-        {
-            carPathFollower.isDeviant = true;
-        }
-
-        carPathFollower.turnIntention = carSpawn.turnChoice;
     }
 
     public bool SpawnCarIfNodeEmpty(CarSpawn carSpawn)

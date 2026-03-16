@@ -352,9 +352,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.4495708
-    width: 0.36281472
-    height: 0.45225322
+    y: 0
+    width: 1
+    height: 1
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -730,15 +730,21 @@ MonoBehaviour:
   roundSuccessful: 0
   rounds:
   - timer: 10
-    spawnDelay: 0
+    spawnDelay: 1.58
     intersectionLayout: 0
     spawnOrder:
     - spawnLocation: 0
       turnChoice: 2
-      deviantBehavior: 6
-    - spawnLocation: 1
+      deviantBehavior:
+        deviantType: 6
+        isSpecified: 1
+      vehicleType: 0
+    - spawnLocation: 3
       turnChoice: 1
-      deviantBehavior: 0
+      deviantBehavior:
+        deviantType: 0
+        isSpecified: 1
+      vehicleType: 0
     deviantSpawnChance: 0
     deviantBehaviors: 0
     isTutorial: 1
@@ -751,10 +757,16 @@ MonoBehaviour:
     spawnOrder:
     - spawnLocation: 3
       turnChoice: 2
-      deviantBehavior: 6
+      deviantBehavior:
+        deviantType: 0
+        isSpecified: 0
+      vehicleType: 0
     - spawnLocation: 1
       turnChoice: 1
-      deviantBehavior: 3
+      deviantBehavior:
+        deviantType: 0
+        isSpecified: 0
+      vehicleType: 0
     deviantSpawnChance: 0
     deviantBehaviors: 0
     isTutorial: 1
@@ -764,7 +776,10 @@ MonoBehaviour:
   test:
     spawnLocation: 0
     turnChoice: 0
-    deviantBehavior: 0
+    deviantBehavior:
+      deviantType: 0
+      isSpecified: 0
+    vehicleType: 0
   intersectionControllerFourWayStopPrefab: {fileID: 5888158828736668804, guid: d63a4e56a4b984c17927b99a4629d2e2, type: 3}
   intersectionControllerFourWayStoplightPrefab: {fileID: 0}
   intersectionControllerTIntersectionPrefab: {fileID: 0}
