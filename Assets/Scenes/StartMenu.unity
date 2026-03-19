@@ -474,7 +474,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &981823901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -488,8 +488,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   Score: 0
-  roundNumber: 1
   roundSuccessful: 0
+  roundNumber: 1
+  allowedMistakes: 3
+  gameTimer: 0
+  gameDuration: 60
+  gameSpeedMultiplier: 1
+  paused: 0
+  rounds: []
+  intersectionControllerFourWayStopPrefab: {fileID: 0}
+  intersectionControllerFourWayStoplightPrefab: {fileID: 0}
+  intersectionControllerTIntersectionPrefab: {fileID: 0}
+  intersectionControllerHighwayIntersectionPrefab: {fileID: 0}
+  uiControllerPrefab: {fileID: 0}
 --- !u!4 &981823902
 Transform:
   m_ObjectHideFlags: 0
@@ -769,9 +780,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.07681756
-    width: 1
-    height: 0.845679
+    y: 0.030042918
+    width: 1.0016286
+    height: 0.9898069
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60

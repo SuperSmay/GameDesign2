@@ -225,17 +225,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1062631280 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5253213636593299483, guid: 3ae5a59f285494d5d9b8ad05410896d8, type: 3}
-  m_PrefabInstance: {fileID: 3597230893727228234}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &1228757426
 GameObject:
   m_ObjectHideFlags: 0
@@ -251,7 +240,7 @@ GameObject:
   - component: {fileID: 1228757431}
   m_Layer: 0
   m_Name: Pixel Perfect Camera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -352,9 +341,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0
-    width: 1
-    height: 1
+    y: 0.030042918
+    width: 1.0016286
+    height: 0.9898069
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -726,8 +715,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   Score: 0
-  roundNumber: 1
   roundSuccessful: 0
+  roundNumber: 1
+  allowedMistakes: 3
+  gameTimer: 0
+  gameDuration: 60
+  gameSpeedMultiplier: 1
+  paused: 0
   rounds:
   - timer: 10
     spawnDelay: 2
@@ -743,8 +737,11 @@ MonoBehaviour:
     isTutorial: 1
     pedestriansEnabled: 0
     preambles:
-    - 
+    - Hello there!
+    - This is a test!!
     failureMessages: []
+    successMessages:
+    - Good job! You did nothing!
     allowedMistakes: 0
   - timer: 10
     spawnDelay: 1.65
@@ -766,8 +763,11 @@ MonoBehaviour:
     isTutorial: 1
     pedestriansEnabled: 0
     preambles:
-    - 
-    failureMessages: []
+    - Click the car that runs the stop sign!
+    failureMessages:
+    - Which car ran the stop sign?
+    successMessages:
+    - Yippeeeee
     allowedMistakes: 0
   - timer: 10
     spawnDelay: 2
@@ -776,29 +776,36 @@ MonoBehaviour:
     - spawnLocation: 3
       turnChoice: 2
       deviantBehavior:
-        deviantType: 0
-        isSpecified: 0
+        deviantType: 6
+        isSpecified: 1
       vehicleType: 0
     - spawnLocation: 1
       turnChoice: 1
       deviantBehavior:
-        deviantType: 0
-        isSpecified: 0
+        deviantType: 3
+        isSpecified: 1
       vehicleType: 0
     deviantSpawnChance: 0
     isTutorial: 1
     pedestriansEnabled: 0
-    preambles:
-    - 
-    failureMessages: []
+    preambles: []
+    failureMessages:
+    - Oops!
+    successMessages: []
     allowedMistakes: 0
-  test:
-    spawnLocation: 0
-    turnChoice: 0
-    deviantBehavior:
-      deviantType: 0
-      isSpecified: 0
-    vehicleType: 0
+  - timer: 60
+    spawnDelay: 2
+    intersectionLayout: 0
+    spawnOrder: []
+    deviantSpawnChance: 0.3
+    isTutorial: 0
+    pedestriansEnabled: 0
+    preambles:
+    - Long round
+    failureMessages:
+    - Oops!
+    successMessages: []
+    allowedMistakes: 0
   intersectionControllerFourWayStopPrefab: {fileID: 5888158828736668804, guid: d63a4e56a4b984c17927b99a4629d2e2, type: 3}
   intersectionControllerFourWayStoplightPrefab: {fileID: 0}
   intersectionControllerTIntersectionPrefab: {fileID: 0}
@@ -1011,7 +1018,7 @@ PrefabInstance:
     - target: {fileID: 3845484231870184547, guid: d63a4e56a4b984c17927b99a4629d2e2, type: 3}
       propertyPath: timerTextComponent
       value: 
-      objectReference: {fileID: 1062631280}
+      objectReference: {fileID: 0}
     - target: {fileID: 5888158828736668804, guid: d63a4e56a4b984c17927b99a4629d2e2, type: 3}
       propertyPath: m_Name
       value: IntersectionController
@@ -1113,9 +1120,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1345611412715511213, guid: 3ae5a59f285494d5d9b8ad05410896d8, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -26.124481
+      objectReference: {fileID: 0}
+    - target: {fileID: 2368302914671810303, guid: 3ae5a59f285494d5d9b8ad05410896d8, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -1.7999992
+      objectReference: {fileID: 0}
     - target: {fileID: 2611391844277416163, guid: 3ae5a59f285494d5d9b8ad05410896d8, type: 3}
       propertyPath: m_Name
       value: Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 2611391844277416163, guid: 3ae5a59f285494d5d9b8ad05410896d8, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8333367612725584334, guid: 3ae5a59f285494d5d9b8ad05410896d8, type: 3}
       propertyPath: m_Camera

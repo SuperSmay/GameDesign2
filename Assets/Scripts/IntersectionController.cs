@@ -29,38 +29,22 @@ public class IntersectionController : MonoBehaviour
 
     public List<CarPathFollower> activeCars = new List<CarPathFollower>();
 
-    List<CarPathFollower> stopSignQueue = new List<CarPathFollower>();
+    List<StopSignQueueEntry> stopSignQueue = new List<StopSignQueueEntry>();
+    List<IntersectionMovementBlockingCollider> stopSigns = new List<IntersectionMovementBlockingCollider>();
+
     [SerializeField] float stopSignWaitTime; // Time to wait at a stop sign before allowing the next car to go
     float stopSignTimer = 0f;
 
     InputAction resetAction;
 
-    // [SerializeField] TMPro.TextMeshProUGUI scoreTextComponent;
-    // [SerializeField] TMPro.TextMeshProUGUI timerTextComponent;
-    // [SerializeField] Button nextTextButton;
-    // [SerializeField] TMPro.TextMeshProUGUI rulesText;
-    // [SerializeField] Image textBackground;
-
-    int textPage = 0;
-    string[] preamble = new string[]
-    {
-        "Welcome, fellow road watcher!\nYour job:\n\tWatch the intersection from above\n\tLook for unsafe driving behaviors\n\tClick on the cars that are driving recklessly to stop them",
-        "Not every driver is dangerous, so choose carefully! Dangerous drivers may…\n\tDrive too fast\n\tDrive through the stop sign without stopping\n\tStop too close to other vehicles\n\nStop these cars, and help us keep our roads safe!"
-
-    };
 
     public CarSpawn[]? carSpawns;
     int carSpawnIndex = 0;
 
-    [SerializeField] float gameDuration = 60f; // Duration of the game in seconds
     float gameOverDelay = 3f; // Time to wait after the game is over before showing the round end screen
-    float gameTimer = 0f;
     float gameOverTimer;
     public bool gameOver = false;
     public Vector2 gameOverPosition; // Position to focus the camera on when the game is over
-    public float gameSpeedMultiplier = 1f;
-    public float fixedDeltaTimeSpeedMult { get { return gameSpeedMultiplier * Time.fixedDeltaTime; } }
-    public float deltaTimeSpeedMult { get { return gameSpeedMultiplier * Time.deltaTime; } }
 
     public List<GameObject> activeEffects = new List<GameObject>();
 
@@ -71,19 +55,24 @@ public class IntersectionController : MonoBehaviour
     int activeCarCount = 0;
     [SerializeField, Range(0f, 1f)] float deviantProbability;
 
-    public void EnqueueStopSign(CarPathFollower car)
+    public void EnqueueStopSign(IntersectionStopLine stopLine, CarPathFollower car)
     {
-        if (!stopSignQueue.Contains(car))
+        StopSignQueueEntry entry = new StopSignQueueEntry(stopLine, car);
+        
+        // Don't add the car to the queue if the path isn't clear!
+        if (!stopSignQueue.Contains(entry) && stopLine.AreMovementBlockingCollidersClear(car.col))
         {
-            stopSignQueue.Add(car);
+            stopSignQueue.Add(entry);
         }
     }
 
-    public void DequeueStopSign(CarPathFollower car)
+    void DequeueStopSign(CarPathFollower car)
     {
-        if (stopSignQueue.Contains(car))
+        StopSignQueueEntry entry = stopSignQueue.Find(e => e.car == car);
+        if (stopSignQueue.Contains(entry))
         {
-            stopSignQueue.Remove(car);
+            stopSignQueue.Remove(entry);
+            entry.stopLine.carsAllowedThrough.Add(car);
             // Reset the timer when a car leaves the stop sign, so the next car has to wait the full time
             stopSignTimer = 0f;
         }
@@ -111,61 +100,28 @@ public class IntersectionController : MonoBehaviour
         //     gameManagerObj.AddComponent<GameManager>();
         // }
 
-        // scoreTextComponent.text = "Score: 0";
-        // timerTextComponent.text = "Time: " + gameDuration.ToString("F1");
-
         stopSignWaitTime -= 0.1f * GameManager.Instance.roundNumber; // Decrease stop sign wait time each round to increase difficulty
         stopSignWaitTime = Mathf.Max(0f, stopSignWaitTime); // Set a minimum stop sign wait time to prevent it from becoming negative
-
-        // if (GameManager.Instance.roundNumber == 1)
-        // {
-        //     textPage = 0; // Reset the text page
-        //     rulesText.text = preamble[textPage];
-        //     gameSpeedMultiplier = 0f; // Pause the game at the start to show the rules
-        //     // Show rules text and hide it when the player clicks the next button
-        //     rulesText.gameObject.SetActive(true);
-        //     textBackground.gameObject.SetActive(true);
-        //     nextTextButton.gameObject.SetActive(true);
-        //     nextTextButton.onClick.AddListener(() =>
-        //     {
-        //         if (textPage < preamble.Length - 1)
-        //         {
-        //             textPage++;
-        //             rulesText.text = preamble[textPage];
-        //         }
-        //         else
-        //         {
-        //             // If we've reached the end of the rules pages, hide the text and button
-        //             rulesText.gameObject.SetActive(false);
-        //             textBackground.gameObject.SetActive(false);
-        //             nextTextButton.gameObject.SetActive(false);
-        //             gameSpeedMultiplier = 1f; // Start the game
-        //         }
-        //     });
-        // }
-        // else
-        // {
-        //     // If it's not the first round, skip the rules and start the game immediately
-        //     rulesText.gameObject.SetActive(false);
-        //     textBackground.gameObject.SetActive(false);
-        //     nextTextButton.gameObject.SetActive(false);
-        //     gameSpeedMultiplier = 1f; // Start the game
-        // }
     }
 
     // Update is called once per frame
     void Update()
     {
 
+        if (GameManager.Instance.allowedMistakes < 0)
+        {
+            gameOver = true;
+        }
+
         if (gameOver)
         {
             gameOverTimer -= Time.deltaTime;
             if (gameOverTimer <= 0f) // Wait for 3 seconds before showing round end screen
             {
-                UnityEngine.SceneManagement.SceneManager.LoadScene("RoundEndScene");
+                GameManager.Instance.EndRound(false);
             }
 
-            gameSpeedMultiplier = 1f - (gameOverDelay - gameOverTimer) / gameOverDelay; // Gradually slow down time over 3 seconds
+            GameManager.Instance.gameSpeedMultiplier = 1f - (gameOverDelay - gameOverTimer) / gameOverDelay; // Gradually slow down time over 3 seconds
 
 
             // // Scale Resolution
@@ -188,22 +144,16 @@ public class IntersectionController : MonoBehaviour
 
         UpdateParticleSpeeds();
 
-        gameTimer += deltaTimeSpeedMult;
-        // timerTextComponent.text = "Time: " + Mathf.Max(0, gameDuration - gameTimer).ToString("F1");
-
-        // scoreTextComponent.text = "Score: " + GameManager.Instance.Score;
-
-        if (gameTimer >= gameDuration && activeCars.Count == 0)
+        if (GameManager.Instance.gameTimer >= GameManager.Instance.gameDuration && activeCars.Count == 0 && GameManager.Instance.allowedMistakes >= 0) // If the game timer has run out and there are no more cars on the screen, end the round with a win
         {
             // Game over, show round end scene
-            GameManager.Instance.roundSuccessful = true; // Mark the round as successful since the player survived until the end
-            UnityEngine.SceneManagement.SceneManager.LoadScene("RoundEndScene");
+            GameManager.Instance.EndRound(true);
             return;
         }
         // Spawn cars periodically while the game timer is running
-        if (gameTimer < gameDuration)
+        if (GameManager.Instance.gameTimer < GameManager.Instance.gameDuration)
         {
-            spawnTimer += deltaTimeSpeedMult;
+            spawnTimer += GameManager.Instance.deltaTimeSpeedMult;
             if (spawnTimer >= spawnInterval)
             {
                 spawnTimer = 0f;
@@ -217,12 +167,12 @@ public class IntersectionController : MonoBehaviour
         // Update stop sign timer
         if (stopSignQueue.Count > 0)
         {
-            stopSignTimer += deltaTimeSpeedMult;
+            stopSignTimer += GameManager.Instance.deltaTimeSpeedMult;
             if (stopSignTimer >= stopSignWaitTime)
             {
                 // Allow the first car in the queue to go
-                CarPathFollower carToGo = stopSignQueue[0];
-                carToGo.canProceedAtStopSign = true;
+                CarPathFollower carToGo = stopSignQueue[0].car;
+                DequeueStopSign(carToGo);
             }
         }
 
@@ -248,7 +198,7 @@ public class IntersectionController : MonoBehaviour
             // If particle has been destroyed, skip it
             if (effect == null) continue;
             ParticleSystem.MainModule mainModule = effect.GetComponent<ParticleSystem>().main;
-            mainModule.simulationSpeed = gameSpeedMultiplier;
+            mainModule.simulationSpeed = GameManager.Instance.gameSpeedMultiplier;
         }
 
         activeEffects.RemoveAll(effect => effect == null); // Remove destroyed effects from the list
@@ -280,7 +230,7 @@ public class IntersectionController : MonoBehaviour
 
     void DoNextCarSpawn()
     {
-        if (carSpawns == null)
+        if (carSpawns == null || carSpawns.Length == 0)
         {
             SpawnCar(CarSpawn.Blank); // If no spawn order is defined, just spawn a car at a random start node
             return;
@@ -339,7 +289,6 @@ public class IntersectionController : MonoBehaviour
     public void Initialize(RoundConfig roundConfig)
     {
         this.carSpawns = roundConfig.spawnOrder;
-        this.gameDuration = roundConfig.timer;
         this.deviantProbability = roundConfig.deviantSpawnChance;
         this.spawnInterval = roundConfig.spawnDelay;
     }
@@ -351,4 +300,16 @@ public enum SpawnResult
     success,
     blocked,
     invalid
+}
+
+public struct StopSignQueueEntry
+{
+    public IntersectionStopLine stopLine;
+    public CarPathFollower car;
+
+    public StopSignQueueEntry(IntersectionStopLine stopLine, CarPathFollower car)
+    {
+        this.stopLine = stopLine;
+        this.car = car;
+    }
 }

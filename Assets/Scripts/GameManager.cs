@@ -9,8 +9,18 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     public int Score = 0;
-    public int roundNumber = 1;
+
     public bool roundSuccessful = false;
+
+    // Current round info
+    public int roundNumber = 1;
+    public int allowedMistakes = 3;
+    public float gameTimer = 0f;
+    public float gameDuration = 60f; // Duration of the game in seconds
+    public float gameSpeedMultiplier = 1f;
+    public bool paused = false;
+    public float fixedDeltaTimeSpeedMult { get { return gameSpeedMultiplier * (paused ? 0f : Time.fixedDeltaTime); } }
+    public float deltaTimeSpeedMult { get { return gameSpeedMultiplier * (paused ? 0f : Time.deltaTime); } }
 
     public RoundConfig[] rounds;
 
@@ -21,9 +31,16 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject uiControllerPrefab;
 
     IntersectionController currentIntersectionController;
-    // UIController currentUIController;
+    UIController currentUIController;
 
-
+    void Update()
+    {
+        if (currentUIController.showingPreamble)
+        {
+            paused = true;
+        }
+        gameTimer += deltaTimeSpeedMult;
+    }
 
     private void Awake()
     {
@@ -90,9 +107,29 @@ public class GameManager : MonoBehaviour
                 currentIntersectionController = Instantiate(intersectionControllerHighwayIntersectionPrefab).GetComponent<IntersectionController>();
                 break;
         }
+
+        gameTimer = 0f;
+        gameSpeedMultiplier = 1f;
+        gameDuration = roundConfig.timer;
+        allowedMistakes = roundConfig.allowedMistakes;
+
         currentIntersectionController.Initialize(roundConfig);
-        // currentUIController = Instantiate(uiControllerPrefab).GetComponent<UIController>();
-        // currentUIController.Initialize(roundConfig);
+        currentUIController = Instantiate(uiControllerPrefab).GetComponent<UIController>();
+        currentUIController.Initialize(roundConfig);
+    }
+
+    public void EndRound(bool success)
+    {
+        if (currentUIController.showingEndMessage) return; // Don't allow ending the round multiple times
+        // TODO refine round end
+        roundSuccessful = success;
+        paused = true;
+        currentUIController.ShowNextEndMessage();
+    }
+
+    public void CloseRound()
+    {
+        SceneManager.LoadScene("RoundEndScene");
     }
 
 }
@@ -109,8 +146,9 @@ public struct RoundConfig
     public bool pedestriansEnabled;
     public string[] preambles;
     public string[] failureMessages;
+    public string[] successMessages;
     public int allowedMistakes;
-    
+
 }
 
 [Serializable]

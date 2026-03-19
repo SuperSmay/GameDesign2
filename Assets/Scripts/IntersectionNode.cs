@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -131,10 +129,23 @@ public class IntersectionNode : MonoBehaviour
 
         GameObject? prefabToSpawn;
 
-        switch (spawnSeed)
+        switch (carSpawn.vehicleType)
         {
-            case < 0.2f:
+            case VehicleType.bus:
                 prefabToSpawn = IntersectionController.Instance.busPrefab;
+                break;
+            case VehicleType.car:
+                prefabToSpawn = IntersectionController.Instance.carPrefab;
+                break;
+            case VehicleType.random:
+                if (spawnSeed < 0.2f)
+                {
+                    prefabToSpawn = IntersectionController.Instance.busPrefab;
+                }
+                else
+                {
+                    prefabToSpawn = IntersectionController.Instance.carPrefab;
+                }
                 break;
             default:
                 prefabToSpawn = IntersectionController.Instance.carPrefab;

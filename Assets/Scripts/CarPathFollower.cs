@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Unity.Collections;
-using UnityEditor.Toolbars;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Splines;
@@ -43,10 +41,11 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     float speed;
     float despawnTimer = 5f;
 
-    [System.NonSerialized] public bool canProceedAtStopSign = false; // Whether this car is currently allowed to proceed through a stop sign. This is set by the IntersectionController when it's this car's turn to go.
+    // [System.NonSerialized] public bool canProceedAtStopSign = false; // Whether this car is currently allowed to proceed through a stop sign. This is set by the IntersectionController when it's this car's turn to go.
 
     Rigidbody2D rb;
     SpriteRenderer spriteRenderer;
+    public Collider2D col;
 
     [SerializeField] GameObject explosionEffectPrefab;
     [SerializeField] GameObject exhaustEffectPrefab;
@@ -82,7 +81,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         // Get spline length for consistent speed across different splines (since the T value is normalized, we need to account for spline length to maintain consistent speed)
         float splineLength = intersectionNode.splineContainer.CalculateLength();
 
-        currentSplineTValue += speed * intersectionController.fixedDeltaTimeSpeedMult / splineLength * 10f;  // 10 is a rough estimate of the avg spline length.
+        currentSplineTValue += speed * GameManager.Instance.fixedDeltaTimeSpeedMult / splineLength * 10f;  // 10 is a rough estimate of the avg spline length.
         // TODO remove the 10x speed multiplier
 
 
@@ -134,7 +133,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
                 // Project movement onto our up axis (assuming 2D top-down) and convert to speed per second
                 float forwardMovement = Vector3.Dot(moveDelta, transform.up);
-                targetSpeed = forwardMovement / intersectionController.fixedDeltaTimeSpeedMult;
+                targetSpeed = forwardMovement / GameManager.Instance.fixedDeltaTimeSpeedMult;
             }
 
             // 3. Intelligent Driver Model (IDM) Variables
@@ -168,7 +167,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
             calculatedAcceleration = Mathf.Max(calculatedAcceleration, -absoluteMaxEmergencyDeceleration);
 
             // 6. Apply acceleration to speed
-            speed += calculatedAcceleration * intersectionController.fixedDeltaTimeSpeedMult;
+            speed += calculatedAcceleration * GameManager.Instance.fixedDeltaTimeSpeedMult;
 
             // Prevent reversing and cap at true max speed
             speed = Mathf.Clamp(speed, 0f, maxSpeed);
@@ -184,7 +183,9 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
                 distanceToTarget < stopSignMinimumQueueDistance &&
                 speed == 0f)
             {
-                intersectionController.EnqueueStopSign(this);
+                // If we hit a stop line collider, it will have this component
+                IntersectionStopLine stopLine = hitObj.GetComponent<IntersectionStopLine>();
+                intersectionController.EnqueueStopSign(stopLine, this);
             }
         }
         else
@@ -192,7 +193,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
             // Free road behavior: accelerate to max speed
             trackedTarget = null;
             StopTireScreechEffect();
-            speed = Mathf.MoveTowards(speed, maxSpeed, accelerationRate * intersectionController.fixedDeltaTimeSpeedMult);
+            speed = Mathf.MoveTowards(speed, maxSpeed, accelerationRate * GameManager.Instance.fixedDeltaTimeSpeedMult);
         }
     }
 
@@ -263,10 +264,35 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
                     if (hit.collider.gameObject == gameObject) continue;
                     // Ignore hits on the clickbox colliders
                     if (hit.collider.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.ClickBox]) continue;
+                    // Ignore stop lines if we're going to run them (deviant)
+                    if (hit.collider.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.StopLine] && deviantType == DeviantType.runsStop)
+                    {
+                        continue;
+                    }
                     // Ignore stop lines if we're allowed to go
-                    if (canProceedAtStopSign && hit.collider.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.StopLine]) continue;
-                    // Ignore interssection leave triggers so we don't get confused when leaving an intersection
+                    if (hit.collider.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.StopLine])
+                    {
+                        IntersectionStopLine stopLine = hit.collider.gameObject.GetComponent<IntersectionStopLine>();
+                        if (stopLine.CanCarProceed(this) && stopLine.AreMovementBlockingCollidersClear(col))
+                        {
+                            continue;
+                        }
+                    }
+                    // Ignore intersection leave triggers so we don't get confused when leaving an intersection
                     if (hit.collider.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.IntersectionLeave]) continue;
+
+                    // If we don't have a LayerMask defined for this collider type, we log a warning and ignore it (treat it as free road)
+                    if (!LayerMasksToColliderType.Map.ContainsKey(hit.collider.gameObject.layer))
+                    {
+                        Debug.Log("No layer mask defined for collider layer " + hit.collider.gameObject.layer + ". Ignoring.");
+                        continue;
+                    }
+
+                    if (!stopDistances.ContainsKey(LayerMasksToColliderType.Map[hit.collider.gameObject.layer]))
+                    {
+                        Debug.Log("No stop distance defined for collider type " + LayerMasksToColliderType.Map[hit.collider.gameObject.layer] + ". Ignoring.");
+                        continue;
+                    }
 
 
                     float distanceToHit = Vector3.Distance(transform.position, hit.point);
@@ -275,6 +301,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
                     {
                         closestTargetDistance = distanceToHit;
                         closestTargetHit = hit;
+                        DebugDrawing.DrawDebugCapsule(hit.point, hit.point, sphereRadius, Color.green, 0.1f);
                     }
                 }
 
@@ -291,7 +318,6 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
             if (crossingToNextNode)
             {
-                // ⚠️ IMPORTANT: You must use a "Peek" method here, not one that alters the car's state.
                 scanNode = scanNode.PeekNextNode(turnIntention);
                 t = 0f; // Reset T to the start of the new spline
             }
@@ -382,6 +408,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        col = GetComponent<Collider2D>();
 
         // Randomly assign a sprite from the list for visual variety
         if (sprites != null && sprites.Count > 0)
@@ -404,7 +431,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
         if (hasCollided)
         {
-            despawnTimer -= intersectionController.deltaTimeSpeedMult;
+            despawnTimer -= GameManager.Instance.deltaTimeSpeedMult;
             if (despawnTimer <= 0f)
             {
                 DestroyAndDropParticles();
@@ -427,7 +454,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
         }
 
-        collisionCooldown = Mathf.Max(collisionCooldown - intersectionController.deltaTimeSpeedMult, 0f);
+        collisionCooldown = Mathf.Max(collisionCooldown - GameManager.Instance.deltaTimeSpeedMult, 0f);
 
     }
 
@@ -466,17 +493,17 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        // If we hit a stop sign trigger, set canProceedAtStopSign to true so we can ignore the stop sign raycast in Update and proceed through the intersection.
-        if (other.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.IntersectionLeave])
-        {
-            intersectionController.DequeueStopSign(this);
-        }
+        // // If we hit a stop sign trigger, set canProceedAtStopSign to true so we can ignore the stop sign raycast in Update and proceed through the intersection.
+        // if (other.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.IntersectionLeave])
+        // {
+        //     intersectionController.DequeueStopSign(this);
+        // }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
         rb.bodyType = RigidbodyType2D.Dynamic; // Make the car affected by physics after collision
-        IntersectionController.Instance.DequeueStopSign(this);
+        // IntersectionController.Instance.DequeueStopSign(this);
         StopTireScreechEffect();
 
         if (collisionCooldown == 0)
@@ -498,7 +525,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
             // If this car is a deviant, clicking it will "report" it and destroy it, giving the player points.
             GameManager.Instance.Score += 1;
             InstantiateParticleEffects(explosionEffectPrefab, transform.position, Quaternion.identity); // Spawn explosion effect
-            DestroyAndDropParticles();
+            DestroyAndDropParticles(true);
         }
 
         else if (hasCollided)
@@ -507,7 +534,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         }
         else if (!hasBeenClicked)
         {
-            // If this car is not a deviant, clicking it will penalize the player by reducing their score and destroying the car.
+            // If this car is not a deviant, clicking it will penalize the player
             GameManager.Instance.Score -= 1;
             gameObject.GetComponent<SpriteRenderer>().color = Color.gray; // Flash gray to indicate mistaken report
 
@@ -539,12 +566,17 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    public void DestroyAndDropParticles()
+    public void DestroyAndDropParticles(bool destroyedByPlayer = false)
     {
         StopExhaust();
         StopTireScreechEffect();
-        IntersectionController.Instance.DequeueStopSign(this);
+        // IntersectionController.Instance.DequeueStopSign(this);
         IntersectionController.Instance.activeCars.Remove(this);
+        if (deviantType != DeviantType.none && !destroyedByPlayer)
+        {
+            GameManager.Instance.Score -= 1; // Penalize for letting a deviant escape
+            GameManager.Instance.allowedMistakes -= 1; // Lose a life for letting a deviant escape
+        }
         Destroy(gameObject);
     }
 
@@ -593,7 +625,8 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
                 // TODO
                 break;
             case DeviantType.runsStop:
-                canProceedAtStopSign = true; // Allow proceeding at stop signs for running stop signs behavior
+                // TODO fix
+                // canProceedAtStopSign = true; // Allow proceeding at stop signs for running stop signs behavior
                 break;
         }
 
