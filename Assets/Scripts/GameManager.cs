@@ -139,8 +139,10 @@ public struct RoundConfig
 {
     public float timer;
     public float spawnDelay;
+    public float pedSpawnDelay;
     public IntersectionLayout intersectionLayout;
     public CarSpawn[] spawnOrder;
+    public PedSpawn[] pedSpawnOrder;
     public float deviantSpawnChance;
     public bool isTutorial;
     public bool pedestriansEnabled;
@@ -173,6 +175,19 @@ public struct CarSpawn
         {
             return new CarSpawn(SpawnLocation.random, TurnChoice.Continue, new DeviantBehaviorInfo { deviantType = DeviantType.random, isSpecified = false }, VehicleType.random);
         }
+    }
+}
+
+[Serializable]
+public struct PedSpawn
+{
+    public Transform spawnLocation;
+    public Transform targetLocation;
+
+    public PedSpawn(Transform spawnLocation, Transform targetLocation)
+    {
+        this.spawnLocation = spawnLocation;
+        this.targetLocation = targetLocation;
     }
 }
 

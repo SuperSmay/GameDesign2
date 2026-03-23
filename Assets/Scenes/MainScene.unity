@@ -340,10 +340,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0
-    y: 0.030042918
-    width: 1.0016286
-    height: 0.9898069
+    x: 0.106088005
+    y: 0
+    width: 0.78923047
+    height: 1.0502675
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -406,6 +406,67 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!1001 &1320019246
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1000816383362207238, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_Name
+      value: CarFollower (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000816383362207238, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.46
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
 --- !u!1 &1375409902
 GameObject:
   m_ObjectHideFlags: 0
@@ -685,6 +746,67 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!1001 &1460074615
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1000816383362207238, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_Name
+      value: CarFollower
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000816383362207238, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.42
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407976767057596053, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
 --- !u!1 &1561792145
 GameObject:
   m_ObjectHideFlags: 0
@@ -724,26 +846,6 @@ MonoBehaviour:
   paused: 0
   rounds:
   - timer: 10
-    spawnDelay: 2
-    intersectionLayout: 0
-    spawnOrder:
-    - spawnLocation: 3
-      turnChoice: 2
-      deviantBehavior:
-        deviantType: 6
-        isSpecified: 1
-      vehicleType: 0
-    deviantSpawnChance: 0
-    isTutorial: 1
-    pedestriansEnabled: 0
-    preambles:
-    - Hello there!
-    - This is a test!!
-    failureMessages: []
-    successMessages:
-    - Good job! You did nothing!
-    allowedMistakes: 0
-  - timer: 10
     spawnDelay: 1.65
     intersectionLayout: 0
     spawnOrder:
@@ -769,6 +871,39 @@ MonoBehaviour:
     successMessages:
     - Yippeeeee
     allowedMistakes: 0
+  - timer: 60
+    spawnDelay: 2
+    intersectionLayout: 0
+    spawnOrder: []
+    deviantSpawnChance: 0.3
+    isTutorial: 0
+    pedestriansEnabled: 0
+    preambles:
+    - Long round
+    failureMessages:
+    - Oops!
+    successMessages: []
+    allowedMistakes: 3
+  - timer: 10
+    spawnDelay: 2
+    intersectionLayout: 0
+    spawnOrder:
+    - spawnLocation: 3
+      turnChoice: 2
+      deviantBehavior:
+        deviantType: 6
+        isSpecified: 1
+      vehicleType: 0
+    deviantSpawnChance: 0
+    isTutorial: 1
+    pedestriansEnabled: 0
+    preambles:
+    - Hello there!
+    - This is a test!!
+    failureMessages: []
+    successMessages:
+    - Good job! You did nothing!
+    allowedMistakes: 0
   - timer: 10
     spawnDelay: 2
     intersectionLayout: 0
@@ -793,22 +928,9 @@ MonoBehaviour:
     - Oops!
     successMessages: []
     allowedMistakes: 0
-  - timer: 60
-    spawnDelay: 2
-    intersectionLayout: 0
-    spawnOrder: []
-    deviantSpawnChance: 0.3
-    isTutorial: 0
-    pedestriansEnabled: 0
-    preambles:
-    - Long round
-    failureMessages:
-    - Oops!
-    successMessages: []
-    allowedMistakes: 0
   intersectionControllerFourWayStopPrefab: {fileID: 5888158828736668804, guid: d63a4e56a4b984c17927b99a4629d2e2, type: 3}
   intersectionControllerFourWayStoplightPrefab: {fileID: 0}
-  intersectionControllerTIntersectionPrefab: {fileID: 0}
+  intersectionControllerTIntersectionPrefab: {fileID: 5402217268340507780, guid: c01c0c893b9a746419838dfa457d3c8a, type: 3}
   intersectionControllerHighwayIntersectionPrefab: {fileID: 0}
   uiControllerPrefab: {fileID: 2611391844277416163, guid: 3ae5a59f285494d5d9b8ad05410896d8, type: 3}
 --- !u!4 &1561792147
@@ -1157,3 +1279,5 @@ SceneRoots:
   - {fileID: 1791891023}
   - {fileID: 2055831491}
   - {fileID: 1561792147}
+  - {fileID: 1460074615}
+  - {fileID: 1320019246}

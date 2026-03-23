@@ -13,15 +13,18 @@ public class IntersectionController : MonoBehaviour
     public GameObject carPrefab;
     public GameObject busPrefab;
     // [SerializeField] PixelPerfectCamera pixelCamera;
-    Vector2 cameraOriginalResolution;
-    Vector2 cameraOriginalPosition;
-    int cameraOriginalPPU;
+    // Vector2 cameraOriginalResolution;
+    // Vector2 cameraOriginalPosition;
+    // int cameraOriginalPPU;
 
 
     [SerializeField] IntersectionNode northSpawnNode;
     [SerializeField] IntersectionNode eastSpawnNode;
     [SerializeField] IntersectionNode southSpawnNode;
     [SerializeField] IntersectionNode westSpawnNode;
+
+    [SerializeField] GameObject PedestrianPrefab;
+    [SerializeField] Transform[] PedestrianSpawnPoints;
 
     [SerializeField] PlayerInput playerInput;
 
@@ -39,7 +42,9 @@ public class IntersectionController : MonoBehaviour
 
 
     public CarSpawn[]? carSpawns;
+    public PedSpawn[]? pedSpawns;
     int carSpawnIndex = 0;
+    int pedSpawnIndex = 0;
 
     float gameOverDelay = 3f; // Time to wait after the game is over before showing the round end screen
     float gameOverTimer;
@@ -51,6 +56,9 @@ public class IntersectionController : MonoBehaviour
     [Header("Spawning")]
     [SerializeField] float spawnInterval; // seconds between spawn attempts
     float spawnTimer = 0f;
+    [SerializeField]float pedestrianSpawnInterval = 5f; // seconds between pedestrian spawn attempts
+    float pedestrianSpawnTimer = 0f;
+    bool pedestriansEnabled = false;
     [SerializeField] int maxActiveCars;
     int activeCarCount = 0;
     [SerializeField, Range(0f, 1f)] float deviantProbability;
@@ -157,10 +165,17 @@ public class IntersectionController : MonoBehaviour
             if (spawnTimer >= spawnInterval)
             {
                 spawnTimer = 0f;
-
-
                 DoNextCarSpawn();
-
+            }
+                        
+            if (pedestriansEnabled)
+            {
+                pedestrianSpawnTimer += GameManager.Instance.deltaTimeSpeedMult;
+                if (pedestrianSpawnTimer >= pedestrianSpawnInterval)
+                {
+                    pedestrianSpawnTimer = 0f;
+                    DoNextPedSpawn();
+                }
             }
         }
 
@@ -255,6 +270,73 @@ public class IntersectionController : MonoBehaviour
         }
     }
 
+    void DoNextPedSpawn()
+    {
+
+        PedSpawn? spawn = null;
+
+        if (PedestrianSpawnPoints.Length == 1)
+        {
+            Debug.LogWarning("Only 1 pedestrian spawn point defined!");
+            return;
+        }
+
+        if (pedSpawns == null || pedSpawns.Length == 0)
+        {
+            Transform spawnPoint = PedestrianSpawnPoints[UnityEngine.Random.Range(0, PedestrianSpawnPoints.Length)]; // If no spawn order is defined, just spawn a pedestrian at a random spawn point
+            Transform targetPoint = PedestrianSpawnPoints[UnityEngine.Random.Range(0, PedestrianSpawnPoints.Length)];
+            while (targetPoint == spawnPoint) // Ensure target point is different from spawn point
+            {
+                targetPoint = PedestrianSpawnPoints[UnityEngine.Random.Range(0, PedestrianSpawnPoints.Length)];
+            }
+            spawn = new PedSpawn(spawnPoint, targetPoint);
+        }
+
+        // If a spawn order is defined, spawn cars according to the order
+        else if (pedSpawnIndex < pedSpawns.Length)
+        {
+            spawn = pedSpawns[pedSpawnIndex];
+            pedSpawnIndex++;
+            // Log an error and continue if only one of the locations is null
+            if (spawn.Value.spawnLocation == null ^ spawn.Value.targetLocation == null)
+            {
+                Debug.LogError("Invalid pedestrian spawn: spawn location or target location is null.");
+                DoNextPedSpawn(); // Attempt to spawn the next pedestrian immediately since this one was invalid
+                return;
+            }
+            // If the locations aren't defined, but we don't have enough points to pick from, log an error and continue
+            else if (spawn.Value.spawnLocation == null && spawn.Value.targetLocation == null && PedestrianSpawnPoints.Length < 2)
+            {
+                Debug.LogError("Not enough pedestrian spawn points defined to randomly assign spawn and target locations.");
+                DoNextPedSpawn(); // Attempt to spawn the next pedestrian immediately since this one was invalid
+                return;
+            }
+            // If both are null, then pick locations randomly
+            else if (spawn.Value.spawnLocation == null && spawn.Value.targetLocation == null)
+            {
+                Transform spawnPoint = PedestrianSpawnPoints[UnityEngine.Random.Range(0, PedestrianSpawnPoints.Length)];
+                Transform targetPoint = PedestrianSpawnPoints[UnityEngine.Random.Range(0, PedestrianSpawnPoints.Length)];
+                while (targetPoint == spawnPoint) // Ensure target point is different from spawn point
+                {
+                    targetPoint = PedestrianSpawnPoints[UnityEngine.Random.Range(0, PedestrianSpawnPoints.Length)];
+                }
+                spawn = new PedSpawn(spawnPoint, targetPoint);
+            }
+            
+        }
+
+        if (spawn == null)
+        {
+            Debug.LogWarning("Pedestrian spawn point is null!");
+            return;
+        }
+        
+
+        GameObject ped = Instantiate(PedestrianPrefab, spawn.Value.spawnLocation.position, Quaternion.identity);
+        ped.GetComponent<PedestrianNavAgent>().Initialize(spawn.Value.targetLocation);
+
+    }
+
     IntersectionNode? GetSpawnNode(SpawnLocation location)
     {
         // Note: even though the spawn nodes aren't marked nullable,
@@ -289,6 +371,9 @@ public class IntersectionController : MonoBehaviour
     public void Initialize(RoundConfig roundConfig)
     {
         this.carSpawns = roundConfig.spawnOrder;
+        this.pedSpawns = roundConfig.pedSpawnOrder;
+        this.pedestrianSpawnInterval = roundConfig.pedSpawnDelay;
+        this.pedestriansEnabled = roundConfig.pedestriansEnabled;
         this.deviantProbability = roundConfig.deviantSpawnChance;
         this.spawnInterval = roundConfig.spawnDelay;
     }
