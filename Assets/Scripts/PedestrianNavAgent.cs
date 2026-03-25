@@ -7,7 +7,7 @@ public class PedestrianNavAgent : MonoBehaviour
     NavMeshAgent navMeshAgent;
     [SerializeField] Transform target;
 
-    float speed = 1f;
+    float speed = 0.5f;
     float despawnDistance = 0.2f;
 
     void Awake()
@@ -39,5 +39,20 @@ public class PedestrianNavAgent : MonoBehaviour
     {
         this.target = target;
         navMeshAgent.SetDestination(target.position);
+    }
+
+    public void OnCollisionEnter2D(Collision2D collision)
+    {
+        // When we collide with a car, ragdoll and stop moving
+        if (collision.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.Car])
+        {
+            // However, if the car isn't moving, we don't ragdoll since it won't actually cause the pedestrian to fall over
+            if (collision.gameObject.GetComponent<CarPathFollower>().speed < 0.1f)
+            {
+                return;
+            }
+            navMeshAgent.enabled = false; // Disable NavMeshAgent to stop movement
+            GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic; // Make the pedestrian affected by physics
+        }
     }
 }

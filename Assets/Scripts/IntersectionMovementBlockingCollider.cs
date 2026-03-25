@@ -8,6 +8,8 @@ public class IntersectionMovementBlockingCollider : MonoBehaviour
     
     // A HashSet ensures we don't count the same object twice
     public HashSet<Collider2D> ObjectsInRange = new HashSet<Collider2D>();
+    public bool detectCars = true;
+    public bool detectPeds = true;
 
     void Awake()
     {
@@ -24,6 +26,9 @@ public class IntersectionMovementBlockingCollider : MonoBehaviour
     {
 
         if (other.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.ClickBox]) return; // Ignore click boxes, since they don't actually block movement and would just cause confusion
+
+        if (other.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.Car] && !detectCars) return; // Ignore cars if detectCars is false
+        if (other.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.Pedestrian] && !detectPeds) return; // Ignore pedestrians if detectPeds is false
 
         // Add the object when it enters the zone
         if (!ObjectsInRange.Contains(other))

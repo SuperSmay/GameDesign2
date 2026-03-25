@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Splines;
@@ -23,10 +24,16 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     public float accelerationRate;
     public float targetStopTime;  // Safe time headway in seconds (tune this for following distance)
     public List<ColliderStopDistanceInfo> stopDistancesList;
-   
-        
-     // List of stop distances for different collider types, used to populate the stopDistances dictionary in Awake()
-    Dictionary<ColliderType, float> stopDistances { get
+
+    // The stop lines this car has committed to going through. 
+    // This is used to stop the car from breaking for a pedestrian that enters the crosswalk right after the car has been allowed to go through the stop line.
+    public HashSet<IntersectionStopLine> committedStopLines = new HashSet<IntersectionStopLine>();
+
+
+    // List of stop distances for different collider types, used to populate the stopDistances dictionary in Awake()
+    Dictionary<ColliderType, float> stopDistances
+    {
+        get
         {
             Dictionary<ColliderType, float> dict = new Dictionary<ColliderType, float>();
             foreach (ColliderStopDistanceInfo info in stopDistancesList)
@@ -34,11 +41,12 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
                 dict[info.colliderType] = info.distance;
             }
             return dict;
-        } } // How far away the car should try to stop from different types of targets (other cars, stop signs, etc)
+        }
+    } // How far away the car should try to stop from different types of targets (other cars, stop signs, etc)
     public TurnChoice turnIntention; // The car will take the first available turn that matches this intention when it reaches an intersection.
                                      // If the there is no "continue" option, and the intended turn is not available, the car will take any available turn.
 
-    float speed;
+    public float speed;
     float despawnTimer = 5f;
 
     // [System.NonSerialized] public bool canProceedAtStopSign = false; // Whether this car is currently allowed to proceed through a stop sign. This is set by the IntersectionController when it's this car's turn to go.
@@ -57,7 +65,6 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     [Header("Path Scanning")]
     public float lookAheadDistance = 25f; // Max distance to scan
     public float carWidth = 0.5f;           // Used for the SphereCast radius
-    public LayerMask obstacleLayer;       // Only hit other cars/stop lines
 
 
     bool hasCollided = false;
@@ -260,6 +267,10 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
                 foreach (RaycastHit2D hit in hits)
                 {
+
+                    // Draw debug points for all hits
+                    DebugDrawing.DrawDebugCircle(hit.point, 0.1f, Color.blue, 0.1f);
+
                     // Ignore hits that are this car's own collider
                     if (hit.collider.gameObject == gameObject) continue;
                     // Ignore hits on the clickbox colliders
@@ -280,17 +291,35 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
                     }
                     // Ignore intersection leave triggers so we don't get confused when leaving an intersection
                     if (hit.collider.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.IntersectionLeave]) continue;
+                    // Stop line filtering
+                    if (hit.collider.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.StopLine])
+                    {
+                        IntersectionStopLine stopLine = hit.collider.gameObject.GetComponent<IntersectionStopLine>();
+
+                        // Ignore stop lines that we've already committed to going through, since we won't be stopping for those anymore even if we're still within the max stopping distance.
+                        if (committedStopLines.Contains(stopLine))
+                        {
+                            continue;
+                        }
+
+                        // Ignore stop lines that don't match our turn intention, since we won't be stopping for those.
+                        // Continue is the case where it applies to all turns, so we don't want to skip those
+                        if (stopLine.turnChoiceForThisStopLine != turnIntention && stopLine.turnChoiceForThisStopLine != TurnChoice.Continue)
+                        {
+                            continue;
+                        }
+                    }
 
                     // If we don't have a LayerMask defined for this collider type, we log a warning and ignore it (treat it as free road)
                     if (!LayerMasksToColliderType.Map.ContainsKey(hit.collider.gameObject.layer))
                     {
-                        Debug.Log("No layer mask defined for collider layer " + hit.collider.gameObject.layer + ". Ignoring.");
+                        Debug.LogWarning("No layer mask defined for collider layer " + hit.collider.gameObject.layer + ". Ignoring.");
                         continue;
                     }
 
                     if (!stopDistances.ContainsKey(LayerMasksToColliderType.Map[hit.collider.gameObject.layer]))
                     {
-                        Debug.Log("No stop distance defined for collider type " + LayerMasksToColliderType.Map[hit.collider.gameObject.layer] + ". Ignoring.");
+                        Debug.LogWarning("No stop distance defined for collider type " + LayerMasksToColliderType.Map[hit.collider.gameObject.layer] + ". Ignoring.");
                         continue;
                     }
 
@@ -318,7 +347,8 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
             if (crossingToNextNode)
             {
-                scanNode = scanNode.PeekNextNode(turnIntention);
+                // Get continue node if it exists, otherwise get the node corresponding to our turn intention
+                scanNode = scanNode.continueNode != null ? scanNode.continueNode : scanNode.PeekNextNode(turnIntention);
                 t = 0f; // Reset T to the start of the new spline
             }
             else
@@ -502,6 +532,13 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
     void OnCollisionEnter2D(Collision2D collision)
     {
+
+        // Don't ragdoll on pedestrian collisions, just ignore them (cars can run over pedestrians but it doesn't cause them to crash)
+        if (collision.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.Pedestrian])
+        {
+            return;
+        }
+
         rb.bodyType = RigidbodyType2D.Dynamic; // Make the car affected by physics after collision
         // IntersectionController.Instance.DequeueStopSign(this);
         StopTireScreechEffect();
@@ -582,10 +619,30 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
     public void Initialize(CarSpawn carSpawn, IntersectionNode node)
     {
-
         this.intersectionNode = node;
         SetupDeviantBehavior(carSpawn.deviantBehavior.deviantType);
-        turnIntention = carSpawn.turnChoice;
+        SetupTurnIntention(carSpawn.turnChoice);
+    }
+
+    void SetupTurnIntention(TurnChoice turnChoice)
+    {
+        // This means unspecified, so we pick a random one from what's available on the path we spawned on.
+        if (turnChoice == TurnChoice.Continue)
+        {
+            TurnChoice[] possibleIntentions = intersectionNode.availableTurnChoicesOnPath;
+            turnIntention = possibleIntentions[Random.Range(0, possibleIntentions.Length)];
+        }
+        else
+        {
+            turnIntention = turnChoice;
+        }
+
+        // Warn for invalid turn intentions that don't match the available turns on this path
+        if (!intersectionNode.availableTurnChoicesOnPath.ToArray().Contains(turnIntention))
+        {
+            Debug.LogWarning("Car spawned with turn intention " + turnIntention + " but that turn is not available on the path it spawned on. Available turns: " + string.Join(", ", intersectionNode.availableTurnChoicesOnPath) + ". Car will not stop at direction specific stop lines.");
+        }
+
     }
 
     public void SetupDeviantBehavior(DeviantType deviantSpawnType)
@@ -601,23 +658,23 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         {
             case DeviantType.tailgating:
                 List<ColliderStopDistanceInfo> newStopDistances = new List<ColliderStopDistanceInfo>();
-                    foreach (ColliderStopDistanceInfo info in stopDistancesList)
+                foreach (ColliderStopDistanceInfo info in stopDistancesList)
+                {
+                    if (info.colliderType == ColliderType.StopLine)
                     {
-                        if (info.colliderType == ColliderType.StopLine)
-                        {
-                            newStopDistances.Add(new ColliderStopDistanceInfo(info.colliderType, -1f)); // Stop after the line!
-                        }
-                        else if (info.colliderType == ColliderType.Car)
-                        {
-                            newStopDistances.Add(new ColliderStopDistanceInfo(info.colliderType, 0.3f)); // Stop very close to other cars
-                        }
-                        else
-                        {
-                            newStopDistances.Add(info);
-                        }
+                        newStopDistances.Add(new ColliderStopDistanceInfo(info.colliderType, -1f)); // Stop after the line!
                     }
-                    stopDistancesList = newStopDistances;
-                    break;
+                    else if (info.colliderType == ColliderType.Car)
+                    {
+                        newStopDistances.Add(new ColliderStopDistanceInfo(info.colliderType, 0.3f)); // Stop very close to other cars
+                    }
+                    else
+                    {
+                        newStopDistances.Add(info);
+                    }
+                }
+                stopDistancesList = newStopDistances;
+                break;
             case DeviantType.speeding:
                 maxSpeed *= 3f; // Higher max speed for speeding behavior
                 break;
@@ -637,6 +694,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 public enum ColliderType
 {
     Car,
+    Pedestrian,
     StopLine,
     IntersectionLeave,
     ClickBox,
@@ -648,6 +706,7 @@ public static class ColliderTypeToLayerMasks
     public static readonly Dictionary<ColliderType, int> Map = new Dictionary<ColliderType, int>()
     {
         { ColliderType.Car, LayerMask.NameToLayer("Cars") },
+        { ColliderType.Pedestrian, LayerMask.NameToLayer("Pedestrians") },
         { ColliderType.StopLine, LayerMask.NameToLayer("Stop Lines") },
         { ColliderType.IntersectionLeave, LayerMask.NameToLayer("Intersection Leave") },
         { ColliderType.ClickBox, LayerMask.NameToLayer("Pointer Interaction") },
@@ -660,6 +719,7 @@ public static class LayerMasksToColliderType
     public static readonly Dictionary<int, ColliderType> Map = new Dictionary<int, ColliderType>()
     {
         { LayerMask.NameToLayer("Cars"), ColliderType.Car },
+        { LayerMask.NameToLayer("Pedestrians"), ColliderType.Pedestrian },
         { LayerMask.NameToLayer("Stop Lines"), ColliderType.StopLine },
         { LayerMask.NameToLayer("Intersection Leave"), ColliderType.IntersectionLeave },
         { LayerMask.NameToLayer("Pointer Interaction"), ColliderType.ClickBox },

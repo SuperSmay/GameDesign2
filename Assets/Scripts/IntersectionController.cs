@@ -23,6 +23,11 @@ public class IntersectionController : MonoBehaviour
     [SerializeField] IntersectionNode southSpawnNode;
     [SerializeField] IntersectionNode westSpawnNode;
 
+    [SerializeField] GameObject northCrosswalkBlocker;
+    [SerializeField] GameObject eastCrosswalkBlocker;
+    [SerializeField] GameObject southCrosswalkBlocker;
+    [SerializeField] GameObject westCrosswalkBlocker;
+
     [SerializeField] GameObject PedestrianPrefab;
     [SerializeField] Transform[] PedestrianSpawnPoints;
 
@@ -67,20 +72,21 @@ public class IntersectionController : MonoBehaviour
     {
         StopSignQueueEntry entry = new StopSignQueueEntry(stopLine, car);
         
-        // Don't add the car to the queue if the path isn't clear!
-        if (!stopSignQueue.Contains(entry) && stopLine.AreMovementBlockingCollidersClear(car.col))
+        // Don't add the car to the queue if is already there!
+        if (!stopSignQueue.Contains(entry))
         {
             stopSignQueue.Add(entry);
         }
     }
 
-    void DequeueStopSign(CarPathFollower car)
+    void AllowThroughStopSign(CarPathFollower car)
     {
         StopSignQueueEntry entry = stopSignQueue.Find(e => e.car == car);
         if (stopSignQueue.Contains(entry))
         {
             stopSignQueue.Remove(entry);
             entry.stopLine.carsAllowedThrough.Add(car);
+            car.committedStopLines.Add(entry.stopLine);
             // Reset the timer when a car leaves the stop sign, so the next car has to wait the full time
             stopSignTimer = 0f;
         }
@@ -185,9 +191,18 @@ public class IntersectionController : MonoBehaviour
             stopSignTimer += GameManager.Instance.deltaTimeSpeedMult;
             if (stopSignTimer >= stopSignWaitTime)
             {
-                // Allow the first car in the queue to go
-                CarPathFollower carToGo = stopSignQueue[0].car;
-                DequeueStopSign(carToGo);
+                // Allow the first car in the queue that can go to proceed, and remove it from the queue
+                // If the car in the front of the queue can't go, skip it and try the next, and so on.
+                for (int i = 0; i < stopSignQueue.Count; i++)
+                {
+                    if (stopSignQueue[i].stopLine.AreMovementBlockingCollidersClear(stopSignQueue[i].car.col))
+                    {
+                        AllowThroughStopSign(stopSignQueue[i].car);
+                        stopSignQueue.RemoveAt(i); // Note: Modifying the list while iterating is usually a bad idea, but in this case we break immediately after, so it won't cause any issues
+                        stopSignTimer = 0f; // Reset timer after allowing a car through
+                        break;
+                    }
+                }
             }
         }
 

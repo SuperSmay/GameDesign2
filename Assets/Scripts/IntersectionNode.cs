@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -10,10 +11,12 @@ public class IntersectionNode : MonoBehaviour
 
     List<CarPathFollower> carPathFollowers = new List<CarPathFollower>();
 
-    [SerializeField] IntersectionNode? continueNode;
-    [SerializeField] IntersectionNode? leftTurnNode;
-    [SerializeField] IntersectionNode? rightTurnNode;
-    [SerializeField] IntersectionNode? noTurnNode;
+    public IntersectionNode? continueNode;
+    public IntersectionNode? leftTurnNode;
+    public IntersectionNode? rightTurnNode;
+    public IntersectionNode? noTurnNode;
+
+    public TurnChoice[] availableTurnChoicesOnPath;
 
     public IntersectionNode? TransferCarToNextNode(CarPathFollower car, TurnChoice? turnChoice)
     {
@@ -64,6 +67,26 @@ public class IntersectionNode : MonoBehaviour
         }
     }
 
+
+    // Note!
+    // This function assumes that only ONE path split will happen for the each complete route through the intersection.
+    // Thus, it will only build the choices available until it hits a node with no continue path.
+    TurnChoice[] BuildAvailableTurnChoices()
+    {
+
+        // Base case. 
+        // This is guaranteed to happen eventually unless there is a loop.
+        if (continueNode == null)
+        {
+            List<TurnChoice> choices = GetAvailableTurnChoices();
+            return choices.ToArray();
+        }
+
+        // Recursive case
+        return continueNode.BuildAvailableTurnChoices();
+
+    }
+
     public void OnCarEnter(CarPathFollower car)
     {
         if (!carPathFollowers.Contains(car))
@@ -94,18 +117,7 @@ public class IntersectionNode : MonoBehaviour
     void Awake()
     {
         splineContainer = GetComponent<SplineContainer>();
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        availableTurnChoicesOnPath = BuildAvailableTurnChoices();
     }
 
     public bool HasCars()
@@ -125,7 +137,7 @@ public class IntersectionNode : MonoBehaviour
         Quaternion rotation = Quaternion.Euler(0, 0, angle - 90);
 
         // Sometimes spawn a bus
-        float spawnSeed = Random.Range(0f, 1f);
+        float spawnSeed = UnityEngine.Random.Range(0f, 1f);
 
         GameObject? prefabToSpawn;
 

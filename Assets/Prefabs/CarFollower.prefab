@@ -53,8 +53,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baa99eeaccecf4c91af2a1d363ad1845, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  isDeviant: 0
-  raycastDistance: 4
+  deviantType: 0
   stopSignMinimumQueueDistance: 1
   maxDistanceToMoveAfterStopping: 0
   maxSpeed: 0.15
@@ -67,8 +66,11 @@ MonoBehaviour:
   - colliderType: 0
     distance: 1
   - colliderType: 1
+    distance: 1
+  - colliderType: 2
     distance: 0.2
   turnIntention: 4
+  col: {fileID: 0}
   explosionEffectPrefab: {fileID: 1357960708350422463, guid: 3502f83d611094fbbb1829878ebfc094, type: 3}
   exhaustEffectPrefab: {fileID: 1761815862495215839, guid: d8cbca1fa59344c8bbe1a4bb62af9903, type: 3}
   tireScreechEffectPrefab: {fileID: 1761815862495215839, guid: 3660cb7cc31a349378629a384315914b, type: 3}

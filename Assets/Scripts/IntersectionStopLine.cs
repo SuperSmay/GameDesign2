@@ -7,6 +7,7 @@ public class IntersectionStopLine : MonoBehaviour
     [SerializeField] IntersectionMovementBlockingCollider[] collidersToCheckBeforeMoving;
     public HashSet<CarPathFollower> carsAllowedThrough = new HashSet<CarPathFollower>();
     public bool allCarsAllowedThrough = false;
+    public TurnChoice turnChoiceForThisStopLine;
 
     public bool CanCarProceed(CarPathFollower car)
     {

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1387383147618334071}
   - component: {fileID: 9039939553519491558}
   - component: {fileID: 3063243489934329728}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -189,7 +189,7 @@ Rigidbody2D:
   m_GameObject: {fileID: 3239262816969464011}
   m_BodyType: 1
   m_Simulated: 1
-  m_UseFullKinematicContacts: 0
+  m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDamping: 0

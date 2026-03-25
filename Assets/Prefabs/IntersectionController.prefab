@@ -129,6 +129,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &451374674530354773
 GameObject:
   m_ObjectHideFlags: 0
@@ -349,6 +350,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &673521733518114436
 GameObject:
   m_ObjectHideFlags: 0
@@ -478,6 +480,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &674903196259357379
 GameObject:
   m_ObjectHideFlags: 0
@@ -677,6 +680,101 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0b37d4ac7390418f9e6beed26da91d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IntersectionMovementBlockingCollider
+  detectCars: 1
+  detectPeds: 0
+--- !u!1 &857867422340693890
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7847014614433625815}
+  - component: {fileID: 4990078433811133920}
+  - component: {fileID: 9010748795679176433}
+  m_Layer: 0
+  m_Name: EnterAreaEastPed
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7847014614433625815
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 857867422340693890}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4947876756288397391}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &4990078433811133920
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 857867422340693890}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 2.479343, y: 1.4815649}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.9115372, y: 2.7102468}
+  m_EdgeRadius: 0
+--- !u!114 &9010748795679176433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 857867422340693890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0b37d4ac7390418f9e6beed26da91d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IntersectionMovementBlockingCollider
+  detectCars: 0
+  detectPeds: 1
 --- !u!1 &895817995866510083
 GameObject:
   m_ObjectHideFlags: 0
@@ -914,6 +1012,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &1216633070962614693
 GameObject:
   m_ObjectHideFlags: 0
@@ -1043,6 +1142,108 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
+--- !u!1 &1347417426142343122
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3556860704430561495}
+  - component: {fileID: 3962790935715028078}
+  - component: {fileID: 8063961136576637799}
+  m_Layer: 6
+  m_Name: North Stop Line No Turn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3556860704430561495
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1347417426142343122}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2553954452890715908}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &3962790935715028078
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1347417426142343122}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -3.328258, y: 3.689919}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 2.1086226, y: 0.092642784}
+  m_EdgeRadius: 0
+--- !u!114 &8063961136576637799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1347417426142343122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d97b933b201e4474bd70315c50af334, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  collidersToCheckBeforeMoving:
+  - {fileID: 1731027325465017483}
+  - {fileID: 8801045724605436266}
+  - {fileID: 5266928401097863649}
+  - {fileID: 2382009264527974409}
+  - {fileID: 7967861108175815749}
+  - {fileID: 3874508683187682119}
+  - {fileID: 5519037979291659970}
+  allCarsAllowedThrough: 0
+  turnChoiceForThisStopLine: 2
 --- !u!1 &1432417978460463913
 GameObject:
   m_ObjectHideFlags: 0
@@ -1172,6 +1373,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &1603867756389030327
 GameObject:
   m_ObjectHideFlags: 0
@@ -1227,7 +1429,7 @@ GameObject:
   - component: {fileID: 3570543921889829683}
   - component: {fileID: 194362987403918731}
   m_Layer: 6
-  m_Name: West Stop Line
+  m_Name: West Stop Line Right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1312,7 +1514,10 @@ MonoBehaviour:
   - {fileID: 5266928401097863649}
   - {fileID: 2382009264527974409}
   - {fileID: 7967861108175815749}
+  - {fileID: 3874508683187682119}
+  - {fileID: 3494440010464227057}
   allCarsAllowedThrough: 0
+  turnChoiceForThisStopLine: 3
 --- !u!1 &1766872460082334131
 GameObject:
   m_ObjectHideFlags: 0
@@ -1485,6 +1690,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &1883912773239519640
 GameObject:
   m_ObjectHideFlags: 0
@@ -1614,6 +1820,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &1940416850051534779
 GameObject:
   m_ObjectHideFlags: 0
@@ -1840,6 +2047,99 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
+--- !u!1 &2392779994312913929
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3123678179845699749}
+  - component: {fileID: 2990848483277690652}
+  - component: {fileID: 662246316423190103}
+  m_Layer: 0
+  m_Name: EnterAreaSouthPed
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3123678179845699749
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2392779994312913929}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4947876756288397391}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &2990848483277690652
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2392779994312913929}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0.969049, y: -2.2473516}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 2.6931858, y: 0.8524761}
+  m_EdgeRadius: 0
+--- !u!114 &662246316423190103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2392779994312913929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0b37d4ac7390418f9e6beed26da91d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IntersectionMovementBlockingCollider
+  detectCars: 0
+  detectPeds: 1
 --- !u!1 &2593002669520516465
 GameObject:
   m_ObjectHideFlags: 0
@@ -1969,6 +2269,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 8867114828013207362}
   rightTurnNode: {fileID: 8969891825313011468}
   noTurnNode: {fileID: 3231675786179318609}
+  availableTurnChoicesOnPath: 
 --- !u!1 &2631372745442804685
 GameObject:
   m_ObjectHideFlags: 0
@@ -2060,6 +2361,109 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0b37d4ac7390418f9e6beed26da91d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IntersectionMovementBlockingCollider
+  detectCars: 1
+  detectPeds: 0
+--- !u!1 &2717201929296816282
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7545587225001460304}
+  - component: {fileID: 6434899549854384711}
+  - component: {fileID: 6412306795754716355}
+  m_Layer: 6
+  m_Name: South Stop Line No Turn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7545587225001460304
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2717201929296816282}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2553954452890715908}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &6434899549854384711
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2717201929296816282}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -1.1753186, y: -2.366415}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 2.103327, y: 0.09589195}
+  m_EdgeRadius: 0
+--- !u!114 &6412306795754716355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2717201929296816282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d97b933b201e4474bd70315c50af334, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  collidersToCheckBeforeMoving:
+  - {fileID: 1731027325465017483}
+  - {fileID: 8801045724605436266}
+  - {fileID: 5266928401097863649}
+  - {fileID: 2382009264527974409}
+  - {fileID: 7967861108175815749}
+  - {fileID: 1772489245242914007}
+  - {fileID: 662246316423190103}
+  allCarsAllowedThrough: 0
+  turnChoiceForThisStopLine: 2
 --- !u!1 &2818926817120923158
 GameObject:
   m_ObjectHideFlags: 0
@@ -2297,6 +2701,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &3096013664310586361
 GameObject:
   m_ObjectHideFlags: 0
@@ -2496,6 +2901,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0b37d4ac7390418f9e6beed26da91d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IntersectionMovementBlockingCollider
+  detectCars: 1
+  detectPeds: 0
 --- !u!1 &3384000152109457085
 GameObject:
   m_ObjectHideFlags: 0
@@ -2625,6 +3032,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &3419630302212614132
 GameObject:
   m_ObjectHideFlags: 0
@@ -2733,6 +3141,107 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
+--- !u!1 &3505635333003006180
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2583914868988548080}
+  - component: {fileID: 1399921686986900258}
+  - component: {fileID: 1033621743500352855}
+  m_Layer: 6
+  m_Name: East Stop Line Left
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2583914868988548080
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3505635333003006180}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2553954452890715908}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &1399921686986900258
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3505635333003006180}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0.72799397, y: 1.8187122}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.10366583, y: 2.0478296}
+  m_EdgeRadius: 0
+--- !u!114 &1033621743500352855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3505635333003006180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d97b933b201e4474bd70315c50af334, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  collidersToCheckBeforeMoving:
+  - {fileID: 1731027325465017483}
+  - {fileID: 8801045724605436266}
+  - {fileID: 5266928401097863649}
+  - {fileID: 2382009264527974409}
+  - {fileID: 7967861108175815749}
+  - {fileID: 3874508683187682119}
+  - {fileID: 9010748795679176433}
+  allCarsAllowedThrough: 0
+  turnChoiceForThisStopLine: 1
 --- !u!1 &3693706737156182280
 GameObject:
   m_ObjectHideFlags: 0
@@ -2841,6 +3350,200 @@ MonoBehaviour:
   m_Area: 0
   m_IgnoreFromBuild: 0
   m_AffectedAgents: ffffffff
+--- !u!1 &3863994774597261407
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6836773133344146813}
+  - component: {fileID: 7955840724503685198}
+  - component: {fileID: 7444529465079163873}
+  m_Layer: 0
+  m_Name: CrosswalkEast
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6836773133344146813
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3863994774597261407}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4947876756288397391}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &7955840724503685198
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3863994774597261407}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 2.349216, y: 0.329396}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.6253557, y: 4.3104253}
+  m_EdgeRadius: 0
+--- !u!114 &7444529465079163873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3863994774597261407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0b37d4ac7390418f9e6beed26da91d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IntersectionMovementBlockingCollider
+  detectCars: 0
+  detectPeds: 1
+--- !u!1 &3876590356800701881
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5167438179676365702}
+  - component: {fileID: 4336759574934977450}
+  - component: {fileID: 4677660848386179786}
+  m_Layer: 6
+  m_Name: East Stop Line No Turn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5167438179676365702
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3876590356800701881}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2553954452890715908}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &4336759574934977450
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3876590356800701881}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0.72799397, y: 1.8187122}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.10366583, y: 2.0478296}
+  m_EdgeRadius: 0
+--- !u!114 &4677660848386179786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3876590356800701881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d97b933b201e4474bd70315c50af334, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  collidersToCheckBeforeMoving:
+  - {fileID: 1731027325465017483}
+  - {fileID: 8801045724605436266}
+  - {fileID: 5266928401097863649}
+  - {fileID: 2382009264527974409}
+  - {fileID: 7967861108175815749}
+  - {fileID: 4332689097992727436}
+  - {fileID: 9010748795679176433}
+  allCarsAllowedThrough: 0
+  turnChoiceForThisStopLine: 2
 --- !u!1 &4006782080686977964
 GameObject:
   m_ObjectHideFlags: 0
@@ -2970,6 +3673,100 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
+--- !u!1 &4077158853249612505
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2007410409622661539}
+  - component: {fileID: 2315487678074301417}
+  - component: {fileID: 3494440010464227057}
+  m_Layer: 0
+  m_Name: EnterAreaWestPed
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2007410409622661539
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4077158853249612505}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4947876756288397391}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &2315487678074301417
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4077158853249612505}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -2.7325072, y: -0.8387543}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.89601517, y: 2.7780783}
+  m_EdgeRadius: 0
+--- !u!114 &3494440010464227057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4077158853249612505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0b37d4ac7390418f9e6beed26da91d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IntersectionMovementBlockingCollider
+  detectCars: 0
+  detectPeds: 1
 --- !u!1 &4158573548607396079
 GameObject:
   m_ObjectHideFlags: 0
@@ -3099,6 +3896,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &4161642802884103632
 GameObject:
   m_ObjectHideFlags: 0
@@ -3111,7 +3909,7 @@ GameObject:
   - component: {fileID: 3678701229151194554}
   - component: {fileID: 4869095477589051479}
   m_Layer: 6
-  m_Name: East Stop Line
+  m_Name: East Stop Line Right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3196,7 +3994,10 @@ MonoBehaviour:
   - {fileID: 5266928401097863649}
   - {fileID: 2382009264527974409}
   - {fileID: 7967861108175815749}
+  - {fileID: 1772489245242914007}
+  - {fileID: 9010748795679176433}
   allCarsAllowedThrough: 0
+  turnChoiceForThisStopLine: 3
 --- !u!1 &4340740631347381489
 GameObject:
   m_ObjectHideFlags: 0
@@ -3300,7 +4101,7 @@ GameObject:
   - component: {fileID: 7219181186102066421}
   - component: {fileID: 1576061839010823866}
   m_Layer: 6
-  m_Name: North Stop Line
+  m_Name: North Stop Line Right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3385,7 +4186,10 @@ MonoBehaviour:
   - {fileID: 5266928401097863649}
   - {fileID: 2382009264527974409}
   - {fileID: 7967861108175815749}
+  - {fileID: 4332689097992727436}
+  - {fileID: 5519037979291659970}
   allCarsAllowedThrough: 0
+  turnChoiceForThisStopLine: 3
 --- !u!1 &4570798664271235313
 GameObject:
   m_ObjectHideFlags: 0
@@ -3548,6 +4352,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &4606154242210753549
 GameObject:
   m_ObjectHideFlags: 0
@@ -3677,6 +4482,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &4606443051289535506
 GameObject:
   m_ObjectHideFlags: 0
@@ -3806,6 +4612,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &4618496687623180859
 GameObject:
   m_ObjectHideFlags: 0
@@ -3935,6 +4742,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &4685985168137699499
 GameObject:
   m_ObjectHideFlags: 0
@@ -4064,6 +4872,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &4767796700533563219
 GameObject:
   m_ObjectHideFlags: 0
@@ -4213,6 +5022,108 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
+--- !u!1 &4802042856419357510
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7871825815503616865}
+  - component: {fileID: 4203917505701092733}
+  - component: {fileID: 2829145701851110972}
+  m_Layer: 6
+  m_Name: West Stop Line Left
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7871825815503616865
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4802042856419357510}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2553954452890715908}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &4203917505701092733
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4802042856419357510}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -5.273488, y: -0.48208976}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.10203743, y: 1.9641795}
+  m_EdgeRadius: 0
+--- !u!114 &2829145701851110972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4802042856419357510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d97b933b201e4474bd70315c50af334, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  collidersToCheckBeforeMoving:
+  - {fileID: 1731027325465017483}
+  - {fileID: 8801045724605436266}
+  - {fileID: 5266928401097863649}
+  - {fileID: 2382009264527974409}
+  - {fileID: 7967861108175815749}
+  - {fileID: 1772489245242914007}
+  - {fileID: 3494440010464227057}
+  allCarsAllowedThrough: 0
+  turnChoiceForThisStopLine: 1
 --- !u!1 &4843649328739029776
 GameObject:
   m_ObjectHideFlags: 0
@@ -4342,6 +5253,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &4892201201335077745
 GameObject:
   m_ObjectHideFlags: 0
@@ -4579,6 +5491,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &4954739501612666446
 GameObject:
   m_ObjectHideFlags: 0
@@ -4708,6 +5621,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &4955117705213343270
 GameObject:
   m_ObjectHideFlags: 0
@@ -4924,6 +5838,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0b37d4ac7390418f9e6beed26da91d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IntersectionMovementBlockingCollider
+  detectCars: 1
+  detectPeds: 0
 --- !u!1 &4975115342054911332
 GameObject:
   m_ObjectHideFlags: 0
@@ -5121,6 +6037,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &5187325063555785266
 GameObject:
   m_ObjectHideFlags: 0
@@ -5395,6 +6312,100 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
+--- !u!1 &5289698653356841911
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8701364276950030885}
+  - component: {fileID: 5422762380432937115}
+  - component: {fileID: 1772489245242914007}
+  m_Layer: 0
+  m_Name: CrosswalkNorth
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8701364276950030885
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5289698653356841911}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4947876756288397391}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &5422762380432937115
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5289698653356841911}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -0.09936261, y: 2.8063638}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 4.3301616, y: 0.6623988}
+  m_EdgeRadius: 0
+--- !u!114 &1772489245242914007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5289698653356841911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0b37d4ac7390418f9e6beed26da91d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IntersectionMovementBlockingCollider
+  detectCars: 0
+  detectPeds: 1
 --- !u!1 &5291137622190923798
 GameObject:
   m_ObjectHideFlags: 0
@@ -5575,6 +6586,100 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
+--- !u!1 &5485685219681845418
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1338891888392021476}
+  - component: {fileID: 7830279229567539798}
+  - component: {fileID: 3874508683187682119}
+  m_Layer: 0
+  m_Name: CrosswalkSouth
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1338891888392021476
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5485685219681845418}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4947876756288397391}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &7830279229567539798
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5485685219681845418}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -0.09936261, y: -2.1546693}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 4.3301616, y: 0.64820457}
+  m_EdgeRadius: 0
+--- !u!114 &3874508683187682119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5485685219681845418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0b37d4ac7390418f9e6beed26da91d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IntersectionMovementBlockingCollider
+  detectCars: 0
+  detectPeds: 1
 --- !u!1 &5543860838929132490
 GameObject:
   m_ObjectHideFlags: 0
@@ -5735,6 +6840,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &5708533443921752446
 GameObject:
   m_ObjectHideFlags: 0
@@ -5884,6 +6990,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &5719657841811272355
 GameObject:
   m_ObjectHideFlags: 0
@@ -6013,6 +7120,108 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
+--- !u!1 &5813684514155708080
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1297390664738566870}
+  - component: {fileID: 2949950674384648722}
+  - component: {fileID: 6559710248687447234}
+  m_Layer: 6
+  m_Name: North Stop Line Left
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1297390664738566870
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5813684514155708080}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2553954452890715908}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &2949950674384648722
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5813684514155708080}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -3.328258, y: 3.689919}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 2.1086226, y: 0.092642784}
+  m_EdgeRadius: 0
+--- !u!114 &6559710248687447234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5813684514155708080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d97b933b201e4474bd70315c50af334, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  collidersToCheckBeforeMoving:
+  - {fileID: 1731027325465017483}
+  - {fileID: 8801045724605436266}
+  - {fileID: 5266928401097863649}
+  - {fileID: 2382009264527974409}
+  - {fileID: 7967861108175815749}
+  - {fileID: 7444529465079163873}
+  - {fileID: 5519037979291659970}
+  allCarsAllowedThrough: 0
+  turnChoiceForThisStopLine: 1
 --- !u!1 &5888158828736668804
 GameObject:
   m_ObjectHideFlags: 0
@@ -6089,10 +7298,12 @@ MonoBehaviour:
   activeCars: []
   stopSignWaitTime: 0.75
   carSpawns: []
+  pedSpawns: []
   gameOver: 0
   gameOverPosition: {x: 0, y: 0}
   activeEffects: []
   spawnInterval: 1000
+  pedestrianSpawnInterval: 5
   maxActiveCars: 20
   deviantProbability: 0.304
 --- !u!114 &2941158373803884380
@@ -6345,6 +7556,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &6151426860983920785
 GameObject:
   m_ObjectHideFlags: 0
@@ -6357,7 +7569,7 @@ GameObject:
   - component: {fileID: 8405334891528514345}
   - component: {fileID: 2166769570977730811}
   m_Layer: 6
-  m_Name: South Stop Line
+  m_Name: South Stop Line Right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6442,7 +7654,10 @@ MonoBehaviour:
   - {fileID: 5266928401097863649}
   - {fileID: 2382009264527974409}
   - {fileID: 7967861108175815749}
+  - {fileID: 7444529465079163873}
+  - {fileID: 662246316423190103}
   allCarsAllowedThrough: 0
+  turnChoiceForThisStopLine: 3
 --- !u!1 &6190218501662263108
 GameObject:
   m_ObjectHideFlags: 0
@@ -6690,6 +7905,107 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1175750705502576997}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6335045858601277576
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1961854830643290661}
+  - component: {fileID: 8853012640140105372}
+  - component: {fileID: 1382916820498707020}
+  m_Layer: 6
+  m_Name: West Stop Line No Turn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1961854830643290661
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6335045858601277576}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2553954452890715908}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &8853012640140105372
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6335045858601277576}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -5.273488, y: -0.48208976}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.10203743, y: 1.9641795}
+  m_EdgeRadius: 0
+--- !u!114 &1382916820498707020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6335045858601277576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d97b933b201e4474bd70315c50af334, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  collidersToCheckBeforeMoving:
+  - {fileID: 1731027325465017483}
+  - {fileID: 8801045724605436266}
+  - {fileID: 5266928401097863649}
+  - {fileID: 2382009264527974409}
+  - {fileID: 7967861108175815749}
+  - {fileID: 7444529465079163873}
+  - {fileID: 3494440010464227057}
+  allCarsAllowedThrough: 0
+  turnChoiceForThisStopLine: 2
 --- !u!1 &6601304549210954182
 GameObject:
   m_ObjectHideFlags: 0
@@ -6927,6 +8243,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &6850980995999855672
 GameObject:
   m_ObjectHideFlags: 0
@@ -7091,6 +8408,100 @@ MonoBehaviour:
   leftTurnNode: {fileID: 5010442209136507527}
   rightTurnNode: {fileID: 8230208279261149252}
   noTurnNode: {fileID: 7488465098085843502}
+  availableTurnChoicesOnPath: 
+--- !u!1 &7085339729507053428
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7669275879956284398}
+  - component: {fileID: 4477854637013631214}
+  - component: {fileID: 5519037979291659970}
+  m_Layer: 0
+  m_Name: EnterAreaNorthPed
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7669275879956284398
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7085339729507053428}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4947876756288397391}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &4477854637013631214
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7085339729507053428}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -1.2791708, y: 2.9270182}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 2.8091645, y: 0.9037075}
+  m_EdgeRadius: 0
+--- !u!114 &5519037979291659970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7085339729507053428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0b37d4ac7390418f9e6beed26da91d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IntersectionMovementBlockingCollider
+  detectCars: 0
+  detectPeds: 1
 --- !u!1 &7111155943470624349
 GameObject:
   m_ObjectHideFlags: 0
@@ -7586,6 +8997,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &7287148433336976671
 GameObject:
   m_ObjectHideFlags: 0
@@ -7715,6 +9127,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &7304917782113489431
 GameObject:
   m_ObjectHideFlags: 0
@@ -7935,6 +9348,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &7502656960332086460
 GameObject:
   m_ObjectHideFlags: 0
@@ -8064,6 +9478,100 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
+--- !u!1 &7517936103392883866
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5716828339437849874}
+  - component: {fileID: 3321939801892155931}
+  - component: {fileID: 4332689097992727436}
+  m_Layer: 0
+  m_Name: CrosswalkWest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5716828339437849874
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7517936103392883866}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4947876756288397391}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &3321939801892155931
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7517936103392883866}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -2.60472, y: 0.33649325}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.65374494, y: 4.267842}
+  m_EdgeRadius: 0
+--- !u!114 &4332689097992727436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7517936103392883866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0b37d4ac7390418f9e6beed26da91d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IntersectionMovementBlockingCollider
+  detectCars: 0
+  detectPeds: 1
 --- !u!1 &7567761327251468882
 GameObject:
   m_ObjectHideFlags: 0
@@ -8193,6 +9701,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 4304758410587380025}
   rightTurnNode: {fileID: 6489996600422723665}
   noTurnNode: {fileID: 6155474578412884207}
+  availableTurnChoicesOnPath: 
 --- !u!1 &7665877129477556472
 GameObject:
   m_ObjectHideFlags: 0
@@ -8342,6 +9851,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &7688446237291293291
 GameObject:
   m_ObjectHideFlags: 0
@@ -8471,6 +9981,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &7823689904273569833
 GameObject:
   m_ObjectHideFlags: 0
@@ -8600,6 +10111,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &7837608816351416346
 GameObject:
   m_ObjectHideFlags: 0
@@ -8691,6 +10203,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0b37d4ac7390418f9e6beed26da91d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IntersectionMovementBlockingCollider
+  detectCars: 1
+  detectPeds: 0
 --- !u!1 &7861129556534050704
 GameObject:
   m_ObjectHideFlags: 0
@@ -8820,6 +10334,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &7921354736354522922
 GameObject:
   m_ObjectHideFlags: 0
@@ -9055,6 +10570,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 6057761060481862737}
   rightTurnNode: {fileID: 5013872096679432011}
   noTurnNode: {fileID: 1719549802390575653}
+  availableTurnChoicesOnPath: 
 --- !u!1 &8070313764456541103
 GameObject:
   m_ObjectHideFlags: 0
@@ -9184,6 +10700,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &8086145056231324408
 GameObject:
   m_ObjectHideFlags: 0
@@ -9368,6 +10885,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &8228165009409966538
 GameObject:
   m_ObjectHideFlags: 0
@@ -9497,6 +11015,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &8294363387940256681
 GameObject:
   m_ObjectHideFlags: 0
@@ -9531,6 +11050,14 @@ Transform:
   - {fileID: 265890422296605505}
   - {fileID: 4454740467541083451}
   - {fileID: 6647743597517125478}
+  - {fileID: 7669275879956284398}
+  - {fileID: 7847014614433625815}
+  - {fileID: 3123678179845699749}
+  - {fileID: 2007410409622661539}
+  - {fileID: 8701364276950030885}
+  - {fileID: 6836773133344146813}
+  - {fileID: 1338891888392021476}
+  - {fileID: 5716828339437849874}
   m_Father: {fileID: 3807828675010179163}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8313669139414338226
@@ -9682,6 +11209,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &8330519427621149660
 GameObject:
   m_ObjectHideFlags: 0
@@ -9811,6 +11339,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &8451155030001305140
 GameObject:
   m_ObjectHideFlags: 0
@@ -10068,6 +11597,7 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
 --- !u!1 &8822604795227697303
 GameObject:
   m_ObjectHideFlags: 0
@@ -10099,6 +11629,107 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1175750705502576997}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8863171786882163818
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4160213183900085951}
+  - component: {fileID: 2397581895026335537}
+  - component: {fileID: 957266390114423989}
+  m_Layer: 6
+  m_Name: South Stop Line Left
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4160213183900085951
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8863171786882163818}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2553954452890715908}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &2397581895026335537
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8863171786882163818}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -1.1753186, y: -2.366415}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 2.103327, y: 0.09589195}
+  m_EdgeRadius: 0
+--- !u!114 &957266390114423989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8863171786882163818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d97b933b201e4474bd70315c50af334, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  collidersToCheckBeforeMoving:
+  - {fileID: 1731027325465017483}
+  - {fileID: 8801045724605436266}
+  - {fileID: 5266928401097863649}
+  - {fileID: 2382009264527974409}
+  - {fileID: 7967861108175815749}
+  - {fileID: 4332689097992727436}
+  - {fileID: 662246316423190103}
+  allCarsAllowedThrough: 0
+  turnChoiceForThisStopLine: 1
 --- !u!1 &8915312991372785850
 GameObject:
   m_ObjectHideFlags: 0
@@ -10129,9 +11760,17 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1093162377866029986}
+  - {fileID: 1961854830643290661}
+  - {fileID: 7871825815503616865}
   - {fileID: 4007210430652854428}
+  - {fileID: 7545587225001460304}
+  - {fileID: 4160213183900085951}
   - {fileID: 6357648804187981418}
+  - {fileID: 3556860704430561495}
+  - {fileID: 1297390664738566870}
   - {fileID: 7690295877364883117}
+  - {fileID: 5167438179676365702}
+  - {fileID: 2583914868988548080}
   m_Father: {fileID: 3807828675010179163}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8928045477416754623
@@ -10397,3 +12036,4 @@ MonoBehaviour:
   leftTurnNode: {fileID: 0}
   rightTurnNode: {fileID: 0}
   noTurnNode: {fileID: 0}
+  availableTurnChoicesOnPath: 
