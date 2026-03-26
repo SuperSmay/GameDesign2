@@ -318,9 +318,9 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.03763988
+    x: 0
     y: 0
-    width: 0.92370296
+    width: 1
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
@@ -935,10 +935,10 @@ MonoBehaviour:
     - Oops!
     successMessages: []
     allowedMistakes: 0
-  intersectionControllerFourWayStopPrefab: {fileID: 5888158828736668804, guid: d63a4e56a4b984c17927b99a4629d2e2, type: 3}
-  intersectionControllerFourWayStoplightPrefab: {fileID: 0}
-  intersectionControllerTIntersectionPrefab: {fileID: 5402217268340507780, guid: c01c0c893b9a746419838dfa457d3c8a, type: 3}
-  intersectionControllerHighwayIntersectionPrefab: {fileID: 0}
+  intersectionControllerFourWayStopSceneName: 4WayStop
+  intersectionControllerFourWayStoplightSceneName: 
+  intersectionControllerTIntersectionSceneName: TInterection
+  intersectionControllerHighwayIntersectionSceneName: 
   uiControllerPrefab: {fileID: 2611391844277416163, guid: 3ae5a59f285494d5d9b8ad05410896d8, type: 3}
 --- !u!4 &1561792147
 Transform:

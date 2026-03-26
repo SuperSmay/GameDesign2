@@ -24,10 +24,10 @@ public class GameManager : MonoBehaviour
 
     public RoundConfig[] rounds;
 
-    [SerializeField] GameObject intersectionControllerFourWayStopPrefab;
-    [SerializeField] GameObject intersectionControllerFourWayStoplightPrefab;
-    [SerializeField] GameObject intersectionControllerTIntersectionPrefab;
-    [SerializeField] GameObject intersectionControllerHighwayIntersectionPrefab;
+    [SerializeField] String intersectionControllerFourWayStopSceneName;
+    [SerializeField] String intersectionControllerFourWayStoplightSceneName;
+    [SerializeField] String intersectionControllerTIntersectionSceneName;
+    [SerializeField] String intersectionControllerHighwayIntersectionSceneName;
     [SerializeField] GameObject uiControllerPrefab;
 
     IntersectionController currentIntersectionController;
@@ -35,6 +35,9 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+
+        if (currentUIController == null) return; // Don't update the timer if the UIController hasn't been initialized yet (pre-round)
+
         if (currentUIController.showingPreamble)
         {
             paused = true;
@@ -71,12 +74,20 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Scene " + scene.name + " loaded with mode: " + mode);
 
+        // Find the IntersectionController in the loaded scene and initialize it
+        currentIntersectionController = FindFirstObjectByType<IntersectionController>();
+        if (currentIntersectionController != null)
+        {
+            Debug.Log("Found IntersectionController in scene: " + scene.name);
+            StartRound();
+        } 
+
         // You can add specific logic here, for example, checking the scene name
         if (scene.name == "MainScene")
         {
             // Perform actions specific to "MainScene"
             Debug.Log("Main scene loaded.");
-            StartRound(); // Start the round when the main scene is loaded
+            LoadNextRoundScene();
         }
     }
 
@@ -89,24 +100,30 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("MainScene");
     }
 
-    public void StartRound()
+    public void LoadNextRoundScene()
     {
         RoundConfig roundConfig = rounds[roundNumber - 1];
         switch (roundConfig.intersectionLayout)
         {
             case IntersectionLayout.fourWayStop:
-                currentIntersectionController = Instantiate(intersectionControllerFourWayStopPrefab).GetComponent<IntersectionController>();
+                // Load scene additively so we don't lose the GameManager or UIController
+                SceneManager.LoadScene(intersectionControllerFourWayStopSceneName, LoadSceneMode.Additive);
                 break;
             case IntersectionLayout.fourWayStoplight:
-                currentIntersectionController = Instantiate(intersectionControllerFourWayStoplightPrefab).GetComponent<IntersectionController>();
+                SceneManager.LoadScene(intersectionControllerFourWayStoplightSceneName, LoadSceneMode.Additive);
                 break;
             case IntersectionLayout.tIntersection:
-                currentIntersectionController = Instantiate(intersectionControllerTIntersectionPrefab).GetComponent<IntersectionController>();
+                SceneManager.LoadScene(intersectionControllerTIntersectionSceneName, LoadSceneMode.Additive);
                 break;
             case IntersectionLayout.highway:
-                currentIntersectionController = Instantiate(intersectionControllerHighwayIntersectionPrefab).GetComponent<IntersectionController>();
+                SceneManager.LoadScene(intersectionControllerHighwayIntersectionSceneName, LoadSceneMode.Additive);
                 break;
         }
+    }
+
+    public void StartRound()
+    {
+        RoundConfig roundConfig = rounds[roundNumber - 1];
 
         gameTimer = 0f;
         gameSpeedMultiplier = 1f;

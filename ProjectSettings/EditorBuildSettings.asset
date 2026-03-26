@@ -14,6 +14,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/RoundEndScene.unity
     guid: b361fe5afb03c4751acb328c6112e142
+  - enabled: 1
+    path: Assets/Scenes/Intersections/4WayStop.unity
+    guid: b489274abb4ac4ec8a7299da89f55b2f
+  - enabled: 1
+    path: Assets/Scenes/Intersections/TIntersection.unity
+    guid: 19d853174559b48abb4e30aa4171c972
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
