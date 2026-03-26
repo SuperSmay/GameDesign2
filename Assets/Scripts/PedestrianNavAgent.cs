@@ -5,14 +5,18 @@ public class PedestrianNavAgent : MonoBehaviour
 {
 
     NavMeshAgent navMeshAgent;
+    Animator animator;
+
+    [SerializeField] AnimatorOverrideController[] costumes;
     [SerializeField] Transform target;
 
-    float speed = 0.5f;
+    float baseSpeed = 0.5f;
     float despawnDistance = 0.2f;
 
     void Awake()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
+        animator = GetComponent<Animator>();
         navMeshAgent.updateRotation = false; 
         navMeshAgent.updateUpAxis = false;
     }
@@ -20,7 +24,12 @@ public class PedestrianNavAgent : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        // Randomly select a costume for the pedestrian
+        if (costumes.Length > 0)
+        {
+            int randomIndex = Random.Range(0, costumes.Length);
+            animator.runtimeAnimatorController = costumes[randomIndex];
+        }
     }
 
     // Update is called once per frame
@@ -31,8 +40,34 @@ public class PedestrianNavAgent : MonoBehaviour
             Destroy(gameObject);
         }
 
-        navMeshAgent.speed = GameManager.Instance.paused ? 0 : speed * GameManager.Instance.gameSpeedMultiplier;
+        navMeshAgent.speed = GameManager.Instance.paused ? 0 : baseSpeed * GameManager.Instance.gameSpeedMultiplier;
+        if (navMeshAgent.velocity.sqrMagnitude > Mathf.Epsilon)
+        {
+            animator.speed = navMeshAgent.velocity.magnitude / baseSpeed; // Set animation speed based on how fast we're moving
+        } else
+        {
+            // Reset to standing
+            animator.speed = 0f;
+            animator.Play("Walk", -1, 0f);
+        }
+        UpdateRotation();
+    }
 
+    void UpdateRotation()
+    {
+        // 1. Check if the agent is actually moving (velocity isn't zero)
+        if (navMeshAgent.velocity.sqrMagnitude > Mathf.Epsilon)
+        {
+            // 2. Get the direction we are moving
+            Vector3 direction = navMeshAgent.velocity.normalized;
+
+            // 3. Calculate the angle in degrees
+            // Atan2 takes (y, x) and calculates the angle of that vector
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
+
+            // 4. Apply the rotation to the Z axis
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+        }
     }
 
     public void Initialize(Transform target)

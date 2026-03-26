@@ -15,8 +15,9 @@ GameObject:
   - component: {fileID: 1387383147618334071}
   - component: {fileID: 9039939553519491558}
   - component: {fileID: 3063243489934329728}
+  - component: {fileID: 8530729677267481046}
   m_Layer: 10
-  m_Name: Circle
+  m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +33,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -12.11, y: -2.08, z: 0}
-  m_LocalScale: {x: 0.2591, y: 0.2591, z: 0.2591}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -86,7 +87,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  m_Sprite: {fileID: -3126679698537328506, guid: 62f7fc8991782482f91b356a86b8afd0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -105,7 +106,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 3239262816969464011}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.1
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -114,8 +115,8 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 1
-  m_BaseOffset: 0.5
+  m_Height: 0.2
+  m_BaseOffset: 0.12
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!114 &4966100587720196975
@@ -142,6 +143,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a29403d02f71d4e4a971bc71b1c8d190, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  costumes:
+  - {fileID: 22100000, guid: 2d6b9c0363273424ca0ef098efdf7b66, type: 2}
+  - {fileID: 22100000, guid: 0d69f6f76e0bf4eae83179f2cf2c0edd, type: 2}
+  - {fileID: 22100000, guid: c2e75364ae4004865b48711d9b9e4b97, type: 2}
+  - {fileID: 22100000, guid: 8d5ae4e879eb84dbea0eb9f2361ece54, type: 2}
+  - {fileID: 22100000, guid: 460cdccf2e21842c7b0082978c05021d, type: 2}
   target: {fileID: 0}
 --- !u!58 &9039939553519491558
 CircleCollider2D:
@@ -177,8 +184,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.0000009536743, y: -0.00000017881393}
-  m_Radius: 0.5
+  m_Offset: {x: 0.02670665, y: -0.018160194}
+  m_Radius: 0.1261129
 --- !u!50 &3063243489934329728
 Rigidbody2D:
   serializedVersion: 5
@@ -206,3 +213,25 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!95 &8530729677267481046
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3239262816969464011}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0c9c0baf20dc54f00b54aa38aa92c026, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

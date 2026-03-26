@@ -198,7 +198,6 @@ public class IntersectionController : MonoBehaviour
                     if (stopSignQueue[i].stopLine.AreMovementBlockingCollidersClear(stopSignQueue[i].car.col))
                     {
                         AllowThroughStopSign(stopSignQueue[i].car);
-                        stopSignQueue.RemoveAt(i); // Note: Modifying the list while iterating is usually a bad idea, but in this case we break immediately after, so it won't cause any issues
                         stopSignTimer = 0f; // Reset timer after allowing a car through
                         break;
                     }
