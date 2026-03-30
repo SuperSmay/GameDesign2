@@ -7,6 +7,7 @@ public class IntersectionStopLine : MonoBehaviour
     [SerializeField] IntersectionMovementBlockingCollider[] collidersToCheckBeforeMoving;
     public HashSet<CarPathFollower> carsAllowedThrough = new HashSet<CarPathFollower>();
     public bool allCarsAllowedThrough = false;
+    public StoplightColor currentStoplightColor = StoplightColor.Red;
     public TurnChoice turnChoiceForThisStopLine;
 
     public bool CanCarProceed(CarPathFollower car)
@@ -50,4 +51,12 @@ public class IntersectionStopLine : MonoBehaviour
 
         return true;
     }
+}
+
+
+public enum StoplightColor
+{
+    Red,
+    Yellow,
+    Green
 }

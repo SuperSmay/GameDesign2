@@ -358,7 +358,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
                     {
                         IntersectionStopLine stopLine = hit.collider.gameObject.GetComponent<IntersectionStopLine>();
                         // Check if we are allowed to proceed through this stop line, and if the movement-blocking colliders for this stop line are clear (e.g. no pedestrians in the crosswalk, etc.)
-                        if (stopLine.CanCarProceed(this))
+                        if (stopLine.currentStoplightColor == StoplightColor.Green || stopLine.CanCarProceed(this))
                         {
                             if (stopLine.AreMovementBlockingCollidersClearOfCars(col))
                             {
@@ -394,6 +394,9 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
                         {
                             continue;
                         }
+
+
+
                     }
 
                     // Note: This is disabled because it means that cars will just run pedestrians over.
@@ -655,13 +658,10 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     {
 
         // Don't ragdoll on pedestrian collisions, just ignore them (cars can run over pedestrians but it doesn't cause them to crash)
-        if (collision.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.Pedestrian])
+        if (collision.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.Car])
         {
-            return;
+            rb.bodyType = RigidbodyType2D.Dynamic; // Make the car affected by physics after collision
         }
-
-        rb.bodyType = RigidbodyType2D.Dynamic; // Make the car affected by physics after collision
-        // IntersectionController.Instance.DequeueStopSign(this);
 
         if (collisionCooldown == 0)
         {
@@ -670,7 +670,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         }
 
         hasCollided = true; // Stop moving if we've collided with another car
-        intersectionController.gameOver = true; // Trigger game over in the intersection controller
+        intersectionController.EndRound(false, true);
         intersectionController.gameOverPosition = transform.position; // Set the game over position to the location of the collision for camera focus
     }
 

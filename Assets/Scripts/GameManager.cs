@@ -155,7 +155,8 @@ public class GameManager : MonoBehaviour
 [Serializable]
 public struct RoundConfig
 {
-    public float timer;
+    public float timer; 
+    public bool useTimer;
     public float spawnDelay;
     public float pedSpawnDelay;
     public IntersectionLayout intersectionLayout;

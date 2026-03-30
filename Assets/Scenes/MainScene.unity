@@ -318,9 +318,9 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0
+    x: 0.03032345
     y: 0
-    width: 1
+    width: 0.93980235
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
@@ -813,15 +813,15 @@ MonoBehaviour:
   paused: 0
   rounds:
   - timer: 60
-    spawnDelay: 2
-    pedSpawnDelay: 15
-    intersectionLayout: 2
+    spawnDelay: 1
+    pedSpawnDelay: 0.2
+    intersectionLayout: 1
     spawnOrder: []
     pedSpawnOrder: []
-    deviantSpawnChance: 0.5
-    possibleDeviantBehaviors: 0300000000000000020000000400000001000000
+    deviantSpawnChance: 1
+    possibleDeviantBehaviors: 04000000
     isTutorial: 0
-    pedestriansEnabled: 1
+    pedestriansEnabled: 0
     preambles:
     - Make sure they're watcing out for pedestrians
     failureMessages:
@@ -939,7 +939,7 @@ MonoBehaviour:
     successMessages: []
     allowedMistakes: 5
   intersectionControllerFourWayStopSceneName: 4WayStop
-  intersectionControllerFourWayStoplightSceneName: 
+  intersectionControllerFourWayStoplightSceneName: 4WayStoplight
   intersectionControllerTIntersectionSceneName: TIntersection
   intersectionControllerHighwayIntersectionSceneName: 
   uiControllerPrefab: {fileID: 2611391844277416163, guid: 3ae5a59f285494d5d9b8ad05410896d8, type: 3}

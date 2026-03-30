@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
+using System.Linq;
 
 #nullable enable
 
@@ -39,11 +40,25 @@ public class IntersectionController : MonoBehaviour
 
     public List<CarPathFollower> activeCars = new List<CarPathFollower>();
 
+    public bool useStoplights = false;
+
+    public bool useTimer = true;  // Some rounds just run until the the spawn order is complete and all cars have cleared the intersection, so we don't want to use the timer for those rounds since it would be redundant and could cause confusion.
+    // Note: This also means that rounds without a spawn order and a timer will be infinite. This is intentional.
+
     List<StopSignQueueEntry> stopSignQueue = new List<StopSignQueueEntry>();
-    List<IntersectionMovementBlockingCollider> stopSigns = new List<IntersectionMovementBlockingCollider>();
 
     [SerializeField] float stopSignWaitTime; // Time to wait at a stop sign before allowing the next car to go
     float stopSignTimer = 0f;
+
+    [SerializeField] List<StoplightPhase> stoplightPhases;
+    [SerializeField] List<StoplightPhaseLight> stoplightPhaseLights;
+    [SerializeField] Sprite greenLightSprite;
+    [SerializeField] Sprite yellowLightSprite;
+    [SerializeField] Sprite redLightSprite;
+
+    float stoplightPhaseDuration = 15f; // Time to wait before switching to the next stoplight phase
+    float stoplightPhaseTimer = 0f;
+    int currentStoplightPhase = 0;
 
     InputAction resetAction;
 
@@ -53,10 +68,12 @@ public class IntersectionController : MonoBehaviour
     int carSpawnIndex = 0;
     int pedSpawnIndex = 0;
 
-    float gameOverDelay = 3f; // Time to wait after the game is over before showing the round end screen
-    float gameOverTimer;
-    public bool gameOver = false;
+    Action roundEndCallback = () => { GameManager.Instance.EndRound(false); }; // Called when the round end animation is complete to show the round end screen.
+    bool roundEnded = false;
+    float roundEndAnimationDuration = 3f; // Duration of the game over animation (e.g. zooming in on the crash site)
+    float roundEndAnimationTimer = 0f;
     public Vector2 gameOverPosition; // Position to focus the camera on when the game is over
+
 
     public List<GameObject> activeEffects = new List<GameObject>();
 
@@ -73,6 +90,9 @@ public class IntersectionController : MonoBehaviour
 
     public void EnqueueStopSign(IntersectionStopLine stopLine, CarPathFollower car)
     {
+
+        if (useStoplights) return;
+
         StopSignQueueEntry entry = new StopSignQueueEntry(stopLine, car);
 
         // Don't add the car to the queue if is already there!
@@ -99,7 +119,7 @@ public class IntersectionController : MonoBehaviour
     {
         Instance = this;
         resetAction = playerInput.actions["Reset"];
-        gameOverTimer = gameOverDelay; // Initialize game over timer
+        // gameOverTimer = gameOverDelay; // Initialize game over timer
         // cameraOriginalResolution = new Vector2(pixelCamera.refResolutionX, pixelCamera.refResolutionY);
         // cameraOriginalPPU = pixelCamera.assetsPPU;
         // cameraOriginalPosition = pixelCamera.transform.position;
@@ -116,9 +136,6 @@ public class IntersectionController : MonoBehaviour
         //     GameObject gameManagerObj = new GameObject("GameManager");
         //     gameManagerObj.AddComponent<GameManager>();
         // }
-
-        stopSignWaitTime -= 0.1f * GameManager.Instance.roundNumber; // Decrease stop sign wait time each round to increase difficulty
-        stopSignWaitTime = Mathf.Max(0f, stopSignWaitTime); // Set a minimum stop sign wait time to prevent it from becoming negative
     }
 
     // Update is called once per frame
@@ -127,18 +144,22 @@ public class IntersectionController : MonoBehaviour
 
         if (GameManager.Instance.allowedMistakes < 0)
         {
-            gameOver = true;
+            if (!roundEnded)
+            {
+                roundEnded = true;
+                EndRound(false); // End the round with a loss and don't play the animation
+            }
         }
 
-        if (gameOver)
+        if (roundEnded)
         {
-            gameOverTimer -= Time.deltaTime;
-            if (gameOverTimer <= 0f) // Wait for 3 seconds before showing round end screen
+            roundEndAnimationTimer += Time.deltaTime;
+            if (roundEndAnimationTimer >= roundEndAnimationDuration)
             {
-                GameManager.Instance.EndRound(false);
+                roundEndCallback.Invoke(); // Call the assigned callback. This will store the status of the round.
             }
 
-            GameManager.Instance.gameSpeedMultiplier = 1f - (gameOverDelay - gameOverTimer) / gameOverDelay; // Gradually slow down time over 3 seconds
+            GameManager.Instance.gameSpeedMultiplier = 1f - (roundEndAnimationTimer / roundEndAnimationDuration); // Gradually slow down time
 
 
             // // Scale Resolution
@@ -161,35 +182,44 @@ public class IntersectionController : MonoBehaviour
 
         UpdateParticleSpeeds();
 
-        if (GameManager.Instance.gameTimer >= GameManager.Instance.gameDuration && activeCars.Count == 0 && GameManager.Instance.allowedMistakes >= 0) // If the game timer has run out and there are no more cars on the screen, end the round with a win
+        // If the game timer has run out, end the round
+        if (useTimer && GameManager.Instance.gameTimer >= GameManager.Instance.gameDuration) 
         {
             // Game over, show round end scene
-            GameManager.Instance.EndRound(true);
+            EndRound(true);
             return;
         }
-        // Spawn cars periodically while the game timer is running
-        if (GameManager.Instance.gameTimer < GameManager.Instance.gameDuration)
-        {
-            spawnTimer += GameManager.Instance.deltaTimeSpeedMult;
-            if (spawnTimer >= spawnInterval)
-            {
-                spawnTimer = 0f;
-                DoNextCarSpawn();
-            }
 
-            if (pedestriansEnabled)
-            {
-                pedestrianSpawnTimer += GameManager.Instance.deltaTimeSpeedMult;
-                if (pedestrianSpawnTimer >= pedestrianSpawnInterval)
-                {
-                    pedestrianSpawnTimer = 0f;
-                    DoNextPedSpawn();
-                }
-            }
+        // If we aren't using the timer, check the spawn order and car count for round end conditions instead
+        // Note: If carSpawns is null or empty, then the round will never end without a timer. This is intentional, so no case handling is needed for that scenario.
+        if (!useTimer && carSpawns != null && carSpawns.Length > 0 && carSpawnIndex >= carSpawns.Length && activeCarCount == 0)
+        {
+            // Game over, show round end scene
+            EndRound(true);
+            return;
         }
 
+        // Spawn cars periodically
+        spawnTimer += GameManager.Instance.deltaTimeSpeedMult;
+        if (spawnTimer >= spawnInterval)
+        {
+            spawnTimer = 0f;
+            DoNextCarSpawn();
+        }
+
+        if (pedestriansEnabled)
+        {
+            pedestrianSpawnTimer += GameManager.Instance.deltaTimeSpeedMult;
+            if (pedestrianSpawnTimer >= pedestrianSpawnInterval)
+            {
+                pedestrianSpawnTimer = 0f;
+                DoNextPedSpawn();
+            }
+        }
+        
+
         // Update stop sign timer
-        if (stopSignQueue.Count > 0)
+        if (stopSignQueue.Count > 0 && !useStoplights) // Only update the stop sign timer if there are cars waiting at the stop sign and we're not using stoplights (since stoplights will handle timing separately)
         {
             stopSignTimer += GameManager.Instance.deltaTimeSpeedMult;
             if (stopSignTimer >= stopSignWaitTime)
@@ -214,7 +244,41 @@ public class IntersectionController : MonoBehaviour
             }
         }
 
+        if (useStoplights)
+        {
+            stoplightPhaseTimer += GameManager.Instance.deltaTimeSpeedMult;
+            if (stoplightPhaseTimer >= stoplightPhaseDuration)
+            {
+                // Cache the lights in the previous phase so we can turn them all red before turning the next phase green
+                StoplightPhase previousPhaseStopLines = stoplightPhases[currentStoplightPhase];
+                StoplightPhaseLight previousPhaseLights = stoplightPhaseLights[currentStoplightPhase];
+                
+                // Turn all lights red before changing the phase
+                // Move to the next stoplight phase
+                currentStoplightPhase = (currentStoplightPhase + 1) % stoplightPhases.Count;
+                StoplightPhase activeStopLines = stoplightPhases[currentStoplightPhase];
+                StoplightPhaseLight activePhaseLights = stoplightPhaseLights[currentStoplightPhase];
+                foreach (var stopLine in previousPhaseStopLines.stopLines)
+                {
+                    stopLine.currentStoplightColor = StoplightColor.Red;
+                }
+                foreach (var light in previousPhaseLights.stopLights)
+                {
+                    light.GetComponent<SpriteRenderer>().sprite = redLightSprite;
+                }
 
+                foreach (var stopLine in activeStopLines.stopLines)
+                {
+                    stopLine.currentStoplightColor = StoplightColor.Green;
+                }
+                foreach (var light in activePhaseLights.stopLights)
+                {
+                    light.GetComponent<SpriteRenderer>().sprite = greenLightSprite;
+                }
+
+                stoplightPhaseTimer = 0f; // Reset timer after changing phases
+            }
+        }
 
 
         bool reset = resetAction.ReadValue<float>() > 0;
@@ -419,6 +483,7 @@ public class IntersectionController : MonoBehaviour
         returnList.RemoveAll(node => node.gameObject.activeInHierarchy == false); // Remove any nodes that are inactive, since they shouldn't be used for spawning
         return returnList.ToArray(); // Remove any null nodes from the list
     }
+    
     public void Initialize(RoundConfig roundConfig)
     {
         this.carSpawns = roundConfig.spawnOrder;
@@ -428,6 +493,26 @@ public class IntersectionController : MonoBehaviour
         this.deviantProbability = roundConfig.deviantSpawnChance;
         this.possibleDeviantBehaviors = roundConfig.possibleDeviantBehaviors;
         this.spawnInterval = roundConfig.spawnDelay;
+        this.useTimer = roundConfig.useTimer;
+    }
+
+    public void EndRound(bool success, bool playAnimation = false)
+    {
+
+        if (roundEnded) return; // If the round has already ended, don't do anything
+
+        if (playAnimation) 
+        {
+            roundEndAnimationTimer = 0f;
+        }
+        else
+        {
+            roundEndAnimationTimer = roundEndAnimationDuration; // Skip the animation and go straight to the end screen
+        }
+
+        roundEnded = true;
+        roundEndCallback = () => { GameManager.Instance.EndRound(success); }; // Set the callback to end the round with the appropriate success value when the animation is done
+
     }
 
 }
@@ -448,5 +533,27 @@ public struct StopSignQueueEntry
     {
         this.stopLine = stopLine;
         this.car = car;
+    }
+}
+
+[Serializable]
+public struct StoplightPhase
+{
+    public List<IntersectionStopLine> stopLines;
+
+    public StoplightPhase(List<IntersectionStopLine> stopLines)
+    {
+        this.stopLines = stopLines;
+    }
+}
+
+[Serializable]
+public struct StoplightPhaseLight
+{
+    public List<GameObject> stopLights;
+
+    public StoplightPhaseLight(List<GameObject> stopLights)
+    {
+        this.stopLights = stopLights;
     }
 }

@@ -164,7 +164,8 @@ public class IntersectionNode : MonoBehaviour
                 break;
         }
 
-        GameObject car = Instantiate(prefabToSpawn, transform.position, rotation);
+        Vector3 spawnPosition = splineContainer.EvaluatePosition(0f);
+        GameObject car = Instantiate(prefabToSpawn, spawnPosition, rotation);
         CarPathFollower carPathFollower = car.GetComponent<CarPathFollower>();
         carPathFollower.Initialize(carSpawn, this);
 
