@@ -39,6 +39,10 @@ Transform:
   - {fileID: 2817958069014978371}
   - {fileID: 3297366893100048317}
   - {fileID: 5241666139850803241}
+  - {fileID: 5903756128488096724}
+  - {fileID: 4850018131736575462}
+  - {fileID: 2631310995291792497}
+  - {fileID: 6000483574574695752}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6775790952202966939
@@ -56,12 +60,15 @@ MonoBehaviour:
   deviantType: 0
   stopSignMinimumQueueDistance: 1
   maxDistanceToMoveAfterStopping: 0
-  maxSpeed: 0.15
+  maxSpeed: 2
   minSpeed: 0.1
-  decelerationRate: 0.001
-  absoluteMaxEmergencyDeceleration: 0.5
-  accelerationRate: 0.3
-  targetStopTime: 2
+  speedVariance: 0.2
+  centerOffset: 0
+  centerVariance: 0.1
+  decelerationRate: 0.3
+  absoluteMaxEmergencyDeceleration: 5
+  accelerationRate: 2
+  targetStopTime: 0.75
   stopDistancesList:
   - colliderType: 0
     distance: 1
@@ -70,6 +77,7 @@ MonoBehaviour:
   - colliderType: 2
     distance: 0.2
   turnIntention: 4
+  speed: 0
   col: {fileID: 0}
   explosionEffectPrefab: {fileID: 1357960708350422463, guid: 3502f83d611094fbbb1829878ebfc094, type: 3}
   exhaustEffectPrefab: {fileID: 1761815862495215839, guid: d8cbca1fa59344c8bbe1a4bb62af9903, type: 3}
@@ -79,6 +87,13 @@ MonoBehaviour:
   - {fileID: 1301269341680616287}
   - {fileID: 4102357851312662321}
   - {fileID: 5395436134280709442}
+  turnSignalEffectPrefab: {fileID: 1761815862495215839, guid: e3ba0926f2ba440ac8f00ec34431c1ec, type: 3}
+  leftTurnSignalSpawnPoints:
+  - {fileID: 1213375699106544622}
+  - {fileID: 6890621032725957700}
+  rightTurnSignalSpawnPoints:
+  - {fileID: 8479645860353446671}
+  - {fileID: 4955260426143626913}
   sprites:
   - {fileID: 7206818784195897195, guid: 7498b0f6184764535a775a7013cf566b, type: 3}
   - {fileID: 120349635869896627, guid: 16d0c75cf1cf24814a50d5e938d2f0c3, type: 3}
@@ -86,9 +101,6 @@ MonoBehaviour:
   - {fileID: 1617365613214483723, guid: 99cf0632601e848aca5cf43e75f8f970, type: 3}
   lookAheadDistance: 25
   carWidth: 0.5
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!212 &7459471659854134903
 SpriteRenderer:
   serializedVersion: 2
@@ -251,6 +263,37 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!1 &1213375699106544622
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5903756128488096724}
+  m_Layer: 0
+  m_Name: LeftTurnSignalSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5903756128488096724
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1213375699106544622}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.176, y: 0.573, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8407976767057596053}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1301269341680616287
 GameObject:
   m_ObjectHideFlags: 0
@@ -313,6 +356,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8407976767057596053}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4955260426143626913
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6000483574574695752}
+  m_Layer: 0
+  m_Name: RightTurnSignalSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6000483574574695752
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4955260426143626913}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.175, y: -0.174, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8407976767057596053}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5185816194283629069
 GameObject:
   m_ObjectHideFlags: 0
@@ -370,6 +444,37 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.224, y: 0.473, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8407976767057596053}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6890621032725957700
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4850018131736575462}
+  m_Layer: 0
+  m_Name: LeftTurnSignalSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4850018131736575462
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6890621032725957700}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.181, y: -0.167, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -466,3 +571,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c0cf43f0483c415a9cc77eb54f57356, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+--- !u!1 &8479645860353446671
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2631310995291792497}
+  m_Layer: 0
+  m_Name: RightTurnSignalSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2631310995291792497
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8479645860353446671}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.172, y: 0.573, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8407976767057596053}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -15,15 +15,34 @@ public class IntersectionStopLine : MonoBehaviour
         return carsAllowedThrough.Contains(car);
     }
 
-    public bool AreMovementBlockingCollidersClear(Collider2D colliderToIgnore)
+    public bool AreMovementBlockingCollidersClearOfCars(Collider2D colliderToIgnore)
     {
         foreach (var collider in collidersToCheckBeforeMoving)
         {
-            if (colliderToIgnore != null && collider.ObjectsInRange.Count == 1 && collider.ObjectsInRange.Contains(colliderToIgnore))
+            if (colliderToIgnore != null && collider.CarsInZone.Count == 1 && collider.CarsInZone.Contains(colliderToIgnore))
             {
                 continue;
             }
-            else if (collider.ObjectsInRange.Count > 0)
+            
+            if (collider.CarsInZone.Count > 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public bool AreMovementBlockingCollidersClearOfPeds(Collider2D colliderToIgnore)
+    {
+        foreach (var collider in collidersToCheckBeforeMoving)
+        {
+            if (colliderToIgnore != null && collider.PedsInZone.Count == 1 && collider.PedsInZone.Contains(colliderToIgnore))
+            {
+                continue;
+            }
+            
+            if (collider.PedsInZone.Count > 0)
             {
                 return false;
             }

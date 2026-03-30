@@ -1,5 +1,5 @@
 using System;
-
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     public int Score = 0;
+    public Dictionary<DeviantType, int> DeviantBehaviorCounts = new Dictionary<DeviantType, int>();
 
     public bool roundSuccessful = false;
 
@@ -82,8 +83,8 @@ public class GameManager : MonoBehaviour
             StartRound();
         } 
 
-        // You can add specific logic here, for example, checking the scene name
-        if (scene.name == "MainScene")
+        // Don't load the next round scene if there is already an IntersectionController
+        if (scene.name == "MainScene" && currentIntersectionController == null)
         {
             // Perform actions specific to "MainScene"
             Debug.Log("Main scene loaded.");
@@ -161,6 +162,7 @@ public struct RoundConfig
     public CarSpawn[] spawnOrder;
     public PedSpawn[] pedSpawnOrder;
     public float deviantSpawnChance;
+    public DeviantType[] possibleDeviantBehaviors;
     public bool isTutorial;
     public bool pedestriansEnabled;
     public string[] preambles;
@@ -183,7 +185,7 @@ public struct CarSpawn
         this.spawnLocation = spawnLocation;
         this.turnChoice = turnChoice;
         this.deviantBehavior = deviantBehavior;
-        this.vehicleType = vehicleType;  // TODO make this do something
+        this.vehicleType = vehicleType; 
     }
 
     static public CarSpawn Blank
@@ -218,9 +220,13 @@ public enum VehicleType
 public enum SpawnLocation
 {
     north,
+    north2, // Optional second spawn location for the north side if the intersection has multiple lanes on that side
     east,
+    east2,
     south,
+    south2,
     west,
+    west2,
     random
 }
 
@@ -242,10 +248,10 @@ public struct DeviantBehaviorInfo
 public enum DeviantType
 {
     runsStop,
-    illegalTurn,
     tailgating,
     speeding,
     swerving,
+    ignoresPedestrians,
     random,
     none
 }

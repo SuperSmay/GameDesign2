@@ -19,6 +19,9 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     public float maxDistanceToMoveAfterStopping;  // If the car is stopped for a target but that target moves away (e.g. a car in front turns or accelerates), this is the maximum distance the car will stay stopped within. This prevents cars from getting stuck trying to stop for a target that has moved away.
     public float maxSpeed;
     public float minSpeed; // Minimum speed to stop the very gradual creeping when trying to stop for a target.
+    public float speedVariance; // Random variance added to the base speed for each car for visual variety
+    public float centerOffset; // How much the car is offset from the center of the lane.
+    public float centerVariance; // Random variance added to the center of the car's path along the spline for visual variety (e.g. to make some cars drive slightly to the left or right within the lane)
     public float decelerationRate;
     public float absoluteMaxEmergencyDeceleration; // An absolute max limit to how hard the car will brake when trying to avoid a collision
     public float accelerationRate;
@@ -60,6 +63,10 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     [SerializeField] GameObject tireScreechEffectPrefab;
     [SerializeField] List<GameObject> tireScreechEffectSpawnPoints; // List of points (e.g. empty child game objects) where we can spawn tire screech effects when the car brakes hard.
     List<GameObject>? tireScreechEffectInstances;
+    [SerializeField] GameObject turnSignalEffectPrefab;
+    [SerializeField] List<GameObject> leftTurnSignalSpawnPoints;
+    [SerializeField] List<GameObject> rightTurnSignalSpawnPoints;
+    List<GameObject>? turnSignalInstances;
     [SerializeField] List<Sprite> sprites; // List of possible sprites to randomly assign to this car for visual variety.
 
     [Header("Path Scanning")]
@@ -69,8 +76,21 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
     bool hasCollided = false;
     bool hasBeenClicked = false; // Whether this car has been clicked on by the player, used to prevent multiple clicks being registered on the same car.
+    bool hasSwitchedToTurnNode = false; // Used to track whether we've switched to the turn node after reaching the split point, so we can update our turn signals accordingly on the next node change.
+    int tireMarkTriggersThisFixedUpdate = 0; // How many things are currently triggering the spawning of tire mark effects (e.g. hard braking, sharp turning while speeding, etc.). We use this to determine when to stop the tire mark effects, since multiple conditions can trigger them at the same time.
     GameObject? exhaustEffectInstance;
     float collisionCooldown = 0f; // Time in seconds to ignore collisions after a collision has occurred
+    float smoothedTargetSpeed = 0f;
+    bool hasEncounteredDeviantBehavior = false; // Whether the car has already encountered the conditions to trigger its deviant behavior. Used to prevent the player from losing points for something they couldn't have known about.
+
+    // Speeding deviant behavior variables
+    float speedingTurnAngleThreshold = 20f; // Minimum angle change to trigger tire screech effects when speeding
+
+    // Swerving deviant behavior variables
+    float swervingAmplitude = 0.2f; // How far left and right the car swerves from the center of the lane
+    float swervingFrequency = 1f; // How fast the car swerves left and right
+    float swervingTimer = 0f; // Timer to keep track of swerving oscillation
+    float swervingCooldownTimer = 0f; // Timer to determine how long to wait before starting to swerve again after finishing a swerving behavior
 
     // Braking tracking: remember the first detection distance for the current target so we can
     // compute a smooth, linear target-speed curve from detection to stop point.
@@ -88,14 +108,54 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         // Get spline length for consistent speed across different splines (since the T value is normalized, we need to account for spline length to maintain consistent speed)
         float splineLength = intersectionNode.splineContainer.CalculateLength();
 
-        currentSplineTValue += speed * GameManager.Instance.fixedDeltaTimeSpeedMult / splineLength * 10f;  // 10 is a rough estimate of the avg spline length.
-        // TODO remove the 10x speed multiplier
+        // Now 'speed' truly means "World Units per second"
+        currentSplineTValue += (speed * GameManager.Instance.fixedDeltaTimeSpeedMult) / splineLength;
 
 
 
         // Move along the current spline
         Vector3 targetPosition = intersectionNode.splineContainer.EvaluatePosition(currentSplineTValue);
         targetPosition.z = 0f; // Keep the car on the 2D plane
+
+        float centerOffsetWithSwerve = centerOffset;
+
+        if (deviantType == DeviantType.swerving)
+        {
+
+            if (swervingCooldownTimer > 0f)
+            {
+                swervingCooldownTimer -= GameManager.Instance.deltaTimeSpeedMult;
+            }
+            else
+            {
+                swervingTimer += GameManager.Instance.deltaTimeSpeedMult * (speed / maxSpeed);  // Scale how much we adjust the offset by speed. This stops them sliding around at a stop, and stops the the swerving from jumping around as they slow down.
+                if (swervingTimer >= Mathf.PI * 2 / swervingFrequency) // After one full oscillation, reset the timer and start a cooldown
+                {
+                    swervingTimer = 0f;
+                    swervingCooldownTimer = Random.Range(1f, 3f); // Random cooldown between 1 and 3 seconds before swerving again
+                }
+
+                float swervingOffset = Mathf.Sin(swervingTimer * swervingFrequency) * swervingAmplitude;
+                centerOffsetWithSwerve += swervingOffset;
+            }
+
+        }
+
+        // Apply the combined perpendicular offset to the direction of movement (assuming the car's forward direction is along the spline tangent)
+        Vector3 tangent = ((Vector3)intersectionNode.splineContainer.EvaluateTangent(currentSplineTValue)).normalized;
+        Vector3 perpendicular = new Vector3(-tangent.y, tangent.x, 0f); // Rotate tangent 90 degrees to get perpendicular
+        targetPosition += perpendicular * centerOffsetWithSwerve;
+
+        // If we are speeding, also add tire screech marks when turning sharply
+        if (deviantType == DeviantType.speeding)
+        {
+            float angleChange = Vector3.Angle(tangent, transform.up);
+            if (angleChange > speedingTurnAngleThreshold / 10 && speed > maxSpeed * 0.7f) // If we're turning more than the threshold and going fast, spawn tire screech effects
+            {
+                tireMarkTriggersThisFixedUpdate++;
+            }
+        }
+
         rb.MovePosition(targetPosition); // Move the car to the target position on the spline
     }
 
@@ -114,23 +174,38 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     void DoRaycastDetection()
     {
 
+        // Vector3 calculatedCurrentVelocity = (transform.position - previousSelfPosition) / GameManager.Instance.fixedDeltaTimeSpeedMult;
+
+        if (GameManager.Instance.paused || GameManager.Instance.fixedDeltaTimeSpeedMult == 0) return; // Don't do raycast detection if the game is paused
+
         RaycastHit2D? closestTargetHit = ScanPathAhead();
 
         if (closestTargetHit.HasValue)
         {
+
+            DebugDrawing.DrawDebugCircle(closestTargetHit.Value.point, 0.1f, Color.green);
+
             GameObject hitObj = closestTargetHit.Value.collider.gameObject;
             float distanceToTarget = Vector3.Distance(transform.position, closestTargetHit.Value.point);
+
+            if (deviantType == DeviantType.tailgating && distanceToTarget < 1f)
+            {
+                hasEncounteredDeviantBehavior = true; // The car is tailgating, so if they get within 1 meter of the target, we consider that enough for the player to notice
+            }
 
             // 1. Determine base minimum stopping distance
             float desiredStopDistance = stopDistances[LayerMasksToColliderType.Map[hitObj.layer]] + 0.7f;
 
             // 2. Calculate Target Velocity
-            float targetSpeed = 0f;
             if (trackedTarget != hitObj)
             {
                 trackedTarget = hitObj;
                 trackedTargetLastPosition = hitObj.transform.position;
-                // Assume target is stationary on the exact frame we detect it to avoid delta spikes
+                
+                // Try to get the real speed if it's a car, otherwise assume 0
+                // (Assuming your car script is called CarController, change as needed)
+                var targetCar = hitObj.GetComponent<CarPathFollower>();
+                smoothedTargetSpeed = targetCar != null ? targetCar.speed * 10f : 0f; 
             }
             else
             {
@@ -138,9 +213,11 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
                 Vector3 moveDelta = newPos - trackedTargetLastPosition;
                 trackedTargetLastPosition = newPos;
 
-                // Project movement onto our up axis (assuming 2D top-down) and convert to speed per second
                 float forwardMovement = Vector3.Dot(moveDelta, transform.up);
-                targetSpeed = forwardMovement / GameManager.Instance.fixedDeltaTimeSpeedMult;
+                float rawTargetSpeed = forwardMovement / GameManager.Instance.fixedDeltaTimeSpeedMult;
+                
+                // SMOOTH THE NOISE: Blend the new raw speed with the previous smoothed speed
+                smoothedTargetSpeed = Mathf.Lerp(smoothedTargetSpeed, rawTargetSpeed, Time.fixedDeltaTime * 15f);
             }
 
             // 3. Intelligent Driver Model (IDM) Variables
@@ -148,7 +225,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
             float s0 = desiredStopDistance;      // Minimum desired gap
             float v = speed;                     // Current speed
             float v0 = maxSpeed;                 // Desired speed (speed limit)
-            float deltaV = v - targetSpeed;      // Approach rate (positive if we are faster than target)
+            float deltaV = v - smoothedTargetSpeed;      // Approach rate (positive if we are faster than target)
             float a = accelerationRate;          // Max acceleration
             float b = decelerationRate;          // Comfortable deceleration
 
@@ -165,11 +242,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
             // Optional: Apply an absolute hard limit to emergency braking if a car cuts us off instantly
             if (calculatedAcceleration < 0 && calculatedAcceleration < -absoluteMaxEmergencyDeceleration)
             {
-                SpawnTireScreechEffect();
-            }
-            else
-            {
-                StopTireScreechEffect();
+                tireMarkTriggersThisFixedUpdate++;
             }
             calculatedAcceleration = Mathf.Max(calculatedAcceleration, -absoluteMaxEmergencyDeceleration);
 
@@ -199,7 +272,6 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         {
             // Free road behavior: accelerate to max speed
             trackedTarget = null;
-            StopTireScreechEffect();
             speed = Mathf.MoveTowards(speed, maxSpeed, accelerationRate * GameManager.Instance.fixedDeltaTimeSpeedMult);
         }
     }
@@ -259,7 +331,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
             if (segmentLength > 0.001f) // Prevent zero-length cast errors
             {
                 // We cast from stepStartPos to stepEndPos
-                DebugDrawing.DrawDebugCapsule(stepStartPos, stepEndPos, sphereRadius, Color.red, 0.1f);
+                DebugDrawing.DrawDebugCapsule(stepStartPos, stepEndPos, sphereRadius, Color.red);
                 RaycastHit2D[] hits = Physics2D.CircleCastAll(stepStartPos, sphereRadius, direction.normalized, segmentLength);
 
                 RaycastHit2D? closestTargetHit = null;
@@ -269,7 +341,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
                 {
 
                     // Draw debug points for all hits
-                    DebugDrawing.DrawDebugCircle(hit.point, 0.1f, Color.blue, 0.1f);
+                    DebugDrawing.DrawDebugCircle(hit.point, 0.1f, Color.blue);
 
                     // Ignore hits that are this car's own collider
                     if (hit.collider.gameObject == gameObject) continue;
@@ -278,15 +350,29 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
                     // Ignore stop lines if we're going to run them (deviant)
                     if (hit.collider.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.StopLine] && deviantType == DeviantType.runsStop)
                     {
+                        hasEncounteredDeviantBehavior = true; // We've decided to ignore a stop line, so the player will be able to spot this.
                         continue;
                     }
                     // Ignore stop lines if we're allowed to go
                     if (hit.collider.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.StopLine])
                     {
                         IntersectionStopLine stopLine = hit.collider.gameObject.GetComponent<IntersectionStopLine>();
-                        if (stopLine.CanCarProceed(this) && stopLine.AreMovementBlockingCollidersClear(col))
+                        // Check if we are allowed to proceed through this stop line, and if the movement-blocking colliders for this stop line are clear (e.g. no pedestrians in the crosswalk, etc.)
+                        if (stopLine.CanCarProceed(this))
                         {
-                            continue;
+                            if (stopLine.AreMovementBlockingCollidersClearOfCars(col))
+                            {
+                                if (stopLine.AreMovementBlockingCollidersClearOfPeds(col))
+                                {
+                                    // We can go through this stop line, so ignore it in our pathfinding
+                                    continue;
+                                }
+                                else if (deviantType == DeviantType.ignoresPedestrians)
+                                {
+                                    hasEncounteredDeviantBehavior = true; // We've decided to ignore a stop line with pedestrians in the crosswalk, so the player will be able to spot this.
+                                    continue;
+                                }
+                            }
                         }
                     }
                     // Ignore intersection leave triggers so we don't get confused when leaving an intersection
@@ -310,6 +396,18 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
                         }
                     }
 
+                    // Note: This is disabled because it means that cars will just run pedestrians over.
+                    // Instead, this is implemented by ignoring pedestrian only colliders in the calls to AreMovementBlockingCollidersClear(),
+                    // so the car will stop for the stop line but won't stop for pedestrians in the crosswalk. 
+                    // If needed, this could be enhanced to have the movement blocking colliders keep a list of which types of objects
+                    // are in range, but for now simply ignoring the ped only colliders achieves the desired behavior.
+
+                    // Ignore pedestrians if we're a deviant that ignores pedestrians
+                    // if (deviantType == DeviantType.ignoresPedestrians && hit.collider.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.Pedestrian])
+                    // {
+                    //     continue;
+                    // }
+
                     // If we don't have a LayerMask defined for this collider type, we log a warning and ignore it (treat it as free road)
                     if (!LayerMasksToColliderType.Map.ContainsKey(hit.collider.gameObject.layer))
                     {
@@ -330,7 +428,6 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
                     {
                         closestTargetDistance = distanceToHit;
                         closestTargetHit = hit;
-                        DebugDrawing.DrawDebugCapsule(hit.point, hit.point, sphereRadius, Color.green, 0.1f);
                     }
                 }
 
@@ -359,8 +456,10 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
         return null; // Nothing found in our path
     }
+
     void SpawnTireScreechEffect()
     {
+
         if (tireScreechEffectPrefab != null && tireScreechEffectSpawnPoints != null)
         {
             if (tireScreechEffectInstances == null)
@@ -377,6 +476,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
     void StopTireScreechEffect()
     {
+
         if (tireScreechEffectInstances != null)
         {
             foreach (GameObject effectInstance in tireScreechEffectInstances)
@@ -426,6 +526,16 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         {
             intersectionNode = nextNode;
             currentSplineTValue = 0f;
+
+            if (chosenTurn != TurnChoice.Continue)
+            {
+                hasSwitchedToTurnNode = true;
+            }
+            else if (hasSwitchedToTurnNode)
+            {
+                // If we just came off a turn, turn off the turn signals
+                DespawnTurnSignals();
+            }
         }
         else
         {
@@ -508,6 +618,8 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
         if (hasCollided) return; // Stop moving if we've collided with another car
 
+        tireMarkTriggersThisFixedUpdate = 0; // Reset the count of tire mark triggers for this frame, we will increment it in various calls below if the effect is needed.
+
         // T value updates        
         if (currentSplineTValue > 1f)
         {
@@ -518,6 +630,15 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         DoRaycastDetection();
         UpdatePositionAlongSpline();
         UpdateRotationAlongSpline();
+
+        if (tireMarkTriggersThisFixedUpdate == 0)
+        {
+            StopTireScreechEffect();
+        }
+        else
+        {
+            SpawnTireScreechEffect();
+        }
 
     }
 
@@ -541,7 +662,6 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
         rb.bodyType = RigidbodyType2D.Dynamic; // Make the car affected by physics after collision
         // IntersectionController.Instance.DequeueStopSign(this);
-        StopTireScreechEffect();
 
         if (collisionCooldown == 0)
         {
@@ -609,10 +729,11 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         StopTireScreechEffect();
         // IntersectionController.Instance.DequeueStopSign(this);
         IntersectionController.Instance.activeCars.Remove(this);
-        if (deviantType != DeviantType.none && !destroyedByPlayer)
+        if (deviantType != DeviantType.none && !destroyedByPlayer && hasEncounteredDeviantBehavior)
         {
-            GameManager.Instance.Score -= 1; // Penalize for letting a deviant escape
+            // GameManager.Instance.Score -= 1; // Penalize for letting a deviant escape
             GameManager.Instance.allowedMistakes -= 1; // Lose a life for letting a deviant escape
+            GameManager.Instance.DeviantBehaviorCounts[deviantType] = GameManager.Instance.DeviantBehaviorCounts.ContainsKey(deviantType) ? GameManager.Instance.DeviantBehaviorCounts[deviantType] + 1 : 1; // Increment the count of this deviant type that has escaped
         }
         Destroy(gameObject);
     }
@@ -620,8 +741,16 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     public void Initialize(CarSpawn carSpawn, IntersectionNode node)
     {
         this.intersectionNode = node;
+
+        // Note: This is done BEFORE setting up the deviant behavior.
+        // This is because the speeding cars will be going way too fast to stop nicely if they spawn right behind another car.
+        maxSpeed += Random.Range(-speedVariance, speedVariance); // Add some random variance to the speed for visual variety
+        speed = maxSpeed; // Start at max speed for a more dynamic start
         SetupDeviantBehavior(carSpawn.deviantBehavior.deviantType);
         SetupTurnIntention(carSpawn.turnChoice);
+        SpawnTurnSignals();
+        
+        centerOffset += Random.Range(-centerVariance, centerVariance); // Add some random variance to the center offset for visual variety
     }
 
     void SetupTurnIntention(TurnChoice turnChoice)
@@ -647,12 +776,6 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
 
     public void SetupDeviantBehavior(DeviantType deviantSpawnType)
     {
-        if (deviantSpawnType == DeviantType.random)
-        {
-            // If the deviant type is random, pick a random deviant behavior
-            DeviantType[] deviantTypes = new DeviantType[] { DeviantType.tailgating, DeviantType.speeding, DeviantType.swerving, DeviantType.runsStop };
-            deviantSpawnType = deviantTypes[Random.Range(0, deviantTypes.Length)];
-        }
 
         switch (deviantSpawnType)
         {
@@ -674,20 +797,86 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
                     }
                 }
                 stopDistancesList = newStopDistances;
+                targetStopTime /= 10f; // Shorter time headway to target for more aggressive braking behavior
                 break;
             case DeviantType.speeding:
                 maxSpeed *= 3f; // Higher max speed for speeding behavior
+                accelerationRate *= 3f; // Faster acceleration for speeding behavior
+                // Also do some tailgating to make it more obvious when the cars are just lined up
+                newStopDistances = new List<ColliderStopDistanceInfo>();
+                foreach (ColliderStopDistanceInfo info in stopDistancesList)
+                {
+                    if (info.colliderType == ColliderType.Car)
+                    {
+                        newStopDistances.Add(new ColliderStopDistanceInfo(info.colliderType, 0.3f)); // Stop very close to other cars
+                    }
+                    else
+                    {
+                        newStopDistances.Add(info);
+                    }
+                }
+                stopDistancesList = newStopDistances;
+                targetStopTime /= 10f; // Shorter time headway to target for more aggressive braking behavior
+                hasEncounteredDeviantBehavior = true; // Speeding is obvious and can be identified immediately
                 break;
             case DeviantType.swerving:
-                // TODO
+                // Most of the important behavior is handled in UpdatePositionAlongSpline() where we apply a swerving offset to the car's position along the spline. 
+                // Here, we just set the parameters for the swerving behavior.
+                swervingCooldownTimer = Random.Range(0f, 2f); // Random initial cooldown so not all swerving cars start swerving at the same time
+                swervingAmplitude = Random.Range(0.3f, 0.5f); // Random amplitude between 0.3 and 0.5
+                swervingFrequency = Random.Range(0.5f, 1.5f); // Random frequency between 0.5 and 1.5
+                hasEncounteredDeviantBehavior = true; // Swerving is obvious and can be identified immediately
                 break;
             case DeviantType.runsStop:
-                // TODO fix
-                // canProceedAtStopSign = true; // Allow proceeding at stop signs for running stop signs behavior
+                // Nothing to do here, this is handled elsewhere
+                break;
+            case DeviantType.ignoresPedestrians:
+                // Nothing to do here, this is handled elsewhere
                 break;
         }
 
         deviantType = deviantSpawnType;
+    }
+
+    void SpawnTurnSignals()
+    {
+        if (turnSignalEffectPrefab == null) return;
+
+        List<GameObject>? spawnPoints = null;
+        if (turnIntention == TurnChoice.Left)
+        {
+            spawnPoints = leftTurnSignalSpawnPoints;
+        }
+        else if (turnIntention == TurnChoice.Right)
+        {
+            spawnPoints = rightTurnSignalSpawnPoints;
+        }
+
+        if (spawnPoints == null || spawnPoints.Count == 0) return;
+
+        // Implementation for spawning turn signals
+        if (turnSignalInstances == null)
+        {
+            turnSignalInstances = new List<GameObject>();
+            foreach (GameObject spawnPoint in spawnPoints)
+            {
+                GameObject effectInstance = InstantiateParticleEffects(turnSignalEffectPrefab, spawnPoint.transform);
+                effectInstance.transform.parent = spawnPoint.transform; // Parent to the spawn point so it moves with the car
+                turnSignalInstances.Add(effectInstance);
+            }
+        }
+    }
+
+    void DespawnTurnSignals()
+    {
+        if (turnSignalInstances != null)
+        {
+            foreach (GameObject effectInstance in turnSignalInstances)
+            {
+                Destroy(effectInstance);
+            }
+            turnSignalInstances = null;
+        }
     }
 }
 
@@ -698,6 +887,7 @@ public enum ColliderType
     StopLine,
     IntersectionLeave,
     ClickBox,
+    Default
 }
 
 public static class ColliderTypeToLayerMasks
@@ -710,6 +900,7 @@ public static class ColliderTypeToLayerMasks
         { ColliderType.StopLine, LayerMask.NameToLayer("Stop Lines") },
         { ColliderType.IntersectionLeave, LayerMask.NameToLayer("Intersection Leave") },
         { ColliderType.ClickBox, LayerMask.NameToLayer("Pointer Interaction") },
+        { ColliderType.Default, LayerMask.NameToLayer("Default") },
     };
 }
 
@@ -723,6 +914,7 @@ public static class LayerMasksToColliderType
         { LayerMask.NameToLayer("Stop Lines"), ColliderType.StopLine },
         { LayerMask.NameToLayer("Intersection Leave"), ColliderType.IntersectionLeave },
         { LayerMask.NameToLayer("Pointer Interaction"), ColliderType.ClickBox },
+        { LayerMask.NameToLayer("Default"), ColliderType.Default },
     };
 }
 

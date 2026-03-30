@@ -44,17 +44,21 @@ PrefabInstance:
       propertyPath: m_SpriteTilingProperty.oldSize.y
       value: 1.5
       objectReference: {fileID: 0}
+    - target: {fileID: 4850018131736575462, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.713
+      objectReference: {fileID: 0}
+    - target: {fileID: 6000483574574695752, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.72
+      objectReference: {fileID: 0}
     - target: {fileID: 6775790952202966939, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
       propertyPath: maxSpeed
-      value: 0.1
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 6775790952202966939, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
       propertyPath: accelerationRate
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6775790952202966939, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
-      propertyPath: decelerationRate
-      value: 0.0005
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6775790952202966939, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
       propertyPath: sprites.Array.size
@@ -66,7 +70,7 @@ PrefabInstance:
       objectReference: {fileID: 1223958431475000254, guid: 96399cab9b41843ad889b749dba66ec5, type: 3}
     - target: {fileID: 6775790952202966939, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
       propertyPath: absoluteMaxEmergencyDeceleration
-      value: 0.3
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7459471659854134903, guid: 51ece275395d841b9bec713526ba7c7d, type: 3}
       propertyPath: m_Size.y

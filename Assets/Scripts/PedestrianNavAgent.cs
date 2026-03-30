@@ -4,7 +4,7 @@ using UnityEngine.AI;
 public class PedestrianNavAgent : MonoBehaviour
 {
 
-    NavMeshAgent navMeshAgent;
+    public NavMeshAgent navMeshAgent;
     Animator animator;
 
     [SerializeField] AnimatorOverrideController[] costumes;
@@ -90,4 +90,17 @@ public class PedestrianNavAgent : MonoBehaviour
             GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic; // Make the pedestrian affected by physics
         }
     }
+
+    public void PauseWalking()
+    {
+        navMeshAgent.isStopped = true;
+        animator.speed = 0f; // Pause animation
+    }
+
+    public void ResumeWalking()
+    {
+        navMeshAgent.isStopped = false;
+        // Animation speed will be updated in the next Update() call based on velocity
+    }
+
 }

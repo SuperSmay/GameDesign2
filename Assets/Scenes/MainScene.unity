@@ -814,19 +814,38 @@ MonoBehaviour:
   rounds:
   - timer: 60
     spawnDelay: 2
-    pedSpawnDelay: 2
-    intersectionLayout: 0
+    pedSpawnDelay: 15
+    intersectionLayout: 2
     spawnOrder: []
     pedSpawnOrder: []
-    deviantSpawnChance: 0.3
+    deviantSpawnChance: 0.5
+    possibleDeviantBehaviors: 0300000000000000020000000400000001000000
     isTutorial: 0
     pedestriansEnabled: 1
     preambles:
-    - Long round
+    - Make sure they're watcing out for pedestrians
     failureMessages:
     - Oops!
     successMessages: []
-    allowedMistakes: 30
+    allowedMistakes: 100
+  - timer: 10
+    spawnDelay: 2
+    pedSpawnDelay: 0
+    intersectionLayout: 0
+    spawnOrder: []
+    pedSpawnOrder: []
+    deviantSpawnChance: 0
+    possibleDeviantBehaviors: 
+    isTutorial: 1
+    pedestriansEnabled: 0
+    preambles:
+    - Hello there!
+    - Welcome to Road Watcher!
+    - Look at these cars all behaving nicely
+    failureMessages: []
+    successMessages:
+    - Now let's see some more interesting behavior
+    allowedMistakes: 0
   - timer: 10
     spawnDelay: 1.65
     pedSpawnDelay: 0
@@ -852,6 +871,7 @@ MonoBehaviour:
     - spawnLocation: {fileID: 0}
       targetLocation: {fileID: 0}
     deviantSpawnChance: 0
+    possibleDeviantBehaviors: 
     isTutorial: 1
     pedestriansEnabled: 0
     preambles:
@@ -872,21 +892,27 @@ MonoBehaviour:
         deviantType: 6
         isSpecified: 1
       vehicleType: 0
+    - spawnLocation: 1
+      turnChoice: 1
+      deviantBehavior:
+        deviantType: 3
+        isSpecified: 1
+      vehicleType: 0
     pedSpawnOrder: []
     deviantSpawnChance: 0
+    possibleDeviantBehaviors: 
     isTutorial: 1
     pedestriansEnabled: 0
     preambles:
-    - Hello there!
-    - This is a test!!
-    failureMessages: []
-    successMessages:
-    - Good job! You did nothing!
+    - Looks like someone might be speeding!
+    failureMessages:
+    - Oops!
+    successMessages: []
     allowedMistakes: 0
-  - timer: 10
+  - timer: 30
     spawnDelay: 2
-    pedSpawnDelay: 5
-    intersectionLayout: 0
+    pedSpawnDelay: 0
+    intersectionLayout: 2
     spawnOrder:
     - spawnLocation: 3
       turnChoice: 2
@@ -901,43 +927,20 @@ MonoBehaviour:
         isSpecified: 1
       vehicleType: 0
     pedSpawnOrder: []
-    deviantSpawnChance: 0
-    isTutorial: 1
+    deviantSpawnChance: 0.3
+    possibleDeviantBehaviors: 
+    isTutorial: 0
     pedestriansEnabled: 0
-    preambles: []
+    preambles:
+    - Now let's watch some more cars...
+    - See if you can spot who's breaking the rules.
     failureMessages:
     - Oops!
     successMessages: []
-    allowedMistakes: 0
-  - timer: 10
-    spawnDelay: 2
-    pedSpawnDelay: 5
-    intersectionLayout: 0
-    spawnOrder:
-    - spawnLocation: 3
-      turnChoice: 2
-      deviantBehavior:
-        deviantType: 6
-        isSpecified: 1
-      vehicleType: 0
-    - spawnLocation: 1
-      turnChoice: 1
-      deviantBehavior:
-        deviantType: 3
-        isSpecified: 1
-      vehicleType: 0
-    pedSpawnOrder: []
-    deviantSpawnChance: 0
-    isTutorial: 1
-    pedestriansEnabled: 0
-    preambles: []
-    failureMessages:
-    - Oops!
-    successMessages: []
-    allowedMistakes: 0
+    allowedMistakes: 5
   intersectionControllerFourWayStopSceneName: 4WayStop
   intersectionControllerFourWayStoplightSceneName: 
-  intersectionControllerTIntersectionSceneName: TInterection
+  intersectionControllerTIntersectionSceneName: TIntersection
   intersectionControllerHighwayIntersectionSceneName: 
   uiControllerPrefab: {fileID: 2611391844277416163, guid: 3ae5a59f285494d5d9b8ad05410896d8, type: 3}
 --- !u!4 &1561792147

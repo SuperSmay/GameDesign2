@@ -7,7 +7,8 @@ public class IntersectionMovementBlockingCollider : MonoBehaviour
     BoxCollider2D boxCollider;
     
     // A HashSet ensures we don't count the same object twice
-    public HashSet<Collider2D> ObjectsInRange = new HashSet<Collider2D>();
+    public HashSet<Collider2D> CarsInZone = new HashSet<Collider2D>();
+    public HashSet<Collider2D> PedsInZone = new HashSet<Collider2D>();
     public bool detectCars = true;
     public bool detectPeds = true;
 
@@ -19,7 +20,8 @@ public class IntersectionMovementBlockingCollider : MonoBehaviour
     void Update()
     {
         // Clear out nulls
-        ObjectsInRange.RemoveWhere(item => item == null);
+        CarsInZone.RemoveWhere(item => item == null);
+        PedsInZone.RemoveWhere(item => item == null);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -30,19 +32,32 @@ public class IntersectionMovementBlockingCollider : MonoBehaviour
         if (other.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.Car] && !detectCars) return; // Ignore cars if detectCars is false
         if (other.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.Pedestrian] && !detectPeds) return; // Ignore pedestrians if detectPeds is false
 
-        // Add the object when it enters the zone
-        if (!ObjectsInRange.Contains(other))
+        if (other.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.Car])
         {
-            ObjectsInRange.Add(other);
+            if (!CarsInZone.Contains(other))
+            {
+                CarsInZone.Add(other);
+            }
+        }
+        else if (other.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.Pedestrian])
+        {
+            if (!PedsInZone.Contains(other))
+            {
+                PedsInZone.Add(other);
+            }
         }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
         // Remove the object when it leaves
-        if (ObjectsInRange.Contains(other))
+        if (other.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.Car])
         {
-            ObjectsInRange.Remove(other);
+            CarsInZone.Remove(other);
+        }
+        else if (other.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.Pedestrian])
+        {
+            PedsInZone.Remove(other);
         }
     }
 }

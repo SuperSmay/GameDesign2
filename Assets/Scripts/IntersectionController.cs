@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
-using UnityEngine.Rendering.Universal;
-using UnityEngine.UI;
 
 #nullable enable
 
@@ -19,9 +17,13 @@ public class IntersectionController : MonoBehaviour
 
 
     [SerializeField] IntersectionNode northSpawnNode;
+    [SerializeField] IntersectionNode northSpawnNode2; // Optional second spawn node for the north side if the intersection has multiple lanes on that side
     [SerializeField] IntersectionNode eastSpawnNode;
+    [SerializeField] IntersectionNode eastSpawnNode2; // Optional second spawn node for the east side if the intersection has multiple lanes on that side
     [SerializeField] IntersectionNode southSpawnNode;
+    [SerializeField] IntersectionNode southSpawnNode2; // Optional second spawn node for the south side if the intersection has multiple lanes on that side
     [SerializeField] IntersectionNode westSpawnNode;
+    [SerializeField] IntersectionNode westSpawnNode2; // Optional second spawn node for the west side if the intersection has multiple lanes on that side
 
     [SerializeField] GameObject northCrosswalkBlocker;
     [SerializeField] GameObject eastCrosswalkBlocker;
@@ -60,10 +62,11 @@ public class IntersectionController : MonoBehaviour
 
     [Header("Spawning")]
     [SerializeField] float spawnInterval; // seconds between spawn attempts
-    float spawnTimer = 0f;
-    [SerializeField]float pedestrianSpawnInterval = 5f; // seconds between pedestrian spawn attempts
+    float spawnTimer = float.PositiveInfinity;
+    [SerializeField] float pedestrianSpawnInterval = 5f; // seconds between pedestrian spawn attempts
     float pedestrianSpawnTimer = 0f;
     bool pedestriansEnabled = false;
+    DeviantType[] possibleDeviantBehaviors;
     [SerializeField] int maxActiveCars;
     int activeCarCount = 0;
     [SerializeField, Range(0f, 1f)] float deviantProbability;
@@ -71,7 +74,7 @@ public class IntersectionController : MonoBehaviour
     public void EnqueueStopSign(IntersectionStopLine stopLine, CarPathFollower car)
     {
         StopSignQueueEntry entry = new StopSignQueueEntry(stopLine, car);
-        
+
         // Don't add the car to the queue if is already there!
         if (!stopSignQueue.Contains(entry))
         {
@@ -173,7 +176,7 @@ public class IntersectionController : MonoBehaviour
                 spawnTimer = 0f;
                 DoNextCarSpawn();
             }
-                        
+
             if (pedestriansEnabled)
             {
                 pedestrianSpawnTimer += GameManager.Instance.deltaTimeSpeedMult;
@@ -195,7 +198,13 @@ public class IntersectionController : MonoBehaviour
                 // If the car in the front of the queue can't go, skip it and try the next, and so on.
                 for (int i = 0; i < stopSignQueue.Count; i++)
                 {
-                    if (stopSignQueue[i].stopLine.AreMovementBlockingCollidersClear(stopSignQueue[i].car.col))
+                    if (
+                        stopSignQueue[i].stopLine.AreMovementBlockingCollidersClearOfCars(stopSignQueue[i].car.col) &&
+                        (
+                        stopSignQueue[i].car.deviantType == DeviantType.ignoresPedestrians ||
+                        stopSignQueue[i].stopLine.AreMovementBlockingCollidersClearOfPeds(stopSignQueue[i].car.col)
+                        )
+                    )
                     {
                         AllowThroughStopSign(stopSignQueue[i].car);
                         stopSignTimer = 0f; // Reset timer after allowing a car through
@@ -243,6 +252,20 @@ public class IntersectionController : MonoBehaviour
     {
         IntersectionNode? spawnNode = GetSpawnNode(spawn.spawnLocation);
         if (spawnNode == null) return SpawnResult.invalid; // If there isn't a valid spawn node for the specified location, return invalid to indicate the spawn failed
+
+        // If the deviant behavior type is random, randomly select a deviant behavior from the possible behaviors defined for this round
+        else if (spawn.deviantBehavior.deviantType == DeviantType.random)
+        {
+            DeviantType[] possibleDeviants = possibleDeviantBehaviors.Length > 0 ? possibleDeviantBehaviors : new DeviantType[] { DeviantType.none }; // If no possible deviant behaviors are defined, default to none to prevent errors
+            if (possibleDeviants.Length > 0)
+            {
+                spawn.deviantBehavior.deviantType = possibleDeviants[UnityEngine.Random.Range(0, possibleDeviants.Length)];
+            }
+            else
+            {
+                spawn.deviantBehavior.deviantType = DeviantType.none; // If no possible deviant behaviors are defined, set to none
+            }
+        }
 
         // If the type is unspecified, use the probability to determine if the car should be deviant.
         // If it should be, then pass through the set behavior. If not, set the behavior to none.
@@ -307,6 +330,10 @@ public class IntersectionController : MonoBehaviour
         }
 
         // If a spawn order is defined, spawn cars according to the order
+        else if (pedSpawnIndex >= pedSpawns.Length)
+        {
+            return; // If we've gone through the whole spawn order, stop spawning pedestrians
+        }
         else if (pedSpawnIndex < pedSpawns.Length)
         {
             spawn = pedSpawns[pedSpawnIndex];
@@ -336,7 +363,7 @@ public class IntersectionController : MonoBehaviour
                 }
                 spawn = new PedSpawn(spawnPoint, targetPoint);
             }
-            
+
         }
 
         if (spawn == null)
@@ -344,7 +371,7 @@ public class IntersectionController : MonoBehaviour
             Debug.LogWarning("Pedestrian spawn point is null!");
             return;
         }
-        
+
 
         GameObject ped = Instantiate(PedestrianPrefab, spawn.Value.spawnLocation.position, Quaternion.identity);
         ped.GetComponent<PedestrianNavAgent>().Initialize(spawn.Value.targetLocation);
@@ -360,12 +387,20 @@ public class IntersectionController : MonoBehaviour
         {
             case SpawnLocation.north:
                 return northSpawnNode;
+            case SpawnLocation.north2:
+                return northSpawnNode2;
             case SpawnLocation.east:
                 return eastSpawnNode;
+            case SpawnLocation.east2:
+                return eastSpawnNode2;
             case SpawnLocation.south:
                 return southSpawnNode;
+            case SpawnLocation.south2:
+                return southSpawnNode2;
             case SpawnLocation.west:
                 return westSpawnNode;
+            case SpawnLocation.west2:
+                return westSpawnNode2;
             // If no spawn location is specified, pick a random one
             case SpawnLocation.random:
                 IntersectionNode[] startNodes = GetAllSpawnNodes();
@@ -378,8 +413,10 @@ public class IntersectionController : MonoBehaviour
 
     IntersectionNode[] GetAllSpawnNodes()
     {
-        List<IntersectionNode> returnList = new List<IntersectionNode> { northSpawnNode, eastSpawnNode, southSpawnNode, westSpawnNode };
+        List<IntersectionNode> returnList = new List<IntersectionNode> { northSpawnNode, northSpawnNode2, eastSpawnNode, eastSpawnNode2, southSpawnNode, southSpawnNode2, westSpawnNode, westSpawnNode2 };
         returnList.RemoveAll(node => node == null);
+        returnList.RemoveAll(node => node.gameObject.activeSelf == false); // Remove any nodes that are inactive, since they shouldn't be used for spawning
+        returnList.RemoveAll(node => node.gameObject.activeInHierarchy == false); // Remove any nodes that are inactive, since they shouldn't be used for spawning
         return returnList.ToArray(); // Remove any null nodes from the list
     }
     public void Initialize(RoundConfig roundConfig)
@@ -389,6 +426,7 @@ public class IntersectionController : MonoBehaviour
         this.pedestrianSpawnInterval = roundConfig.pedSpawnDelay;
         this.pedestriansEnabled = roundConfig.pedestriansEnabled;
         this.deviantProbability = roundConfig.deviantSpawnChance;
+        this.possibleDeviantBehaviors = roundConfig.possibleDeviantBehaviors;
         this.spawnInterval = roundConfig.spawnDelay;
     }
 
