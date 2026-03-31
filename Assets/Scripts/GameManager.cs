@@ -26,7 +26,8 @@ public class GameManager : MonoBehaviour
     public RoundConfig[] rounds;
 
     [SerializeField] String intersectionControllerFourWayStopSceneName;
-    [SerializeField] String intersectionControllerFourWayStoplightSceneName;
+    [SerializeField] String intersectionControllerFourWayStop2LaneSceneName;
+    // [SerializeField] String intersectionControllerFourWayStoplightSceneName;
     [SerializeField] String intersectionControllerTIntersectionSceneName;
     [SerializeField] String intersectionControllerHighwayIntersectionSceneName;
     [SerializeField] GameObject uiControllerPrefab;
@@ -110,8 +111,8 @@ public class GameManager : MonoBehaviour
                 // Load scene additively so we don't lose the GameManager or UIController
                 SceneManager.LoadScene(intersectionControllerFourWayStopSceneName, LoadSceneMode.Additive);
                 break;
-            case IntersectionLayout.fourWayStoplight:
-                SceneManager.LoadScene(intersectionControllerFourWayStoplightSceneName, LoadSceneMode.Additive);
+            case IntersectionLayout.fourWayStop2Lane:
+                SceneManager.LoadScene(intersectionControllerFourWayStop2LaneSceneName, LoadSceneMode.Additive);
                 break;
             case IntersectionLayout.tIntersection:
                 SceneManager.LoadScene(intersectionControllerTIntersectionSceneName, LoadSceneMode.Additive);
@@ -130,6 +131,8 @@ public class GameManager : MonoBehaviour
         gameSpeedMultiplier = 1f;
         gameDuration = roundConfig.timer;
         allowedMistakes = roundConfig.allowedMistakes;
+        roundSuccessful = false;
+        DeviantBehaviorCounts = new Dictionary<DeviantType, int>();
 
         currentIntersectionController.Initialize(roundConfig);
         currentUIController = Instantiate(uiControllerPrefab).GetComponent<UIController>();
@@ -142,6 +145,7 @@ public class GameManager : MonoBehaviour
         // TODO refine round end
         roundSuccessful = success;
         paused = true;
+        if (!rounds[roundNumber-1].isTutorial) currentUIController.InsertStatsIntoEndMessages();
         currentUIController.ShowNextEndMessage();
     }
 
@@ -168,9 +172,10 @@ public struct RoundConfig
     public bool pedestriansEnabled;
     public string[] preambles;
     public string[] failureMessages;
+    public string[] allLivesLostMessages;
     public string[] successMessages;
     public int allowedMistakes;
-
+    public TimeOfDay timeOfDay;
 }
 
 [Serializable]
@@ -234,7 +239,7 @@ public enum SpawnLocation
 public enum IntersectionLayout
 {
     fourWayStop,
-    fourWayStoplight,
+    fourWayStop2Lane,
     tIntersection,
     highway
 }

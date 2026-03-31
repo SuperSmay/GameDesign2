@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2610424700391951311}
   - component: {fileID: 6728596966048615492}
   m_Layer: 5
-  m_Name: Score
+  m_Name: Round
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 23, y: -9}
+  m_AnchoredPosition: {x: 23, y: -209.5}
   m_SizeDelta: {x: 40.7418, y: 17.1245}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2610424700391951311
@@ -203,7 +203,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 20
   m_TargetDisplay: 0
 --- !u!114 &3086865532527848710
 MonoBehaviour:
@@ -257,10 +257,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 460c51516171b489d8d734663e4c860a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  scoreText: {fileID: 6728596966048615492}
-  roundText: {fileID: 5485419611320723652}
+  scoreText: {fileID: 4282551140310971446}
+  roundText: {fileID: 6728596966048615492}
   timerText: {fileID: 5263662667769300535}
-  livesText: {fileID: 4282551140310971446}
+  livesText: {fileID: 5485419611320723652}
   nextTextButton: {fileID: 2600297127127166314}
   preambleImage: {fileID: 8017484179131896389}
   preambleText: {fileID: 7116307909832597800}
@@ -290,7 +290,7 @@ GameObject:
   - component: {fileID: 4338216671119015217}
   - component: {fileID: 5485419611320723652}
   m_Layer: 5
-  m_Name: Round
+  m_Name: Lives
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -312,7 +312,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 23, y: -43.24945}
+  m_AnchoredPosition: {x: 23, y: -243.74944}
   m_SizeDelta: {x: 40.7418, y: 17.1245}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4338216671119015217
@@ -586,7 +586,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 23, y: -26.124474}
+  m_AnchoredPosition: {x: 23, y: -226.62445}
   m_SizeDelta: {x: 40.7418, y: 17.1245}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8105581057254190031
@@ -778,7 +778,7 @@ GameObject:
   - component: {fileID: 6947524222396176313}
   - component: {fileID: 4282551140310971446}
   m_Layer: 5
-  m_Name: Lives
+  m_Name: Score
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -800,7 +800,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 23, y: -60.37445}
+  m_AnchoredPosition: {x: 23, y: -260.87445}
   m_SizeDelta: {x: 40.7418, y: 17.1245}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6947524222396176313

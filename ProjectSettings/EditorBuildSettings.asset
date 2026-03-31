@@ -20,6 +20,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Intersections/TIntersection.unity
     guid: 19d853174559b48abb4e30aa4171c972
+  - enabled: 1
+    path: Assets/Scenes/Intersections/4WayStop2Lanes.unity
+    guid: c8c1e05c77c594859a88e6c1fbe7548f
+  - enabled: 1
+    path: Assets/Scenes/Intersections/2WayStop2Lanes.unity
+    guid: f20645ed6938a4b5eb972c4cee30b8f1
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

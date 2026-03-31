@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.Splines;
 
 #nullable enable
@@ -68,6 +69,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     [SerializeField] List<GameObject> rightTurnSignalSpawnPoints;
     List<GameObject>? turnSignalInstances;
     [SerializeField] List<Sprite> sprites; // List of possible sprites to randomly assign to this car for visual variety.
+    [SerializeField] List<Light2D> lightsToDisableInDaytime;
 
     [Header("Path Scanning")]
     public float lookAheadDistance = 25f; // Max distance to scan
@@ -82,6 +84,9 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
     float collisionCooldown = 0f; // Time in seconds to ignore collisions after a collision has occurred
     float smoothedTargetSpeed = 0f;
     bool hasEncounteredDeviantBehavior = false; // Whether the car has already encountered the conditions to trigger its deviant behavior. Used to prevent the player from losing points for something they couldn't have known about.
+    float lightEnableTimer = 0f; // Timer to track when to enable the car's lights after spawning
+    float lightEnableDuration = 1f;
+
 
     // Speeding deviant behavior variables
     float speedingTurnAngleThreshold = 20f; // Minimum angle change to trigger tire screech effects when speeding
@@ -560,6 +565,19 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
             spriteRenderer.sprite = sprites[index];
         }
 
+        if (IntersectionController.Instance.timeOfDay == TimeOfDay.Day)
+        {
+            foreach (Light2D light in lightsToDisableInDaytime)
+            {
+                light.enabled = false;
+            }
+        }
+
+        foreach (Light2D light in lightsToDisableInDaytime)
+        {
+            light.intensity = 0f; // Start with lights off, we'll fade them in over the first second for a nice effect
+        }
+
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -598,6 +616,17 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         }
 
         collisionCooldown = Mathf.Max(collisionCooldown - GameManager.Instance.deltaTimeSpeedMult, 0f);
+
+        if (lightEnableTimer < lightEnableDuration)
+        {
+            lightEnableTimer += GameManager.Instance.deltaTimeSpeedMult;
+            foreach (Light2D light in lightsToDisableInDaytime)
+            {
+                // Lerp opacity from 0 to 0.75 over duration
+                light.intensity = Mathf.Lerp(0f, 0.75f, lightEnableTimer / lightEnableDuration);
+            }
+
+        }
 
     }
 
@@ -661,6 +690,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
         if (collision.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.Car])
         {
             rb.bodyType = RigidbodyType2D.Dynamic; // Make the car affected by physics after collision
+            hasCollided = true; // Stop moving if we've collided with another car
         }
 
         if (collisionCooldown == 0)
@@ -669,7 +699,13 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
             InstantiateParticleEffects(explosionEffectPrefab, transform.position, Quaternion.identity); // Spawn explosion effect
         }
 
-        hasCollided = true; // Stop moving if we've collided with another car
+
+        // Don't end the round if a pedestrian walks into a stationary car.
+        if (collision.gameObject.layer == ColliderTypeToLayerMasks.Map[ColliderType.Pedestrian] && speed < minSpeed)
+        {
+            return;
+        }
+        
         intersectionController.EndRound(false, true);
         intersectionController.gameOverPosition = transform.position; // Set the game over position to the location of the collision for camera focus
     }
@@ -785,7 +821,7 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
                 {
                     if (info.colliderType == ColliderType.StopLine)
                     {
-                        newStopDistances.Add(new ColliderStopDistanceInfo(info.colliderType, -1f)); // Stop after the line!
+                        newStopDistances.Add(new ColliderStopDistanceInfo(info.colliderType, -0.5f)); // Stop after the line!
                     }
                     else if (info.colliderType == ColliderType.Car)
                     {
@@ -822,8 +858,8 @@ public class CarPathFollower : MonoBehaviour, IPointerClickHandler
             case DeviantType.swerving:
                 // Most of the important behavior is handled in UpdatePositionAlongSpline() where we apply a swerving offset to the car's position along the spline. 
                 // Here, we just set the parameters for the swerving behavior.
-                swervingCooldownTimer = Random.Range(0f, 2f); // Random initial cooldown so not all swerving cars start swerving at the same time
-                swervingAmplitude = Random.Range(0.3f, 0.5f); // Random amplitude between 0.3 and 0.5
+                swervingCooldownTimer = Random.Range(1f, 2f); // Random initial cooldown so not all swerving cars start swerving at the same time
+                swervingAmplitude = Random.Range(0.6f, 1f); // Random amplitude between 0.6 and 1.0
                 swervingFrequency = Random.Range(0.5f, 1.5f); // Random frequency between 0.5 and 1.5
                 hasEncounteredDeviantBehavior = true; // Swerving is obvious and can be identified immediately
                 break;

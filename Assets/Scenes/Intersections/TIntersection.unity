@@ -639,6 +639,258 @@ MonoBehaviour:
       m_Data: []
   m_Knots:
     m_KnotsLink: []
+--- !u!1 &387018930
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 387018932}
+  - component: {fileID: 387018931}
+  m_Layer: 0
+  m_Name: Morning Light
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &387018931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 387018930}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ComponentVersion: 2
+  m_LightType: 3
+  m_BlendStyleIndex: 0
+  m_FalloffIntensity: 0.5
+  m_Color: {r: 1, g: 0.7749815, b: 0.43867922, a: 1}
+  m_Intensity: 1
+  m_LightVolumeIntensity: 1
+  m_LightVolumeEnabled: 0
+  m_ApplyToSortingLayers: 0000000069a4b6b1
+  m_LightCookieSprite: {fileID: 0}
+  m_DeprecatedPointLightCookieSprite: {fileID: 0}
+  m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
+  m_OverlapOperation: 0
+  m_NormalMapDistance: 3
+  m_NormalMapQuality: 2
+  m_UseNormalMap: 0
+  m_ShadowsEnabled: 1
+  m_ShadowIntensity: 0.149
+  m_ShadowSoftness: 1
+  m_ShadowSoftnessFalloffIntensity: 0.25
+  m_ShadowVolumeIntensityEnabled: 0
+  m_ShadowVolumeIntensity: 0.75
+  m_LocalBounds:
+    m_Center: {x: 0, y: -0.00000011920929, z: 0}
+    m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
+  m_PointLightInnerAngle: 56.160004
+  m_PointLightOuterAngle: 56.160004
+  m_PointLightInnerRadius: 0
+  m_PointLightOuterRadius: 586.33
+  m_ShapeLightParametricSides: 5
+  m_ShapeLightParametricAngleOffset: 0
+  m_ShapeLightParametricRadius: 1
+  m_ShapeLightFalloffSize: 0.5
+  m_ShapeLightFalloffOffset: {x: 0, y: 0}
+  m_ShapePath:
+  - {x: -0.5, y: -0.5, z: 0}
+  - {x: 0.5, y: -0.5, z: 0}
+  - {x: 0.5, y: 0.5, z: 0}
+  - {x: -0.5, y: 0.5, z: 0}
+--- !u!4 &387018932
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 387018930}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
+  m_LocalPosition: {x: 0, y: 105.3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
+--- !u!1 &388614989
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 388614991}
+  - component: {fileID: 388614990}
+  m_Layer: 0
+  m_Name: Day Light
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &388614990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388614989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ComponentVersion: 2
+  m_LightType: 4
+  m_BlendStyleIndex: 0
+  m_FalloffIntensity: 0.5
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 1
+  m_LightVolumeIntensity: 1
+  m_LightVolumeEnabled: 0
+  m_ApplyToSortingLayers: 0000000069a4b6b1
+  m_LightCookieSprite: {fileID: 0}
+  m_DeprecatedPointLightCookieSprite: {fileID: 0}
+  m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
+  m_OverlapOperation: 0
+  m_NormalMapDistance: 3
+  m_NormalMapQuality: 2
+  m_UseNormalMap: 0
+  m_ShadowsEnabled: 0
+  m_ShadowIntensity: 0.75
+  m_ShadowSoftness: 0
+  m_ShadowSoftnessFalloffIntensity: 0.5
+  m_ShadowVolumeIntensityEnabled: 0
+  m_ShadowVolumeIntensity: 0.75
+  m_LocalBounds:
+    m_Center: {x: 0, y: -0.00000011920929, z: 0}
+    m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
+  m_PointLightInnerAngle: 360
+  m_PointLightOuterAngle: 360
+  m_PointLightInnerRadius: 0
+  m_PointLightOuterRadius: 1
+  m_ShapeLightParametricSides: 5
+  m_ShapeLightParametricAngleOffset: 0
+  m_ShapeLightParametricRadius: 1
+  m_ShapeLightFalloffSize: 0.5
+  m_ShapeLightFalloffOffset: {x: 0, y: 0}
+  m_ShapePath:
+  - {x: -0.5, y: -0.5, z: 0}
+  - {x: 0.5, y: -0.5, z: 0}
+  - {x: 0.5, y: 0.5, z: 0}
+  - {x: -0.5, y: 0.5, z: 0}
+--- !u!4 &388614991
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388614989}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &404066399
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 404066401}
+  - component: {fileID: 404066400}
+  m_Layer: 0
+  m_Name: Night Light
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &404066400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 404066399}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ComponentVersion: 2
+  m_LightType: 4
+  m_BlendStyleIndex: 0
+  m_FalloffIntensity: 0.5
+  m_Color: {r: 0.25, g: 0.384452, b: 1, a: 1}
+  m_Intensity: 0.09
+  m_LightVolumeIntensity: 1
+  m_LightVolumeEnabled: 0
+  m_ApplyToSortingLayers: 0000000069a4b6b1
+  m_LightCookieSprite: {fileID: 0}
+  m_DeprecatedPointLightCookieSprite: {fileID: 0}
+  m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
+  m_OverlapOperation: 0
+  m_NormalMapDistance: 3
+  m_NormalMapQuality: 2
+  m_UseNormalMap: 0
+  m_ShadowsEnabled: 0
+  m_ShadowIntensity: 0.75
+  m_ShadowSoftness: 0
+  m_ShadowSoftnessFalloffIntensity: 0.5
+  m_ShadowVolumeIntensityEnabled: 0
+  m_ShadowVolumeIntensity: 0.75
+  m_LocalBounds:
+    m_Center: {x: 0, y: -0.00000011920929, z: 0}
+    m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
+  m_PointLightInnerAngle: 360
+  m_PointLightOuterAngle: 360
+  m_PointLightInnerRadius: 0
+  m_PointLightOuterRadius: 1
+  m_ShapeLightParametricSides: 5
+  m_ShapeLightParametricAngleOffset: 0
+  m_ShapeLightParametricRadius: 1
+  m_ShapeLightFalloffSize: 0.5
+  m_ShapeLightFalloffOffset: {x: 0, y: 0}
+  m_ShapePath:
+  - {x: -0.5, y: -0.5, z: 0}
+  - {x: 0.5, y: -0.5, z: 0}
+  - {x: 0.5, y: 0.5, z: 0}
+  - {x: -0.5, y: 0.5, z: 0}
+--- !u!4 &404066401
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 404066399}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &421498402
 GameObject:
   m_ObjectHideFlags: 0
@@ -2487,23 +2739,23 @@ MonoBehaviour:
   - m_EditModeType: 1
     m_Knots:
     - Position:
-        x: 0
-        y: 0
+        x: -3.7133749
+        y: 0.0038647652
         z: 0
       TangentIn:
         x: -0
         y: -0
-        z: -0.29382706
+        z: -0.66516244
       TangentOut:
         x: 0
         y: 0
-        z: 0.29382706
+        z: 0.66516244
       Rotation:
         value:
-          x: 0.49840006
-          y: -0.50159484
-          z: 0.5015949
-          w: -0.4984
+          x: -0.49914825
+          y: 0.50085026
+          z: -0.5008501
+          w: 0.4991485
     - Position:
         x: 2.9382105
         y: -0.01877451
@@ -2511,17 +2763,17 @@ MonoBehaviour:
       TangentIn:
         x: -0
         y: -0
-        z: -0.29382706
+        z: -0.66516244
       TangentOut:
         x: 0
         y: 0
-        z: 0.29382706
+        z: 0.66516244
       Rotation:
         value:
-          x: 0.49840006
-          y: -0.50159484
-          z: 0.5015949
-          w: -0.4984
+          x: -0.49914837
+          y: 0.50085014
+          z: -0.5008502
+          w: 0.49914837
     m_MetaData:
     - Mode: 0
       Tension: 0.5
@@ -2914,6 +3166,7 @@ MonoBehaviour:
   - {fileID: 1216829647749720811}
   - {fileID: 3731172283280401410}
   allCarsAllowedThrough: 1
+  currentStoplightColor: 0
   turnChoiceForThisStopLine: 1
 --- !u!114 &1417628394731408809
 MonoBehaviour:
@@ -3225,6 +3478,7 @@ MonoBehaviour:
   - {fileID: 2813717037921501004}
   - {fileID: 3731172283280401410}
   allCarsAllowedThrough: 0
+  currentStoplightColor: 0
   turnChoiceForThisStopLine: 3
 --- !u!114 &1836748043155430633
 MonoBehaviour:
@@ -3641,6 +3895,7 @@ MonoBehaviour:
   collidersToCheckBeforeMoving:
   - {fileID: 3731172283280401410}
   allCarsAllowedThrough: 1
+  currentStoplightColor: 0
   turnChoiceForThisStopLine: 3
 --- !u!4 &2518184369473665276
 Transform:
@@ -4483,11 +4738,21 @@ MonoBehaviour:
   - {fileID: 7503604389119935985}
   - {fileID: 6016340971394803100}
   playerInput: {fileID: 3374281920888807449}
+  globalDayLight: {fileID: 388614990}
+  globalMorningLight: {fileID: 387018931}
+  globalNightLight: {fileID: 404066400}
   activeCars: []
+  useStoplights: 0
+  timeOfDay: 1
+  useTimer: 1
   stopSignWaitTime: 0.75
+  stoplightPhases: []
+  stoplightPhaseLights: []
+  greenLightSprite: {fileID: 0}
+  yellowLightSprite: {fileID: 0}
+  redLightSprite: {fileID: 0}
   carSpawns: []
   pedSpawns: []
-  gameOver: 0
   gameOverPosition: {x: 0, y: 0}
   activeEffects: []
   spawnInterval: 1000
@@ -6557,6 +6822,7 @@ MonoBehaviour:
   - {fileID: 1417628394731408809}
   - {fileID: 3731172283280401410}
   allCarsAllowedThrough: 0
+  currentStoplightColor: 0
   turnChoiceForThisStopLine: 1
 --- !u!208 &6380545992384532981
 NavMeshObstacle:
@@ -7255,35 +7521,35 @@ MonoBehaviour:
       TangentIn:
         x: -0
         y: -0
-        z: -0.5362773
+        z: -0.165003
       TangentOut:
         x: 0
         y: 0
-        z: 0.5362773
+        z: 0.165003
       Rotation:
         value:
-          x: 0.49937087
-          y: -0.5006284
-          z: 0.5006284
-          w: -0.4993708
+          x: 0.498447
+          y: -0.5015482
+          z: 0.5015481
+          w: -0.49844694
     - Position:
-        x: 3.3137007
-        y: -0.009387255
+        x: -0.3990574
+        y: -0.0061335564
         z: 0
       TangentIn:
         x: -0
         y: -0
-        z: -0.5362773
+        z: -0.165003
       TangentOut:
         x: 0
         y: 0
-        z: 0.5362773
+        z: 0.165003
       Rotation:
         value:
-          x: 0.49937087
-          y: -0.5006284
-          z: 0.5006284
-          w: -0.4993708
+          x: -0.49844688
+          y: 0.5015482
+          z: -0.5015481
+          w: 0.49844703
     m_MetaData:
     - Mode: 0
       Tension: 0.5
@@ -8592,3 +8858,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 3664501227961478942}
+  - {fileID: 404066401}
+  - {fileID: 388614991}
+  - {fileID: 387018932}

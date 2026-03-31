@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 using System.Linq;
+using UnityEngine.Rendering.Universal;
+using Unity.VisualScripting;
 
 #nullable enable
 
@@ -36,11 +38,16 @@ public class IntersectionController : MonoBehaviour
 
     [SerializeField] PlayerInput playerInput;
 
+    [SerializeField] Light2D globalDayLight;
+    [SerializeField] Light2D globalMorningLight;
+    [SerializeField] Light2D globalNightLight;
+
     public static IntersectionController Instance { get; private set; }
 
     public List<CarPathFollower> activeCars = new List<CarPathFollower>();
 
     public bool useStoplights = false;
+    public TimeOfDay timeOfDay = TimeOfDay.Day;
 
     public bool useTimer = true;  // Some rounds just run until the the spawn order is complete and all cars have cleared the intersection, so we don't want to use the timer for those rounds since it would be redundant and could cause confusion.
     // Note: This also means that rounds without a spawn order and a timer will be infinite. This is intentional.
@@ -129,13 +136,24 @@ public class IntersectionController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        // This is for debugging
-        // If there isn't a GameManager in the scene, create one and initialize it with default values
-        // if (GameManager.Instance == null)
-        // {
-        //     GameObject gameManagerObj = new GameObject("GameManager");
-        //     gameManagerObj.AddComponent<GameManager>();
-        // }
+        switch (timeOfDay)
+        {
+            case TimeOfDay.Morning:
+                globalMorningLight.enabled = true;
+                globalDayLight.enabled = false;
+                globalNightLight.enabled = false;
+                break;
+            case TimeOfDay.Day:
+                globalMorningLight.enabled = false;
+                globalDayLight.enabled = true;
+                globalNightLight.enabled = false;
+                break;
+            case TimeOfDay.Night:
+                globalMorningLight.enabled = false;
+                globalDayLight.enabled = false;
+                globalNightLight.enabled = true;
+                break;
+        }
     }
 
     // Update is called once per frame
@@ -146,8 +164,7 @@ public class IntersectionController : MonoBehaviour
         {
             if (!roundEnded)
             {
-                roundEnded = true;
-                EndRound(false); // End the round with a loss and don't play the animation
+                EndRound(false, false); // End the round with a loss and don't play the animation
             }
         }
 
@@ -160,6 +177,10 @@ public class IntersectionController : MonoBehaviour
             }
 
             GameManager.Instance.gameSpeedMultiplier = 1f - (roundEndAnimationTimer / roundEndAnimationDuration); // Gradually slow down time
+
+
+            // Do a vignette effect
+            
 
 
             // // Scale Resolution
@@ -494,6 +515,7 @@ public class IntersectionController : MonoBehaviour
         this.possibleDeviantBehaviors = roundConfig.possibleDeviantBehaviors;
         this.spawnInterval = roundConfig.spawnDelay;
         this.useTimer = roundConfig.useTimer;
+        this.timeOfDay = roundConfig.timeOfDay;
     }
 
     public void EndRound(bool success, bool playAnimation = false)
@@ -556,4 +578,12 @@ public struct StoplightPhaseLight
     {
         this.stopLights = stopLights;
     }
+}
+
+[Serializable]
+public enum TimeOfDay
+{
+    Morning,
+    Day,
+    Night
 }

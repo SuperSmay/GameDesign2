@@ -120,6 +120,11 @@ public class IntersectionNode : MonoBehaviour
         availableTurnChoicesOnPath = BuildAvailableTurnChoices();
     }
 
+    void Update()
+    {
+        carPathFollowers.RemoveAll(car => car == null); // Clean up any destroyed cars from the list
+    }
+
     public bool HasCars()
     {
         return carPathFollowers.Count > 0;

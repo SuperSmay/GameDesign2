@@ -119,90 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &619394800
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 619394802}
-  - component: {fileID: 619394801}
-  m_Layer: 0
-  m_Name: Global Light 2D
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &619394801
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 619394800}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ComponentVersion: 2
-  m_LightType: 4
-  m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.5
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1
-  m_LightVolumeIntensity: 1
-  m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 0000000069a4b6b1
-  m_LightCookieSprite: {fileID: 0}
-  m_DeprecatedPointLightCookieSprite: {fileID: 0}
-  m_LightOrder: 0
-  m_AlphaBlendOnOverlap: 0
-  m_OverlapOperation: 0
-  m_NormalMapDistance: 3
-  m_NormalMapQuality: 2
-  m_UseNormalMap: 0
-  m_ShadowsEnabled: 0
-  m_ShadowIntensity: 0.75
-  m_ShadowSoftness: 0
-  m_ShadowSoftnessFalloffIntensity: 0.5
-  m_ShadowVolumeIntensityEnabled: 0
-  m_ShadowVolumeIntensity: 0.75
-  m_LocalBounds:
-    m_Center: {x: 0, y: -0.00000011920929, z: 0}
-    m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
-  m_PointLightInnerAngle: 360
-  m_PointLightOuterAngle: 360
-  m_PointLightInnerRadius: 0
-  m_PointLightOuterRadius: 1
-  m_ShapeLightParametricSides: 5
-  m_ShapeLightParametricAngleOffset: 0
-  m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 0.5
-  m_ShapeLightFalloffOffset: {x: 0, y: 0}
-  m_ShapePath:
-  - {x: -0.5, y: -0.5, z: 0}
-  - {x: 0.5, y: -0.5, z: 0}
-  - {x: 0.5, y: 0.5, z: 0}
-  - {x: -0.5, y: 0.5, z: 0}
---- !u!4 &619394802
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 619394800}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1228757426
 GameObject:
   m_ObjectHideFlags: 0
@@ -318,10 +234,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.03032345
-    y: 0
-    width: 0.93980235
-    height: 1
+    x: 0
+    y: 0.41188738
+    width: 0.40635124
+    height: 0.49035454
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -806,30 +722,15 @@ MonoBehaviour:
   Score: 0
   roundSuccessful: 0
   roundNumber: 1
-  allowedMistakes: 3
+  allowedMistakes: 4
   gameTimer: 0
   gameDuration: 60
   gameSpeedMultiplier: 1
   paused: 0
   rounds:
-  - timer: 60
+  - timer: 15
+    useTimer: 1
     spawnDelay: 1
-    pedSpawnDelay: 0.2
-    intersectionLayout: 1
-    spawnOrder: []
-    pedSpawnOrder: []
-    deviantSpawnChance: 1
-    possibleDeviantBehaviors: 04000000
-    isTutorial: 0
-    pedestriansEnabled: 0
-    preambles:
-    - Make sure they're watcing out for pedestrians
-    failureMessages:
-    - Oops!
-    successMessages: []
-    allowedMistakes: 100
-  - timer: 10
-    spawnDelay: 2
     pedSpawnDelay: 0
     intersectionLayout: 0
     spawnOrder: []
@@ -839,15 +740,18 @@ MonoBehaviour:
     isTutorial: 1
     pedestriansEnabled: 0
     preambles:
-    - Hello there!
-    - Welcome to Road Watcher!
-    - Look at these cars all behaving nicely
+    - 'Welcome, road watcher! '
+    - "It\u2019s a busy morning in Madison, WI, and folks are on their way to work.
+      Take a look at this intersection. Talk about rush hour!"
     failureMessages: []
+    allLivesLostMessages: []
     successMessages:
-    - Now let's see some more interesting behavior
+    - "Looks like everyone\u2019s driving safely!"
     allowedMistakes: 0
-  - timer: 10
-    spawnDelay: 1.65
+    timeOfDay: 0
+  - timer: 0
+    useTimer: 0
+    spawnDelay: 1.7
     pedSpawnDelay: 0
     intersectionLayout: 0
     spawnOrder:
@@ -857,7 +761,7 @@ MonoBehaviour:
         deviantType: 6
         isSpecified: 1
       vehicleType: 0
-    - spawnLocation: 3
+    - spawnLocation: 2
       turnChoice: 1
       deviantBehavior:
         deviantType: 0
@@ -875,27 +779,34 @@ MonoBehaviour:
     isTutorial: 1
     pedestriansEnabled: 0
     preambles:
-    - Click the car that runs the stop sign!
+    - 'Not all drivers are safe, though!  '
+    - 'Did you know? In the United States alone, 40,901 people were killed in motor
+      vehicle crashes in 2023. '
+    - 'Click on the car that runs the stop sign! '
     failureMessages:
-    - Which car ran the stop sign?
+    - Uh oh! Which car ran the stop sign?
+    allLivesLostMessages:
+    - Uh oh! Which car ran the stop sign?
     successMessages:
-    - Yippeeeee
+    - Great job!
     allowedMistakes: 0
+    timeOfDay: 1
   - timer: 10
+    useTimer: 0
     spawnDelay: 2
     pedSpawnDelay: 5
     intersectionLayout: 0
     spawnOrder:
-    - spawnLocation: 3
+    - spawnLocation: 2
       turnChoice: 2
       deviantBehavior:
         deviantType: 6
         isSpecified: 1
       vehicleType: 0
-    - spawnLocation: 1
+    - spawnLocation: 0
       turnChoice: 1
       deviantBehavior:
-        deviantType: 3
+        deviantType: 2
         isSpecified: 1
       vehicleType: 0
     pedSpawnOrder: []
@@ -906,42 +817,259 @@ MonoBehaviour:
     preambles:
     - Looks like someone might be speeding!
     failureMessages:
-    - Oops!
-    successMessages: []
+    - Oops! Someone was going a little too fast!
+    allLivesLostMessages:
+    - Oops! Someone was going a little too fast!
+    successMessages:
+    - Wonderful!
     allowedMistakes: 0
-  - timer: 30
-    spawnDelay: 2
+    timeOfDay: 1
+  - timer: 0
+    useTimer: 0
+    spawnDelay: 1
     pedSpawnDelay: 0
     intersectionLayout: 2
     spawnOrder:
-    - spawnLocation: 3
-      turnChoice: 2
+    - spawnLocation: 4
+      turnChoice: 3
       deviantBehavior:
         deviantType: 6
         isSpecified: 1
       vehicleType: 0
-    - spawnLocation: 1
+    - spawnLocation: 4
       turnChoice: 1
       deviantBehavior:
-        deviantType: 3
+        deviantType: 1
         isSpecified: 1
       vehicleType: 0
+    - spawnLocation: 4
+      turnChoice: 1
+      deviantBehavior:
+        deviantType: 6
+        isSpecified: 1
+      vehicleType: 2
     pedSpawnOrder: []
     deviantSpawnChance: 0.3
     possibleDeviantBehaviors: 
-    isTutorial: 0
+    isTutorial: 1
     pedestriansEnabled: 0
     preambles:
-    - Now let's watch some more cars...
+    - "Some of these drivers have no sense of personal space! Stop the car that\u2019s
+      tailgating."
     - See if you can spot who's breaking the rules.
     failureMessages:
-    - Oops!
-    successMessages: []
+    - A few of those cars got a little too close! Try and click on them!
+    allLivesLostMessages:
+    - A few of those cars got a little too close! Try and click on them!
+    successMessages:
+    - "Looks like you\u2019re ready to keep the roads safe! "
     allowedMistakes: 5
+    timeOfDay: 1
+  - timer: 30
+    useTimer: 1
+    spawnDelay: 2
+    pedSpawnDelay: 8
+    intersectionLayout: 0
+    spawnOrder: []
+    pedSpawnOrder: []
+    deviantSpawnChance: 0.3
+    possibleDeviantBehaviors: 000000000100000004000000
+    isTutorial: 0
+    pedestriansEnabled: 1
+    preambles:
+    - "It\u2019s a busy Monday morning, watch out for drowsy drivers!"
+    - 'Did you know? Drowsiness can cause drivers to have delayed reaction times
+      to hazards on the road, putting them at risk for causing traffic accidents. '
+    failureMessages:
+    - 'Sleepy Steve dozed off behind the wheel and caused a horrific traffic accident.  '
+    allLivesLostMessages:
+    - Oops, looks like a few of those cars were breaking the rules! Watch for tailgating
+      and make sure everyone obeys the stop sign!
+    successMessages:
+    - Great work! You stopped the drowsy drivers and kept the roads safe!
+    allowedMistakes: 3
+    timeOfDay: 0
+  - timer: 30
+    useTimer: 1
+    spawnDelay: 2
+    pedSpawnDelay: 7
+    intersectionLayout: 2
+    spawnOrder: []
+    pedSpawnOrder: []
+    deviantSpawnChance: 0.3
+    possibleDeviantBehaviors: 000000000300000002000000
+    isTutorial: 0
+    pedestriansEnabled: 1
+    preambles:
+    - 'Keep the roads safe! Stop the distracted drivers. '
+    - Distracted driving can cause people to swerve, speed, and have delayed reaction
+      times to traffic signals and hazards.
+    failureMessages:
+    - "Texting Tammy didn\u2019t look up for her phone soon enough and caused a traffic
+      accident! "
+    allLivesLostMessages:
+    - Oh no! A few of them got away with distracted driving! Watch out for swerving
+      and speeding, and make sure everyone obeys the stop signs!
+    successMessages:
+    - 'Great work! You stopped some distracted drivers and kept the roads safe! '
+    - ' Did you know? Texting for just 5 seconds at 55 mph is like driving the length
+      of a football field blind. '
+    allowedMistakes: 3
+    timeOfDay: 1
+  - timer: 60
+    useTimer: 1
+    spawnDelay: 2
+    pedSpawnDelay: 5
+    intersectionLayout: 0
+    spawnOrder: []
+    pedSpawnOrder: []
+    deviantSpawnChance: 0.3
+    possibleDeviantBehaviors: 030000000300000004000000
+    isTutorial: 0
+    pedestriansEnabled: 1
+    preambles:
+    - "It\u2019s 12 o\u2019clock on Wednesday and folks are getting off their lunch
+      breaks! Watch out for people eating while driving!! "
+    - 'Did you know? There are 3 types of distractions:\n\t- Eyes off the road (visual)\n\t-
+      Hands off the wheel (manual)\n\t- Mind off driving (cognitive) '
+    failureMessages:
+    - "Lunchbox Larry took his hands off the wheel to eat and didn\u2019t react in
+      time\u2014crash! "
+    allLivesLostMessages:
+    - Look out for people swerving and make sure everyone checks for pedestrians!
+      It's much easier to swerve when you're holding something!
+    successMessages:
+    - 'Great work! You stopped some distracted drivers and kept the roads safe! '
+    allowedMistakes: 3
+    timeOfDay: 1
+  - timer: 60
+    useTimer: 1
+    spawnDelay: 4
+    pedSpawnDelay: 20
+    intersectionLayout: 1
+    spawnOrder: []
+    pedSpawnOrder: []
+    deviantSpawnChance: 0.4
+    possibleDeviantBehaviors: 0300000003000000040000000000000001000000
+    isTutorial: 0
+    pedestriansEnabled: 1
+    preambles:
+    - "Night drive\u2026 watch out for drunk drivers on the road!"
+    - Alcohol slows reaction time, reduces coordination, and makes it harder to make
+      safe decisions while driving.
+    failureMessages:
+    - 'Buzzed Ben thought he was fine to drive, but his slowed reactions caused a
+      crash! '
+    allLivesLostMessages:
+    - Drunk driving is no joke. Keep a close eye out for unusual behavior.
+    successMessages:
+    - 'Great work! You kept impaired drivers off the road and prevented a crash! '
+    - 'Did you know? At a BAC of 0.08%, drivers are 4x more likely to crash than
+      sober drivers. '
+    allowedMistakes: 3
+    timeOfDay: 2
+  - timer: 60
+    useTimer: 1
+    spawnDelay: 1.5
+    pedSpawnDelay: 9
+    intersectionLayout: 2
+    spawnOrder: []
+    pedSpawnOrder: []
+    deviantSpawnChance: 0.3
+    possibleDeviantBehaviors: 040000000000000002000000
+    isTutorial: 0
+    pedestriansEnabled: 1
+    preambles:
+    - Rush hour traffic is building up! Watch out for drivers not paying attention!
+    - Cognitive distractions like daydreaming or talking can cause drivers to miss
+      important changes on the road.
+    failureMessages:
+    - "Daydreaming Danny wasn\u2019t focused on the road and missed a traffic change\u2014crash! "
+    allLivesLostMessages:
+    - It seems a few people got away! Make sure everyone is paying attention to stopsigns
+      and pedestrians!
+    successMessages:
+    - 'Nice job! You caught distracted drivers before they caused danger! '
+    - 'Distracted driving kills about 9 people every day in the U.S. '
+    allowedMistakes: 3
+    timeOfDay: 1
+  - timer: 60
+    useTimer: 1
+    spawnDelay: 2
+    pedSpawnDelay: 2
+    intersectionLayout: 0
+    spawnOrder: []
+    pedSpawnOrder: []
+    deviantSpawnChance: 0.4
+    possibleDeviantBehaviors: 040000000400000001000000
+    isTutorial: 0
+    pedestriansEnabled: 1
+    preambles:
+    - 'After school traffic! Watch out for younger drivers on their phones! '
+    - 'Younger drivers are more likely to use their phones while driving, increasing
+      crash risk. '
+    failureMessages:
+    - "Facetiming Fiona couldn\u2019t put her phone down and caused a crash! "
+    allLivesLostMessages:
+    - Make sure everyone waits for the pedestrians!
+    successMessages:
+    - 'Nice work! You stopped distracted drivers and kept everyone safe! '
+    - "Did you know? 1 in 3 drivers in distraction-related crashes are ages 15\u201324. "
+    allowedMistakes: 3
+    timeOfDay: 1
+  - timer: 120
+    useTimer: 1
+    spawnDelay: 4
+    pedSpawnDelay: 15
+    intersectionLayout: 0
+    spawnOrder: []
+    pedSpawnOrder: []
+    deviantSpawnChance: 0.4
+    possibleDeviantBehaviors: 0400000000000000010000000200000003000000
+    isTutorial: 0
+    pedestriansEnabled: 1
+    preambles:
+    - "Late evening roads\u2026 watch out for risky combinations! "
+    - Drinking and being distracted at the same time makes driving even more dangerous.
+    failureMessages:
+    - "Double Trouble Delia was both distracted and inebriated \u2013 crash! "
+    allLivesLostMessages:
+    - There is a lot to look out for! Keep an eye for anything strange!
+    successMessages:
+    - Great work! You stopped high-risk drivers before it was too late!
+    - 'Did you know? Combining drunk and distracted driving makes crashes even more
+      likely and severe. '
+    allowedMistakes: 3
+    timeOfDay: 2
+  - timer: 0
+    useTimer: 0
+    spawnDelay: 2
+    pedSpawnDelay: 10
+    intersectionLayout: 1
+    spawnOrder: []
+    pedSpawnOrder: []
+    deviantSpawnChance: 0.3
+    possibleDeviantBehaviors: 0000000001000000020000000300000004000000
+    isTutorial: 0
+    pedestriansEnabled: 1
+    preambles:
+    - You've done a great job so far!
+    - Now see how many cars you can stop! What's the highest score you can get?
+    - This round goes on until you lose! Good luck!
+    failureMessages:
+    - Oops! Spotting them all is tricky!
+    - Click "again" if you want to try again!
+    allLivesLostMessages:
+    - Oops! Spotting them all is tricky!
+    - Click "again" if you want to try again!
+    successMessages:
+    - This text is not supposed to show up!
+    allowedMistakes: 5
+    timeOfDay: 1
   intersectionControllerFourWayStopSceneName: 4WayStop
-  intersectionControllerFourWayStoplightSceneName: 4WayStoplight
+  intersectionControllerFourWayStop2LaneSceneName: 4WayStop2Lanes
   intersectionControllerTIntersectionSceneName: TIntersection
-  intersectionControllerHighwayIntersectionSceneName: 
+  intersectionControllerHighwayIntersectionSceneName: 2WayStop2Lanes
   uiControllerPrefab: {fileID: 2611391844277416163, guid: 3ae5a59f285494d5d9b8ad05410896d8, type: 3}
 --- !u!4 &1561792147
 Transform:
@@ -1072,7 +1200,6 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 619394802}
   - {fileID: 1228757430}
   - {fileID: 1375409904}
   - {fileID: 1791891023}
